@@ -1,0 +1,95 @@
+{
+  "categories": [
+    {
+      "id": "intro",
+      "name": "Introduction",
+      "parentId": null,
+      "order": 1,
+      "level": 1
+    },
+    {
+      "id": "intro.basic",
+      "name": "基本構文",
+      "parentId": "intro",
+      "order": 1,
+      "level": 2
+    },
+    {
+      "id": "intro.variables",
+      "name": "変数と可変性",
+      "parentId": "intro.basic",
+      "order": 1,
+      "level": 3
+    },
+    {
+      "id": "ownership",
+      "name": "Ownership & Borrowing",
+      "parentId": null,
+      "order": 2,
+      "level": 1
+    },
+    {
+      "id": "ownership.move",
+      "name": "MoveとCopy",
+      "parentId": "ownership",
+      "order": 1,
+      "level": 2
+    }
+  ],
+  "questions": [
+    {
+      "id": "intro.variables.q001",
+      "categoryId": "intro.variables",
+      "type": "basic",
+      "title": "let と mut",
+      "body": "Rustで変数を再代入可能にするために必要なキーワードはどれ？",
+      "codeSnippet": "let x = 10;\n// x = 20; // これはエラー",
+      "choices": [
+        { "id": "a", "text": "var" },
+        { "id": "b", "text": "mutable" },
+        { "id": "c", "text": "mut" },
+        { "id": "d", "text": "change" }
+      ],
+      "correctChoiceId": "c",
+      "explanation": "Rustの変数はデフォルトで不変です。再代入したい場合は `let mut x = 10;` のように `mut` を付けます。",
+      "difficulty": 1,
+      "tags": ["syntax", "mutability"]
+    },
+    {
+      "id": "ownership.move.q001",
+      "categoryId": "ownership.move",
+      "type": "codeReading",
+      "title": "所有権のムーブ",
+      "body": "次のコードで `println!(\"{}\", s1);` を追加するとどうなる？",
+      "codeSnippet": "let s1 = String::from(\"hello\");\nlet s2 = s1;\nprintln!(\"{}\", s2);",
+      "choices": [
+        { "id": "a", "text": "正常にコンパイルされ、hello が2回表示される" },
+        { "id": "b", "text": "s1 はムーブされるため、s1 を使うとコンパイルエラーになる" },
+        { "id": "c", "text": "実行時にパニックする" },
+        { "id": "d", "text": "s1 と s2 は自動で deep copy される" }
+      ],
+      "correctChoiceId": "b",
+      "explanation": "String はヒープデータを持つ型で Copy ではありません。`let s2 = s1;` により所有権が s2 にムーブされ、s1 は以後使えません。",
+      "difficulty": 2,
+      "tags": ["ownership", "move", "string"]
+    },
+    {
+      "id": "ownership.move.q002",
+      "categoryId": "ownership.move",
+      "type": "codeReading",
+      "title": "Copyトレイトの例",
+      "body": "次のコードで `x` を使ってもエラーにならない理由として正しいものは？",
+      "codeSnippet": "let x = 5;\nlet y = x;\nprintln!(\"{} {}\", x, y);",
+      "choices": [
+        { "id": "a", "text": "i32 は Copy を実装しているため値がコピーされる" },
+        { "id": "b", "text": "整数は常に参照渡しされる" },
+        { "id": "c", "text": "Rustは let 時に全てCloneする" },
+        { "id": "d", "text": "println! が自動で所有権を戻す" }
+      ],
+      "correctChoiceId": "a",
+      "explanation": "i32 のような固定サイズの単純な型は Copy を実装しています。そのため代入時に所有権のムーブではなく値コピーが行われます。",
+      "difficulty": 2,
+      "tags": ["ownership", "copy", "i32"]
+    }
+  ]
+}

@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		C5B885D82F49243D00124515 /* Rust Drill.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Rust Drill.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C5B885D82F49243D00124515 /* RustDrill.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RustDrill.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		C5B885DA2F49243D00124515 /* Rust Drill */ = {
+		C5B885DA2F49243D00124515 /* RustDrill */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Rust Drill";
+			path = RustDrill;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,7 +32,7 @@
 		C5B885CF2F49243D00124515 = {
 			isa = PBXGroup;
 			children = (
-				C5B885DA2F49243D00124515 /* Rust Drill */,
+				C5B885DA2F49243D00124515 /* RustDrill */,
 				C5B885D92F49243D00124515 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -40,7 +40,7 @@
 		C5B885D92F49243D00124515 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C5B885D82F49243D00124515 /* Rust Drill.app */,
+				C5B885D82F49243D00124515 /* RustDrill.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,9 +48,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C5B885D72F49243D00124515 /* Rust Drill */ = {
+		C5B885D72F49243D00124515 /* RustDrill */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C5B885E52F49243D00124515 /* Build configuration list for PBXNativeTarget "Rust Drill" */;
+			buildConfigurationList = C5B885E52F49243D00124515 /* Build configuration list for PBXNativeTarget "RustDrill" */;
 			buildPhases = (
 				C5B885D42F49243D00124515 /* Sources */,
 				C5B885D52F49243D00124515 /* Frameworks */,
@@ -61,13 +61,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				C5B885DA2F49243D00124515 /* Rust Drill */,
+				C5B885DA2F49243D00124515 /* RustDrill */,
 			);
-			name = "Rust Drill";
+			name = RustDrill;
 			packageProductDependencies = (
 			);
 			productName = "Rust Drill";
-			productReference = C5B885D82F49243D00124515 /* Rust Drill.app */;
+			productReference = C5B885D82F49243D00124515 /* RustDrill.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -85,7 +85,7 @@
 					};
 				};
 			};
-			buildConfigurationList = C5B885D32F49243D00124515 /* Build configuration list for PBXProject "Rust Drill" */;
+			buildConfigurationList = C5B885D32F49243D00124515 /* Build configuration list for PBXProject "RustDrill" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -99,7 +99,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				C5B885D72F49243D00124515 /* Rust Drill */,
+				C5B885D72F49243D00124515 /* RustDrill */,
 			);
 		};
 /* End PBXProject section */
@@ -309,7 +309,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C5B885D32F49243D00124515 /* Build configuration list for PBXProject "Rust Drill" */ = {
+		C5B885D32F49243D00124515 /* Build configuration list for PBXProject "RustDrill" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C5B885E32F49243D00124515 /* Debug */,
@@ -318,7 +318,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C5B885E52F49243D00124515 /* Build configuration list for PBXNativeTarget "Rust Drill" */ = {
+		C5B885E52F49243D00124515 /* Build configuration list for PBXNativeTarget "RustDrill" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C5B885E62F49243D00124515 /* Debug */,

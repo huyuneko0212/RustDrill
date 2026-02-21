@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-@main
+
 struct Rust_DrillApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
