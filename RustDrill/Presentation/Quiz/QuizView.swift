@@ -9,6 +9,8 @@ import SwiftUI
 
 struct QuizView: View {
     @EnvironmentObject private var appContainer: AppContainer
+    @Environment(\.dismiss) private var dismiss
+    
     @StateObject var viewModel: QuizViewModel
     
     @State private var showExplanation = false
@@ -20,7 +22,11 @@ struct QuizView: View {
             if let question = viewModel.currentQuestion {
                 content(question: question)
             } else if let message = viewModel.errorMessage {
-                ContentUnavailableView("エラー", systemImage: "exclamationmark.triangle", description: Text(message))
+                ContentUnavailableView(
+                    "エラー",
+                    systemImage: "exclamationmark.triangle",
+                    description: Text(message)
+                )
             } else {
                 ContentUnavailableView("問題がありません", systemImage: "questionmark.circle")
             }
@@ -31,7 +37,9 @@ struct QuizView: View {
             if let result = explanationResult {
                 ExplanationView(
                     result: result,
-                    onNext: { viewModel.nextQuestion() },
+                    onNext: {
+                        viewModel.nextQuestion()
+                    },
                     isLastQuestion: viewModel.isLastQuestion
                 )
             }
@@ -41,6 +49,7 @@ struct QuizView: View {
     @ViewBuilder
     private func content(question: QuizQuestion) -> some View {
         VStack(spacing: 14) {
+            // 問題番号
             HStack {
                 Text("Q\(viewModel.currentIndex + 1) / \(viewModel.questions.count)")
                     .font(.caption)
@@ -48,6 +57,7 @@ struct QuizView: View {
                 Spacer()
             }
             
+            // 問題カード
             VStack(alignment: .leading, spacing: 10) {
                 Text(question.title)
                     .font(.title3)
@@ -71,6 +81,7 @@ struct QuizView: View {
                     .fill(Color.gray.opacity(0.08))
             )
             
+            // 選択肢
             ChoiceListView(
                 choices: question.choices,
                 selectedChoiceId: viewModel.selectedChoiceId,
@@ -82,41 +93,9 @@ struct QuizView: View {
             
             Spacer(minLength: 8)
             
+            // 下部ボタン群
             if let result = viewModel.submittedResult {
-                // 回答後: 解説へ + 次へ（or 終了）
-                VStack(spacing: 10) {
-                    Button {
-                        Task { await openExplanation(result: result) }
-                    } label: {
-                        HStack {
-                            if isOpeningExplanation {
-                                ProgressView()
-                                    .controlSize(.small)
-                            }
-                            Text("解説へ")
-                        }
-                        .frame(maxWidth: .infinity, minHeight: 50)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(isOpeningExplanation)
-                    
-                    if viewModel.isLastQuestion {
-                        // 最後の問題なら「次へ」の代わりに終了（解説スキップ）
-                        Button("終了（解説をスキップ）") {
-                            // 親のナビゲーションに戻る
-                            // ここでは QuizView を閉じたいので dismiss を使う
-                            dismissQuiz()
-                        }
-                        .frame(maxWidth: .infinity, minHeight: 46)
-                        .buttonStyle(.bordered)
-                    } else {
-                        Button("次へ（解説をスキップ）") {
-                            viewModel.nextQuestion()
-                        }
-                        .frame(maxWidth: .infinity, minHeight: 46)
-                        .buttonStyle(.bordered)
-                    }
-                }
+                answeredButtons(result: result)
             } else {
                 Button("回答する") {
                     viewModel.submit()
@@ -129,7 +108,41 @@ struct QuizView: View {
         .padding()
     }
     
-    @Environment(\.dismiss) private var dismiss
+    @ViewBuilder
+    private func answeredButtons(result: QuizResult) -> some View {
+        VStack(spacing: 10) {
+            Button {
+                Task {
+                    await openExplanation(result: result)
+                }
+            } label: {
+                HStack(spacing: 8) {
+                    if isOpeningExplanation {
+                        ProgressView()
+                            .controlSize(.small)
+                    }
+                    Text("解説へ")
+                }
+                .frame(maxWidth: .infinity, minHeight: 50)
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(isOpeningExplanation)
+            
+            if viewModel.isLastQuestion {
+                Button("終了（解説をスキップ）") {
+                    dismissQuiz()
+                }
+                .frame(maxWidth: .infinity, minHeight: 46)
+                .buttonStyle(.bordered)
+            } else {
+                Button("次へ（解説をスキップ）") {
+                    viewModel.nextQuestion()
+                }
+                .frame(maxWidth: .infinity, minHeight: 46)
+                .buttonStyle(.bordered)
+            }
+        }
+    }
     
     private func dismissQuiz() {
         dismiss()
@@ -137,10 +150,11 @@ struct QuizView: View {
     
     private func openExplanation(result: QuizResult) async {
         guard !isOpeningExplanation else { return }
+        
         isOpeningExplanation = true
         defer { isOpeningExplanation = false }
         
-        // 将来ここで広告表示（今はダミーで即true）
+        // 広告ゲート（頻度制御つき）
         let ok = await appContainer.adGateService.showGateIfNeeded()
         guard ok else { return }
         
