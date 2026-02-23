@@ -150,35 +150,35 @@ struct QuizView: View {
 
     @ViewBuilder
     private func resultBanner(isCorrect: Bool) -> some View {
-        HStack(spacing: 8) {
-            Image(
-                systemName: isCorrect
-                    ? "checkmark.circle.fill" : "xmark.circle.fill"
-            )
-            .foregroundStyle(isCorrect ? .green : .red)
-
-            Text(isCorrect ? "正解" : "不正解")
+        let title = isCorrect ? "正解！次へ進みましょう" : "不正解。解説を確認しましょう"
+        let symbol = isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill"
+        let toneColor: Color = isCorrect ? .green : .red
+        
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: symbol)
+                .foregroundStyle(toneColor)
+                .padding(.top, 1)
+            
+            Text(title)
                 .font(.subheadline)
                 .fontWeight(.semibold)
-                .foregroundStyle(isCorrect ? .green : .red)
-
-            Spacer()
+                .foregroundStyle(toneColor)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            Spacer(minLength: 0)
         }
         .padding(.horizontal, 12)
-        .padding(.vertical, 8)
+        .padding(.vertical, 10)
         .background(
             RoundedRectangle(cornerRadius: 10)
-                .fill((isCorrect ? Color.green : Color.red).opacity(0.08))
+                .fill(toneColor.opacity(0.08))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(
-                    (isCorrect ? Color.green : Color.red).opacity(0.25),
-                    lineWidth: 1
-                )
+                .stroke(toneColor.opacity(0.25), lineWidth: 1)
         )
     }
-
     @ViewBuilder
     private func explanationButtonUnified(
         result: QuizResult,
