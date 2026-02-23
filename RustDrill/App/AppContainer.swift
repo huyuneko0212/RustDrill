@@ -15,6 +15,6 @@ final class AppContainer: ObservableObject {
     
     init(repository: QuizRepository, adGateService: AdGateService? = nil) {
         self.repository = repository
-        self.adGateService = adGateService ?? NoopAdGateService()
+        self.adGateService = adGateService ?? FrequencyControlledAdGateService(frequency: 3)
     }
 }
