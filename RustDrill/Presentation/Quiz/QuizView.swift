@@ -118,34 +118,21 @@ struct QuizView: View {
     private var bottomBar: some View {
         VStack(spacing: 10) {
             Divider()
-            
+
             if let result = viewModel.submittedResult {
                 resultBanner(isCorrect: result.isCorrect)
-                
+
                 let shouldEmphasizeExplanation = !result.isCorrect
-                
+
                 HStack(spacing: 10) {
-                    // 解説へ（不正解時は主ボタン / 正解時はサブボタン）
-                    if shouldEmphasizeExplanation {
-                        explanationButtonProminent(result: result)
-                    } else {
-                        explanationButtonSecondary(result: result)
-                    }
-                    
-                    // 次へ / 終了（正解時は主ボタン / 不正解時はサブボタン）
-                    if viewModel.isLastQuestion {
-                        if shouldEmphasizeExplanation {
-                            endButtonSecondary()
-                        } else {
-                            endButtonProminent()
-                        }
-                    } else {
-                        if shouldEmphasizeExplanation {
-                            nextButtonSecondary()
-                        } else {
-                            nextButtonProminent()
-                        }
-                    }
+                    // 左固定: 解説へ（不正解時だけ強調）
+                    explanationButtonUnified(
+                        result: result,
+                        emphasize: !result.isCorrect
+                    )
+
+                    // 右固定: 次へ/終了（基本強調）
+                    nextOrEndButtonUnified(emphasize: result.isCorrect)
                 }
             } else {
                 Button("回答する") {
@@ -160,7 +147,7 @@ struct QuizView: View {
         .padding(.top, 4)
         .padding(.bottom, 10)
     }
-    
+
     @ViewBuilder
     private func resultBanner(isCorrect: Bool) -> some View {
         HStack(spacing: 8) {
@@ -193,80 +180,82 @@ struct QuizView: View {
     }
 
     @ViewBuilder
-    private func explanationButtonProminent(result: QuizResult) -> some View {
-        Button {
-            Task { await openExplanation(result: result) }
-        } label: {
-            explanationButtonLabel
-        }
-        .buttonStyle(.borderedProminent)
-        .disabled(isOpeningExplanation)
-    }
-    
-    @ViewBuilder
-    private func explanationButtonSecondary(result: QuizResult) -> some View {
-        Button {
-            Task { await openExplanation(result: result) }
-        } label: {
-            explanationButtonLabel
-        }
-        .buttonStyle(.bordered)
-        .disabled(isOpeningExplanation)
-    }
-    
-    private var explanationButtonLabel: some View {
-        HStack(spacing: 6) {
-            if isOpeningExplanation {
-                ProgressView()
-                    .controlSize(.small)
+    private func explanationButtonUnified(
+        result: QuizResult,
+        emphasize: Bool
+    ) -> some View {
+        if emphasize {
+            Button {
+                Task { await openExplanation(result: result) }
+            } label: {
+                HStack(spacing: 6) {
+                    if isOpeningExplanation {
+                        ProgressView()
+                            .controlSize(.small)
+                    }
+                    Text("解説へ")
+                        .fontWeight(.semibold)
+                }
+                
             }
-            Text("解説へ")
-                .fontWeight(.semibold)
+            .frame(maxWidth: .infinity, minHeight: 42)
+            .buttonStyle(.borderedProminent)
+            .disabled(isOpeningExplanation)
+        } else {
+            Button {
+                Task { await openExplanation(result: result) }
+            } label: {
+                HStack(spacing: 6) {
+                    if isOpeningExplanation {
+                        ProgressView()
+                            .controlSize(.small)
+                    }
+                    Text("解説へ")
+                        .fontWeight(.semibold)
+                }
+            }
+            .frame(maxWidth: .infinity, minHeight: 42)
+            .buttonStyle(.bordered)
+            .disabled(isOpeningExplanation)
         }
-        .frame(minHeight: 42)
-        .frame(maxWidth: 120)
     }
-    
+
     @ViewBuilder
-    private func nextButtonProminent() -> some View {
-        Button("次へ") {
-            viewModel.nextQuestion()
+    private func nextOrEndButtonUnified(emphasize: Bool) -> some View {
+        if viewModel.isLastQuestion {
+            actionButton(
+                title: "終了",
+                emphasize: emphasize,
+                action: { dismissQuiz() }
+            )
+        } else {
+            actionButton(
+                title: "次へ",
+                emphasize: emphasize,
+                action: { viewModel.nextQuestion() }
+            )
         }
-        .frame(maxWidth: .infinity, minHeight: 42)
-        .buttonStyle(.borderedProminent)
-        .disabled(isOpeningExplanation)
     }
-    
+
     @ViewBuilder
-    private func nextButtonSecondary() -> some View {
-        Button("次へ") {
-            viewModel.nextQuestion()
+    private func actionButton(
+        title: String,
+        emphasize: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
+        if emphasize {
+            Button(title, action: action)
+                .frame(maxWidth: .infinity, minHeight: 42)
+                .buttonStyle(.borderedProminent)
+                .disabled(isOpeningExplanation)
+        } else {
+            Button(title, action: action)
+                .frame(maxWidth: .infinity, minHeight: 42)
+                .buttonStyle(.bordered)
+                .disabled(isOpeningExplanation)
         }
-        .frame(maxWidth: .infinity, minHeight: 42)
-        .buttonStyle(.bordered)
-        .disabled(isOpeningExplanation)
     }
-    
-    @ViewBuilder
-    private func endButtonProminent() -> some View {
-        Button("終了") {
-            dismissQuiz()
-        }
-        .frame(maxWidth: .infinity, minHeight: 42)
-        .buttonStyle(.borderedProminent)
-        .disabled(isOpeningExplanation)
-    }
-    
-    @ViewBuilder
-    private func endButtonSecondary() -> some View {
-        Button("終了") {
-            dismissQuiz()
-        }
-        .frame(maxWidth: .infinity, minHeight: 42)
-        .buttonStyle(.bordered)
-        .disabled(isOpeningExplanation)
-    }
-    
+
     // MARK: - Actions
 
     private func dismissQuiz() {
@@ -285,5 +274,5 @@ struct QuizView: View {
         explanationResult = result
         showExplanation = true
     }
-    
+
 }
