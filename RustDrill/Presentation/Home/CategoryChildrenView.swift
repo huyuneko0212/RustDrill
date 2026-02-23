@@ -17,9 +17,12 @@ struct CategoryChildrenView: View {
     @State private var isLoading = false
     @State private var didLoad = false
     
-    // 最下層判定 & 自動遷移用（UI表示には使わない）
+    // 最下層判定用
     @State private var questionsCount: Int = 0
+    
+    // クイズ遷移制御
     @State private var shouldNavigateToQuiz = false
+    @State private var hasAutoNavigatedToQuiz = false   // ← 追加（初回だけ自動遷移）
     
     var body: some View {
         List {
@@ -28,14 +31,17 @@ struct CategoryChildrenView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                 
             } else if children.isEmpty {
-                // 最下層: 自動遷移前の一瞬だけ見える可能性がある保険UI
+                // 最下層カテゴリ
                 Section {
                     if questionsCount > 0 {
-                        HStack(spacing: 8) {
-                            Text("問題を開いています...")
-                            Spacer()
-                            ProgressView()
-                                .controlSize(.small)
+                        // 初回自動遷移後に戻ってきた時は、邪魔な文言を出さずボタンだけ表示
+                        NavigationLink("このカテゴリを開始") {
+                            QuizView(
+                                viewModel: QuizViewModel(
+                                    repository: appContainer.repository,
+                                    source: .category(parentCategory.id)
+                                )
+                            )
                         }
                     } else {
                         ContentUnavailableView(
@@ -51,7 +57,7 @@ struct CategoryChildrenView: View {
                         NavigationLink {
                             CategoryChildrenView(parentCategory: child)
                         } label: {
-                            CategoryRowView(category: child) // ← 進捗バー表示はここに集約
+                            CategoryRowView(category: child)
                         }
                     }
                 }
@@ -102,9 +108,9 @@ struct CategoryChildrenView: View {
             // 2) このカテゴリ配下の総問題数（再帰）
             questionsCount = try appContainer.repository.countQuestionsRecursively(categoryId: parentCategory.id)
             
-            // 3) 最下層かつ問題ありなら自動でクイズへ
-            if children.isEmpty && questionsCount > 0 {
-                // 同フレーム遷移回避
+            // 3) 最下層 + 問題あり + 初回だけ自動遷移
+            if children.isEmpty && questionsCount > 0 && !hasAutoNavigatedToQuiz {
+                hasAutoNavigatedToQuiz = true
                 DispatchQueue.main.async {
                     shouldNavigateToQuiz = true
                 }
