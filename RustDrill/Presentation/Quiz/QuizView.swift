@@ -26,44 +26,56 @@ struct QuizView: View {
     
     @ViewBuilder
     private func content(question: QuizQuestion) -> some View {
-        VStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
+        VStack(spacing: 14) {
+            // 進行表示
+            HStack {
                 Text("Q\(viewModel.currentIndex + 1) / \(viewModel.questions.count)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                
+                Spacer()
+            }
+            
+            // 問題カード
+            VStack(alignment: .leading, spacing: 10) {
                 Text(question.title)
-                    .font(.headline)
+                    .font(.title3)
+                    .fontWeight(.bold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                Divider()
                 
                 Text(question.body)
+                    .font(.body)
                     .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            
-            if let code = question.codeSnippet, !code.isEmpty {
-                CodeBlockView(code: code)
-            }
-            
-            VStack(spacing: 10) {
-                ForEach(question.choices) { choice in
-                    ChoiceButton(
-                        text: choice.text,
-                        isSelected: viewModel.selectedChoiceId == choice.id,
-                        isDisabled: viewModel.submittedResult != nil,
-                        action: { viewModel.selectChoice(choice.id) }
-                    )
+                
+                if let code = question.codeSnippet, !code.isEmpty {
+                    CodeBlockView(code: code)
+                        .padding(.top, 2)
                 }
             }
+            .padding(14)
+            .background(
+                RoundedRectangle(cornerRadius: 14)
+                    .fill(Color.gray.opacity(0.08))
+            )
             
-            Spacer()
+            // 選択肢
+            ChoiceListView(
+                choices: question.choices,
+                selectedChoiceId: viewModel.selectedChoiceId,
+                isSubmitted: viewModel.submittedResult != nil,
+                onSelect: { id in
+                    viewModel.selectChoice(id)
+                }
+            )
+            
+            Spacer(minLength: 8)
             
             if let result = viewModel.submittedResult {
                 NavigationLink {
                     ExplanationView(
                         result: result,
-                        onNext: {
-                            viewModel.nextQuestion()
-                        },
+                        onNext: { viewModel.nextQuestion() },
                         isLastQuestion: viewModel.isLastQuestion
                     )
                 } label: {
