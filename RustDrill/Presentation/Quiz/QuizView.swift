@@ -20,7 +20,20 @@ struct QuizView: View {
     var body: some View {
         Group {
             if let question = viewModel.currentQuestion {
-                content(question: question)
+                ScrollView {
+                    VStack(spacing: 14) {
+                        questionHeader
+                        questionCard(question)
+                        choiceList(question)
+                    }
+                    .padding()
+                    .padding(.bottom, 8)
+                }
+                .safeAreaInset(edge: .bottom) {
+                    bottomBar
+                        .background(.ultraThinMaterial)
+                }
+                
             } else if let message = viewModel.errorMessage {
                 ContentUnavailableView(
                     "エラー",
@@ -37,112 +50,148 @@ struct QuizView: View {
             if let result = explanationResult {
                 ExplanationView(
                     result: result,
-                    onNext: {
-                        viewModel.nextQuestion()
-                    },
+                    onNext: { viewModel.nextQuestion() },
                     isLastQuestion: viewModel.isLastQuestion
                 )
             }
         }
     }
     
+    // MARK: - Content
+    
+    private var questionHeader: some View {
+        HStack {
+            Text("Q\(viewModel.currentIndex + 1) / \(viewModel.questions.count)")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Spacer()
+        }
+    }
+    
     @ViewBuilder
-    private func content(question: QuizQuestion) -> some View {
-        VStack(spacing: 14) {
-            // 問題番号
-            HStack {
-                Text("Q\(viewModel.currentIndex + 1) / \(viewModel.questions.count)")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Spacer()
+    private func questionCard(_ question: QuizQuestion) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(question.title)
+                .font(.title3)
+                .fontWeight(.bold)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            Divider()
+            
+            Text(question.body)
+                .font(.body)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            if let code = question.codeSnippet, !code.isEmpty {
+                CodeBlockView(code: code)
+                    .padding(.top, 2)
             }
-            
-            // 問題カード
-            VStack(alignment: .leading, spacing: 10) {
-                Text(question.title)
-                    .font(.title3)
-                    .fontWeight(.bold)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                
-                Divider()
-                
-                Text(question.body)
-                    .font(.body)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                
-                if let code = question.codeSnippet, !code.isEmpty {
-                    CodeBlockView(code: code)
-                        .padding(.top, 2)
-                }
+        }
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 14)
+                .fill(Color.gray.opacity(0.08))
+        )
+    }
+    
+    @ViewBuilder
+    private func choiceList(_ question: QuizQuestion) -> some View {
+        ChoiceListView(
+            choices: question.choices,
+            selectedChoiceId: viewModel.selectedChoiceId,
+            correctChoiceId: (viewModel.submittedResult != nil) ? question.correctChoiceId : nil,
+            isSubmitted: viewModel.submittedResult != nil,
+            onSelect: { id in
+                viewModel.selectChoice(id)
             }
-            .padding(14)
-            .background(
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(Color.gray.opacity(0.08))
-            )
+        )
+    }
+    
+    // MARK: - Fixed Bottom Bar
+    
+    private var bottomBar: some View {
+        VStack(spacing: 10) {
+            Divider()
             
-            // 選択肢
-            ChoiceListView(
-                choices: question.choices,
-                selectedChoiceId: viewModel.selectedChoiceId,
-                isSubmitted: viewModel.submittedResult != nil,
-                onSelect: { id in
-                    viewModel.selectChoice(id)
-                }
-            )
-            
-            Spacer(minLength: 8)
-            
-            // 下部ボタン群
             if let result = viewModel.submittedResult {
-                answeredButtons(result: result)
+                resultBanner(isCorrect: result.isCorrect)
+                
+                HStack(spacing: 10) {
+                    // 解説へ（小さめ）
+                    Button {
+                        Task { await openExplanation(result: result) }
+                    } label: {
+                        HStack(spacing: 6) {
+                            if isOpeningExplanation {
+                                ProgressView()
+                                    .controlSize(.small)
+                            }
+                            Text("解説へ")
+                                .fontWeight(.semibold)
+                        }
+                        .frame(minHeight: 42)
+                        .frame(maxWidth: 120) // ← 大きすぎないよう固定幅
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(isOpeningExplanation)
+                    
+                    // 次へ / 終了（主ボタン）
+                    if viewModel.isLastQuestion {
+                        Button("終了") {
+                            dismissQuiz()
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 42)
+                        .buttonStyle(.borderedProminent)
+                        .disabled(isOpeningExplanation)
+                    } else {
+                        Button("次へ") {
+                            viewModel.nextQuestion()
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 42)
+                        .buttonStyle(.borderedProminent)
+                        .disabled(isOpeningExplanation)
+                    }
+                }
             } else {
                 Button("回答する") {
                     viewModel.submit()
                 }
-                .frame(maxWidth: .infinity, minHeight: 50)
+                .frame(maxWidth: .infinity, minHeight: 44)
                 .buttonStyle(.borderedProminent)
                 .disabled(!viewModel.canSubmit)
             }
         }
-        .padding()
+        .padding(.horizontal, 16)
+        .padding(.top, 4)
+        .padding(.bottom, 10)
     }
     
     @ViewBuilder
-    private func answeredButtons(result: QuizResult) -> some View {
-        VStack(spacing: 10) {
-            Button {
-                Task {
-                    await openExplanation(result: result)
-                }
-            } label: {
-                HStack(spacing: 8) {
-                    if isOpeningExplanation {
-                        ProgressView()
-                            .controlSize(.small)
-                    }
-                    Text("解説へ")
-                }
-                .frame(maxWidth: .infinity, minHeight: 50)
-            }
-            .buttonStyle(.borderedProminent)
-            .disabled(isOpeningExplanation)
+    private func resultBanner(isCorrect: Bool) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
+                .foregroundStyle(isCorrect ? .green : .red)
             
-            if viewModel.isLastQuestion {
-                Button("終了（解説をスキップ）") {
-                    dismissQuiz()
-                }
-                .frame(maxWidth: .infinity, minHeight: 46)
-                .buttonStyle(.bordered)
-            } else {
-                Button("次へ（解説をスキップ）") {
-                    viewModel.nextQuestion()
-                }
-                .frame(maxWidth: .infinity, minHeight: 46)
-                .buttonStyle(.bordered)
-            }
+            Text(isCorrect ? "正解" : "不正解")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundStyle(isCorrect ? .green : .red)
+            
+            Spacer()
         }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill((isCorrect ? Color.green : Color.red).opacity(0.08))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke((isCorrect ? Color.green : Color.red).opacity(0.25), lineWidth: 1)
+        )
     }
+    
+    // MARK: - Actions
     
     private func dismissQuiz() {
         dismiss()
@@ -154,7 +203,6 @@ struct QuizView: View {
         isOpeningExplanation = true
         defer { isOpeningExplanation = false }
         
-        // 広告ゲート（頻度制御つき）
         let ok = await appContainer.adGateService.showGateIfNeeded()
         guard ok else { return }
         
