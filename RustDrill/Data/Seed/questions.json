@@ -1,95 +1,2448 @@
 {
-  "categories": [
-    {
-      "id": "intro",
-      "name": "Introduction",
-      "parentId": null,
-      "order": 1,
-      "level": 1
-    },
-    {
-      "id": "intro.basic",
-      "name": "基本構文",
-      "parentId": "intro",
-      "order": 1,
-      "level": 2
-    },
-    {
-      "id": "intro.variables",
-      "name": "変数と可変性",
-      "parentId": "intro.basic",
-      "order": 1,
-      "level": 3
-    },
-    {
-      "id": "ownership",
-      "name": "Ownership & Borrowing",
-      "parentId": null,
-      "order": 2,
-      "level": 1
-    },
-    {
-      "id": "ownership.move",
-      "name": "MoveとCopy",
-      "parentId": "ownership",
-      "order": 1,
-      "level": 2
-    }
-  ],
-  "questions": [
-    {
-      "id": "intro.variables.q001",
-      "categoryId": "intro.variables",
-      "type": "basic",
-      "title": "let と mut",
-      "body": "Rustで変数を再代入可能にするために必要なキーワードはどれ？",
-      "codeSnippet": "let x = 10;\n// x = 20; // これはエラー",
-      "choices": [
-        { "id": "a", "text": "var" },
-        { "id": "b", "text": "mutable" },
-        { "id": "c", "text": "mut" },
-        { "id": "d", "text": "change" }
-      ],
-      "correctChoiceId": "c",
-      "explanation": "Rustの変数はデフォルトで不変です。再代入したい場合は `let mut x = 10;` のように `mut` を付けます。",
-      "difficulty": 1,
-      "tags": ["syntax", "mutability"]
-    },
-    {
-      "id": "ownership.move.q001",
-      "categoryId": "ownership.move",
-      "type": "codeReading",
-      "title": "所有権のムーブ",
-      "body": "次のコードで `println!(\"{}\", s1);` を追加するとどうなる？",
-      "codeSnippet": "let s1 = String::from(\"hello\");\nlet s2 = s1;\nprintln!(\"{}\", s2);",
-      "choices": [
-        { "id": "a", "text": "正常にコンパイルされ、hello が2回表示される" },
-        { "id": "b", "text": "s1 はムーブされるため、s1 を使うとコンパイルエラーになる" },
-        { "id": "c", "text": "実行時にパニックする" },
-        { "id": "d", "text": "s1 と s2 は自動で deep copy される" }
-      ],
-      "correctChoiceId": "b",
-      "explanation": "String はヒープデータを持つ型で Copy ではありません。`let s2 = s1;` により所有権が s2 にムーブされ、s1 は以後使えません。",
-      "difficulty": 2,
-      "tags": ["ownership", "move", "string"]
-    },
-    {
-      "id": "ownership.move.q002",
-      "categoryId": "ownership.move",
-      "type": "codeReading",
-      "title": "Copyトレイトの例",
-      "body": "次のコードで `x` を使ってもエラーにならない理由として正しいものは？",
-      "codeSnippet": "let x = 5;\nlet y = x;\nprintln!(\"{} {}\", x, y);",
-      "choices": [
-        { "id": "a", "text": "i32 は Copy を実装しているため値がコピーされる" },
-        { "id": "b", "text": "整数は常に参照渡しされる" },
-        { "id": "c", "text": "Rustは let 時に全てCloneする" },
-        { "id": "d", "text": "println! が自動で所有権を戻す" }
-      ],
-      "correctChoiceId": "a",
-      "explanation": "i32 のような固定サイズの単純な型は Copy を実装しています。そのため代入時に所有権のムーブではなく値コピーが行われます。",
-      "difficulty": 2,
-      "tags": ["ownership", "copy", "i32"]
-    }
-  ]
+    "categories": [
+        {
+            "id": "intro",
+            "name": "Introduction",
+            "parentId": null,
+            "order": 1,
+            "level": 1
+        },
+        {
+            "id": "intro.basic",
+            "name": "基本構文",
+            "parentId": "intro",
+            "order": 1,
+            "level": 2
+        },
+        {
+            "id": "intro.variables",
+            "name": "変数と可変性",
+            "parentId": "intro.basic",
+            "order": 1,
+            "level": 3
+        },
+        {
+            "id": "intro.types",
+            "name": "データ型",
+            "parentId": "intro.basic",
+            "order": 2,
+            "level": 3
+        },
+        {
+            "id": "intro.functions",
+            "name": "関数",
+            "parentId": "intro.basic",
+            "order": 3,
+            "level": 3
+        },
+        {
+            "id": "intro.control",
+            "name": "制御フロー",
+            "parentId": "intro.basic",
+            "order": 4,
+            "level": 3
+        },
+        {
+            "id": "intro.collections",
+            "name": "文字列と配列",
+            "parentId": "intro.basic",
+            "order": 5,
+            "level": 3
+        },
+
+        {
+            "id": "ownership",
+            "name": "Ownership & Borrowing",
+            "parentId": null,
+            "order": 2,
+            "level": 1
+        },
+        {
+            "id": "ownership.move",
+            "name": "MoveとCopy",
+            "parentId": "ownership",
+            "order": 1,
+            "level": 2
+        },
+        {
+            "id": "ownership.borrow",
+            "name": "借用と参照",
+            "parentId": "ownership",
+            "order": 2,
+            "level": 2
+        },
+        {
+            "id": "ownership.slice",
+            "name": "スライス",
+            "parentId": "ownership",
+            "order": 3,
+            "level": 2
+        },
+
+        {
+            "id": "structs_enums",
+            "name": "Structs & Enums",
+            "parentId": null,
+            "order": 3,
+            "level": 1
+        },
+        {
+            "id": "structs_enums.structs",
+            "name": "構造体",
+            "parentId": "structs_enums",
+            "order": 1,
+            "level": 2
+        },
+        {
+            "id": "structs_enums.methods",
+            "name": "メソッド",
+            "parentId": "structs_enums",
+            "order": 2,
+            "level": 2
+        },
+        {
+            "id": "structs_enums.enums",
+            "name": "列挙型とmatch",
+            "parentId": "structs_enums",
+            "order": 3,
+            "level": 2
+        },
+
+        {
+            "id": "generics_traits",
+            "name": "Generics & Traits",
+            "parentId": null,
+            "order": 4,
+            "level": 1
+        },
+        {
+            "id": "generics_traits.generics",
+            "name": "ジェネリクス",
+            "parentId": "generics_traits",
+            "order": 1,
+            "level": 2
+        },
+        {
+            "id": "generics_traits.traits",
+            "name": "トレイト",
+            "parentId": "generics_traits",
+            "order": 2,
+            "level": 2
+        }
+    ],
+    "questions": [
+        {
+            "id": "intro.variables.q001",
+            "categoryId": "intro.variables",
+            "type": "basic",
+            "title": "let と mut",
+            "body":
+                "Rustで変数を再代入可能にするために必要なキーワードはどれ？",
+            "codeSnippet": "let x = 10;\n// x = 20; // これはエラー",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "var"
+                },
+                {
+                    "id": "b",
+                    "text": "mutable"
+                },
+                {
+                    "id": "c",
+                    "text": "mut"
+                },
+                {
+                    "id": "d",
+                    "text": "change"
+                }
+            ],
+            "correctChoiceId": "c",
+            "explanation":
+                "Rustの変数はデフォルトで不変です。再代入したい場合は `let mut x = 10;` のように `mut` を付けます。",
+            "difficulty": 1,
+            "tags": [
+                "syntax",
+                "mutability"
+            ]
+        },
+        {
+            "id": "intro.variables.q002",
+            "categoryId": "intro.variables",
+            "type": "basic",
+            "title": "定数の宣言",
+            "body": "定数を宣言するキーワードはどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "let"
+                },
+                {
+                    "id": "b",
+                    "text": "const"
+                },
+                {
+                    "id": "c",
+                    "text": "static mut"
+                },
+                {
+                    "id": "d",
+                    "text": "final"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "定数は `const NAME: Type = value;` の形で宣言します。",
+            "difficulty": 1,
+            "tags": [
+                "const",
+                "variables"
+            ]
+        },
+        {
+            "id": "intro.variables.q003",
+            "categoryId": "intro.variables",
+            "type": "codeReading",
+            "title": "シャドーイング",
+            "body": "次のコードで `spaces` の最終的な型は？",
+            "codeSnippet": "let spaces = \"   \";\nlet spaces = spaces.len();",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "&str"
+                },
+                {
+                    "id": "b",
+                    "text": "String"
+                },
+                {
+                    "id": "c",
+                    "text": "usize"
+                },
+                {
+                    "id": "d",
+                    "text": "i32"
+                }
+            ],
+            "correctChoiceId": "c",
+            "explanation":
+                "シャドーイングにより同名変数を再定義でき、`len()` の戻り値 `usize` になります。",
+            "difficulty": 2,
+            "tags": [
+                "shadowing",
+                "variables"
+            ]
+        },
+        {
+            "id": "intro.variables.q004",
+            "categoryId": "intro.variables",
+            "type": "basic",
+            "title": "変数の型注釈",
+            "body": "型注釈付きの正しい宣言はどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "let x = i32: 5;"
+                },
+                {
+                    "id": "b",
+                    "text": "let x: i32 = 5;"
+                },
+                {
+                    "id": "c",
+                    "text": "let i32 x = 5;"
+                },
+                {
+                    "id": "d",
+                    "text": "x: i32 := 5"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation": "`let 変数名: 型 = 値;` の順で書きます。",
+            "difficulty": 1,
+            "tags": [
+                "types",
+                "variables"
+            ]
+        },
+        {
+            "id": "intro.variables.q005",
+            "categoryId": "intro.variables",
+            "type": "codeReading",
+            "title": "未初期化変数",
+            "body": "次のコードはどうなる？",
+            "codeSnippet": "let x: i32;\nprintln!(\"{}\", x);",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "0 が表示される"
+                },
+                {
+                    "id": "b",
+                    "text": "コンパイルエラーになる"
+                },
+                {
+                    "id": "c",
+                    "text": "実行時にパニックする"
+                },
+                {
+                    "id": "d",
+                    "text": "未定義動作になる"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "Rustでは初期化されていないローカル変数は使用できず、コンパイル時に防がれます。",
+            "difficulty": 2,
+            "tags": [
+                "variables",
+                "safety"
+            ]
+        },
+
+        {
+            "id": "intro.types.q001",
+            "categoryId": "intro.types",
+            "type": "basic",
+            "title": "整数型",
+            "body": "符号付き32bit整数の型名はどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "u32"
+                },
+                {
+                    "id": "b",
+                    "text": "i32"
+                },
+                {
+                    "id": "c",
+                    "text": "int32"
+                },
+                {
+                    "id": "d",
+                    "text": "s32"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation": "`i32` は signed 32-bit integer です。",
+            "difficulty": 1,
+            "tags": [
+                "types",
+                "integer"
+            ]
+        },
+        {
+            "id": "intro.types.q002",
+            "categoryId": "intro.types",
+            "type": "basic",
+            "title": "浮動小数点型のデフォルト",
+            "body":
+                "`3.14` のような浮動小数点リテラルのデフォルト型は通常どれ？",
+            "codeSnippet": "let x = 3.14;",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "f32"
+                },
+                {
+                    "id": "b",
+                    "text": "f64"
+                },
+                {
+                    "id": "c",
+                    "text": "decimal"
+                },
+                {
+                    "id": "d",
+                    "text": "usize"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation": "Rustでは浮動小数点数のデフォルトは `f64` です。",
+            "difficulty": 1,
+            "tags": [
+                "types",
+                "float"
+            ]
+        },
+        {
+            "id": "intro.types.q003",
+            "categoryId": "intro.types",
+            "type": "codeReading",
+            "title": "タプルの要素アクセス",
+            "body": "次のコードで `y` の値は？",
+            "codeSnippet": "let tup = (500, 6.4, 1);\nlet y = tup.1;",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "500"
+                },
+                {
+                    "id": "b",
+                    "text": "6.4"
+                },
+                {
+                    "id": "c",
+                    "text": "1"
+                },
+                {
+                    "id": "d",
+                    "text": "コンパイルエラー"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "タプル要素は `.` と0始まりの添字でアクセスします。`tup.1` は2番目の `6.4` です。",
+            "difficulty": 1,
+            "tags": [
+                "tuple",
+                "types"
+            ]
+        },
+        {
+            "id": "intro.types.q004",
+            "categoryId": "intro.types",
+            "type": "basic",
+            "title": "配列の特徴",
+            "body": "Rustの配列 `[T; N]` について正しい説明はどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "長さは実行時に自由に変えられる"
+                },
+                {
+                    "id": "b",
+                    "text": "全要素の型が同じで長さが固定"
+                },
+                {
+                    "id": "c",
+                    "text": "必ずヒープに配置される"
+                },
+                {
+                    "id": "d",
+                    "text": "文字列専用の型"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "配列は要素型が同一で、長さが型の一部として固定されます。",
+            "difficulty": 1,
+            "tags": [
+                "array",
+                "types"
+            ]
+        },
+        {
+            "id": "intro.types.q005",
+            "categoryId": "intro.types",
+            "type": "codeReading",
+            "title": "文字型",
+            "body": "次のうち `char` 型の値として正しいものはどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "\"A\""
+                },
+                {
+                    "id": "b",
+                    "text": "'A'"
+                },
+                {
+                    "id": "c",
+                    "text": "`A`"
+                },
+                {
+                    "id": "d",
+                    "text": "char(\"A\")"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "Rustの `char` はシングルクォート `'A'` で表します。ダブルクォートは文字列です。",
+            "difficulty": 1,
+            "tags": [
+                "char",
+                "string",
+                "types"
+            ]
+        },
+        {
+            "id": "intro.types.q006",
+            "categoryId": "intro.types",
+            "type": "basic",
+            "title": "真偽値型",
+            "body": "Rustの真偽値型はどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "boolean"
+                },
+                {
+                    "id": "b",
+                    "text": "bool"
+                },
+                {
+                    "id": "c",
+                    "text": "bit"
+                },
+                {
+                    "id": "d",
+                    "text": "truth"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation": "Rustの真偽値型は `bool` です。",
+            "difficulty": 1,
+            "tags": [
+                "bool",
+                "types"
+            ]
+        },
+
+        {
+            "id": "intro.functions.q001",
+            "categoryId": "intro.functions",
+            "type": "basic",
+            "title": "関数定義キーワード",
+            "body": "Rustで関数を定義するキーワードはどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "function"
+                },
+                {
+                    "id": "b",
+                    "text": "def"
+                },
+                {
+                    "id": "c",
+                    "text": "fn"
+                },
+                {
+                    "id": "d",
+                    "text": "func"
+                }
+            ],
+            "correctChoiceId": "c",
+            "explanation": "関数は `fn` で定義します。",
+            "difficulty": 1,
+            "tags": [
+                "function",
+                "syntax"
+            ]
+        },
+        {
+            "id": "intro.functions.q002",
+            "categoryId": "intro.functions",
+            "type": "codeReading",
+            "title": "戻り値の書き方",
+            "body": "関数の戻り値型を指定する正しい記法はどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "fn add(a:i32,b:i32) => i32"
+                },
+                {
+                    "id": "b",
+                    "text": "fn add(a:i32,b:i32): i32"
+                },
+                {
+                    "id": "c",
+                    "text": "fn add(a:i32,b:i32) -> i32"
+                },
+                {
+                    "id": "d",
+                    "text": "fn add(a:i32,b:i32) returns i32"
+                }
+            ],
+            "correctChoiceId": "c",
+            "explanation": "戻り値型は `->` の後ろに書きます。",
+            "difficulty": 1,
+            "tags": [
+                "function",
+                "return"
+            ]
+        },
+        {
+            "id": "intro.functions.q003",
+            "categoryId": "intro.functions",
+            "type": "codeReading",
+            "title": "式による戻り値",
+            "body": "次の関数 `five` の戻り値は？",
+            "codeSnippet": "fn five() -> i32 {\n    5\n}",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "5"
+                },
+                {
+                    "id": "b",
+                    "text": "0"
+                },
+                {
+                    "id": "c",
+                    "text": "コンパイルエラー（return必須）"
+                },
+                {
+                    "id": "d",
+                    "text": "()"
+                }
+            ],
+            "correctChoiceId": "a",
+            "explanation":
+                "末尾式にセミコロンがないので、その値が戻り値になります。",
+            "difficulty": 2,
+            "tags": [
+                "function",
+                "expression"
+            ]
+        },
+        {
+            "id": "intro.functions.q004",
+            "categoryId": "intro.functions",
+            "type": "codeReading",
+            "title": "セミコロンとユニット型",
+            "body": "次の関数はどうなる？",
+            "codeSnippet": "fn five() -> i32 {\n    5;\n}",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "5 を返す"
+                },
+                {
+                    "id": "b",
+                    "text": "()` を返すが型が合わずコンパイルエラー"
+                },
+                {
+                    "id": "c",
+                    "text": "暗黙に 0 を返す"
+                },
+                {
+                    "id": "d",
+                    "text": "実行時にパニックする"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "`5;` は文になり値を返さないため `()` となり、戻り値型 `i32` と不一致でエラーです。",
+            "difficulty": 2,
+            "tags": [
+                "function",
+                "unit",
+                "semicolon"
+            ]
+        },
+        {
+            "id": "intro.functions.q005",
+            "categoryId": "intro.functions",
+            "type": "basic",
+            "title": "引数の型",
+            "body": "Rustの関数引数について正しい説明はどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "型注釈は省略必須"
+                },
+                {
+                    "id": "b",
+                    "text": "各引数に型を明示する"
+                },
+                {
+                    "id": "c",
+                    "text": "最初の引数だけ型が必要"
+                },
+                {
+                    "id": "d",
+                    "text": "戻り値だけ型が必要"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation": "関数の引数には型注釈が必要です（`fn f(x: i32)`）。",
+            "difficulty": 1,
+            "tags": [
+                "function",
+                "types"
+            ]
+        },
+
+        {
+            "id": "intro.control.q001",
+            "categoryId": "intro.control",
+            "type": "basic",
+            "title": "if の条件",
+            "body": "Rustの `if` 条件に書けるものとして正しいのはどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "整数（0はfalse扱い）"
+                },
+                {
+                    "id": "b",
+                    "text": "bool 型の式"
+                },
+                {
+                    "id": "c",
+                    "text": "任意の型"
+                },
+                {
+                    "id": "d",
+                    "text": "文字列"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "Rustでは `if` 条件は `bool` である必要があります。C言語のように整数は使えません。",
+            "difficulty": 1,
+            "tags": [
+                "if",
+                "bool"
+            ]
+        },
+        {
+            "id": "intro.control.q002",
+            "categoryId": "intro.control",
+            "type": "codeReading",
+            "title": "if は式",
+            "body": "次のコードで `number` の値は？",
+            "codeSnippet":
+                "let condition = true;\nlet number = if condition { 5 } else { 6 };",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "5"
+                },
+                {
+                    "id": "b",
+                    "text": "6"
+                },
+                {
+                    "id": "c",
+                    "text": "true"
+                },
+                {
+                    "id": "d",
+                    "text": "コンパイルエラー"
+                }
+            ],
+            "correctChoiceId": "a",
+            "explanation":
+                "`if` は式なので値を返せます。条件が `true` なので `5` です。",
+            "difficulty": 1,
+            "tags": [
+                "if",
+                "expression"
+            ]
+        },
+        {
+            "id": "intro.control.q003",
+            "categoryId": "intro.control",
+            "type": "codeReading",
+            "title": "if の型一致",
+            "body": "次のコードはどうなる？",
+            "codeSnippet":
+                "let condition = true;\nlet x = if condition { 5 } else { \"six\" };",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "5 が入る"
+                },
+                {
+                    "id": "b",
+                    "text": "\"six\" が入る"
+                },
+                {
+                    "id": "c",
+                    "text": "コンパイルエラー（分岐の型不一致）"
+                },
+                {
+                    "id": "d",
+                    "text": "実行時に分岐ごとに型が決まる"
+                }
+            ],
+            "correctChoiceId": "c",
+            "explanation": "`if` 式の各分岐は同じ型を返す必要があります。",
+            "difficulty": 2,
+            "tags": [
+                "if",
+                "types"
+            ]
+        },
+        {
+            "id": "intro.control.q004",
+            "categoryId": "intro.control",
+            "type": "basic",
+            "title": "無限ループ",
+            "body": "無限ループを作るキーワードはどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "forever"
+                },
+                {
+                    "id": "b",
+                    "text": "loop"
+                },
+                {
+                    "id": "c",
+                    "text": "repeat"
+                },
+                {
+                    "id": "d",
+                    "text": "while true only"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation": "`loop { ... }` はRustの無限ループです。",
+            "difficulty": 1,
+            "tags": [
+                "loop",
+                "control-flow"
+            ]
+        },
+        {
+            "id": "intro.control.q005",
+            "categoryId": "intro.control",
+            "type": "codeReading",
+            "title": "loop の break 値",
+            "body": "次のコードで `result` の値は？",
+            "codeSnippet":
+                "let mut counter = 0;\nlet result = loop {\n    counter += 1;\n    if counter == 10 { break counter * 2; }\n};",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "10"
+                },
+                {
+                    "id": "b",
+                    "text": "20"
+                },
+                {
+                    "id": "c",
+                    "text": "18"
+                },
+                {
+                    "id": "d",
+                    "text": "()"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "`break` に値を渡せるため、`counter * 2` の `20` が `result` に入ります。",
+            "difficulty": 2,
+            "tags": [
+                "loop",
+                "break",
+                "expression"
+            ]
+        },
+        {
+            "id": "intro.control.q006",
+            "categoryId": "intro.control",
+            "type": "basic",
+            "title": "while ループ",
+            "body": "条件が真の間繰り返す構文はどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "while"
+                },
+                {
+                    "id": "b",
+                    "text": "for"
+                },
+                {
+                    "id": "c",
+                    "text": "loop if"
+                },
+                {
+                    "id": "d",
+                    "text": "repeat until"
+                }
+            ],
+            "correctChoiceId": "a",
+            "explanation": "`while 条件 { ... }` を使います。",
+            "difficulty": 1,
+            "tags": [
+                "while",
+                "control-flow"
+            ]
+        },
+        {
+            "id": "intro.control.q007",
+            "categoryId": "intro.control",
+            "type": "codeReading",
+            "title": "for で配列を走査",
+            "body": "配列の各要素を順に取り出すのに適した構文はどれ？",
+            "codeSnippet": "let a = [10, 20, 30, 40, 50];",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "for element in a.iter() { ... }"
+                },
+                {
+                    "id": "b",
+                    "text": "foreach a as element { ... }"
+                },
+                {
+                    "id": "c",
+                    "text": "for (element : a) { ... }"
+                },
+                {
+                    "id": "d",
+                    "text": "loop a { ... }"
+                }
+            ],
+            "correctChoiceId": "a",
+            "explanation":
+                "Rustでは `for` とイテレータ（`iter()` など）を組み合わせて書くのが基本です。",
+            "difficulty": 1,
+            "tags": [
+                "for",
+                "iterator",
+                "array"
+            ]
+        },
+        {
+            "id": "intro.control.q008",
+            "categoryId": "intro.control",
+            "type": "codeReading",
+            "title": "レンジ",
+            "body": "`for n in 1..4` で繰り返される `n` の値は？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "1,2,3"
+                },
+                {
+                    "id": "b",
+                    "text": "1,2,3,4"
+                },
+                {
+                    "id": "c",
+                    "text": "0,1,2,3"
+                },
+                {
+                    "id": "d",
+                    "text": "2,3,4"
+                }
+            ],
+            "correctChoiceId": "a",
+            "explanation": "`1..4` は上限を含まないレンジです。",
+            "difficulty": 1,
+            "tags": [
+                "range",
+                "for"
+            ]
+        },
+
+        {
+            "id": "intro.collections.q001",
+            "categoryId": "intro.collections",
+            "type": "basic",
+            "title": "文字列リテラルの型",
+            "body": "`\"hello\"` の型はどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "String"
+                },
+                {
+                    "id": "b",
+                    "text": "&str"
+                },
+                {
+                    "id": "c",
+                    "text": "char[]"
+                },
+                {
+                    "id": "d",
+                    "text": "str"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation": "文字列リテラルは文字列スライス `&str` です。",
+            "difficulty": 1,
+            "tags": [
+                "string",
+                "str"
+            ]
+        },
+        {
+            "id": "intro.collections.q002",
+            "categoryId": "intro.collections",
+            "type": "basic",
+            "title": "String の生成",
+            "body":
+                "ヒープに確保される可変な文字列 `String` を生成する例として正しいのはどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "String::from(\"hello\")"
+                },
+                {
+                    "id": "b",
+                    "text": "&str::new(\"hello\")"
+                },
+                {
+                    "id": "c",
+                    "text": "str(\"hello\")"
+                },
+                {
+                    "id": "d",
+                    "text": "new String(\"hello\")"
+                }
+            ],
+            "correctChoiceId": "a",
+            "explanation":
+                "`String::from(\"...\")` で `String` を作成できます。",
+            "difficulty": 1,
+            "tags": [
+                "string",
+                "heap"
+            ]
+        },
+        {
+            "id": "intro.collections.q003",
+            "categoryId": "intro.collections",
+            "type": "codeReading",
+            "title": "配列アクセス",
+            "body": "次のコードで `first` の値は？",
+            "codeSnippet": "let a = [1, 2, 3, 4, 5];\nlet first = a[0];",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "0"
+                },
+                {
+                    "id": "b",
+                    "text": "1"
+                },
+                {
+                    "id": "c",
+                    "text": "2"
+                },
+                {
+                    "id": "d",
+                    "text": "コンパイルエラー"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation": "配列の添字は0始まりです。",
+            "difficulty": 1,
+            "tags": [
+                "array",
+                "index"
+            ]
+        },
+        {
+            "id": "intro.collections.q004",
+            "categoryId": "intro.collections",
+            "type": "codeReading",
+            "title": "配列の長さ指定省略初期化",
+            "body": "次のコードで生成される配列は？",
+            "codeSnippet": "let a = [3; 5];",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "[3, 3, 3, 3, 3]"
+                },
+                {
+                    "id": "b",
+                    "text": "[5, 5, 5]"
+                },
+                {
+                    "id": "c",
+                    "text": "長さ3で値5の配列"
+                },
+                {
+                    "id": "d",
+                    "text": "コンパイルエラー"
+                }
+            ],
+            "correctChoiceId": "a",
+            "explanation": "`[値; 長さ]` で同じ値を繰り返した配列を作れます。",
+            "difficulty": 1,
+            "tags": [
+                "array",
+                "syntax"
+            ]
+        },
+        {
+            "id": "intro.collections.q005",
+            "categoryId": "intro.collections",
+            "type": "basic",
+            "title": "println! マクロ",
+            "body": "画面出力に使う代表的なマクロはどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "printline()"
+                },
+                {
+                    "id": "b",
+                    "text": "println!"
+                },
+                {
+                    "id": "c",
+                    "text": "echo!"
+                },
+                {
+                    "id": "d",
+                    "text": "console.log!"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation": "Rustでは `println!` はマクロで、`!` が付きます。",
+            "difficulty": 1,
+            "tags": [
+                "macro",
+                "println"
+            ]
+        },
+        {
+            "id": "intro.collections.q006",
+            "categoryId": "intro.collections",
+            "type": "codeReading",
+            "title": "フォーマット指定",
+            "body": "次のコードの出力は？",
+            "codeSnippet": "let x = 10;\nprintln!(\"x = {}\", x);",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "x = {}"
+                },
+                {
+                    "id": "b",
+                    "text": "x = x"
+                },
+                {
+                    "id": "c",
+                    "text": "x = 10"
+                },
+                {
+                    "id": "d",
+                    "text": "コンパイルエラー"
+                }
+            ],
+            "correctChoiceId": "c",
+            "explanation":
+                "`{}` はフォーマットプレースホルダで、変数 `x` の値が埋め込まれます。",
+            "difficulty": 1,
+            "tags": [
+                "println",
+                "format"
+            ]
+        },
+
+        {
+            "id": "ownership.move.q001",
+            "categoryId": "ownership.move",
+            "type": "codeReading",
+            "title": "所有権のムーブ",
+            "body":
+                "次のコードで `println!(\"{}\", s1);` を追加するとどうなる？",
+            "codeSnippet":
+                "let s1 = String::from(\"hello\");\nlet s2 = s1;\nprintln!(\"{}\", s2);",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "正常にコンパイルされ、hello が2回表示される"
+                },
+                {
+                    "id": "b",
+                    "text":
+                        "s1 はムーブされるため、s1 を使うとコンパイルエラーになる"
+                },
+                {
+                    "id": "c",
+                    "text": "実行時にパニックする"
+                },
+                {
+                    "id": "d",
+                    "text": "s1 と s2 は自動で deep copy される"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "String はヒープデータを持つ型で Copy ではありません。`let s2 = s1;` により所有権が s2 にムーブされ、s1 は以後使えません。",
+            "difficulty": 2,
+            "tags": [
+                "ownership",
+                "move",
+                "string"
+            ]
+        },
+        {
+            "id": "ownership.move.q002",
+            "categoryId": "ownership.move",
+            "type": "codeReading",
+            "title": "Copyトレイトの例",
+            "body":
+                "次のコードで `x` を使ってもエラーにならない理由として正しいものは？",
+            "codeSnippet": "let x = 5;\nlet y = x;\nprintln!(\"{} {}\", x, y);",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "i32 は Copy を実装しているため値がコピーされる"
+                },
+                {
+                    "id": "b",
+                    "text": "整数は常に参照渡しされる"
+                },
+                {
+                    "id": "c",
+                    "text": "Rustは let 時に全てCloneする"
+                },
+                {
+                    "id": "d",
+                    "text": "println! が自動で所有権を戻す"
+                }
+            ],
+            "correctChoiceId": "a",
+            "explanation":
+                "i32 のような固定サイズの単純な型は Copy を実装しています。そのため代入時に所有権のムーブではなく値コピーが行われます。",
+            "difficulty": 2,
+            "tags": [
+                "ownership",
+                "copy",
+                "i32"
+            ]
+        },
+        {
+            "id": "ownership.move.q003",
+            "categoryId": "ownership.move",
+            "type": "basic",
+            "title": "clone の役割",
+            "body": "ヒープデータを明示的に複製したいときによく使うのはどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": ".copy()"
+                },
+                {
+                    "id": "b",
+                    "text": ".clone()"
+                },
+                {
+                    "id": "c",
+                    "text": ".dup()"
+                },
+                {
+                    "id": "d",
+                    "text": ".borrow()"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "`clone()` を使うと（型が実装していれば）データの複製を作れます。",
+            "difficulty": 1,
+            "tags": [
+                "clone",
+                "ownership"
+            ]
+        },
+        {
+            "id": "ownership.move.q004",
+            "categoryId": "ownership.move",
+            "type": "codeReading",
+            "title": "関数に渡すとムーブ",
+            "body": "次のコードで `s` を関数呼び出し後に使うとどうなる？",
+            "codeSnippet":
+                "fn takes_ownership(some_string: String) {}\nlet s = String::from(\"hello\");\ntakes_ownership(s);",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "そのまま使える"
+                },
+                {
+                    "id": "b",
+                    "text": "借用されただけなので使える"
+                },
+                {
+                    "id": "c",
+                    "text": "所有権が関数に移るため使えない"
+                },
+                {
+                    "id": "d",
+                    "text": "実行時だけエラー"
+                }
+            ],
+            "correctChoiceId": "c",
+            "explanation":
+                "引数型が `String`（値渡し）なので所有権がムーブします。",
+            "difficulty": 2,
+            "tags": [
+                "ownership",
+                "function",
+                "move"
+            ]
+        },
+        {
+            "id": "ownership.move.q005",
+            "categoryId": "ownership.move",
+            "type": "codeReading",
+            "title": "戻り値で所有権を返す",
+            "body": "所有権を関数から呼び出し元へ戻す方法として適切なのは？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "グローバル変数に入れる"
+                },
+                {
+                    "id": "b",
+                    "text": "戻り値として返す"
+                },
+                {
+                    "id": "c",
+                    "text": "println! する"
+                },
+                {
+                    "id": "d",
+                    "text": "何もしなくても戻る"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation": "所有権は戻り値として返せば呼び出し元へ移せます。",
+            "difficulty": 1,
+            "tags": [
+                "ownership",
+                "return"
+            ]
+        },
+        {
+            "id": "ownership.move.q006",
+            "categoryId": "ownership.move",
+            "type": "basic",
+            "title": "スタックとヒープの文脈",
+            "body": "所有権ルールが特に重要になる理由として適切なのはどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "ヒープ上のデータ寿命管理が必要になるため"
+                },
+                {
+                    "id": "b",
+                    "text": "整数計算を高速化するため"
+                },
+                {
+                    "id": "c",
+                    "text": "マクロを使うため"
+                },
+                {
+                    "id": "d",
+                    "text": "コンパイラを小さくするため"
+                }
+            ],
+            "correctChoiceId": "a",
+            "explanation":
+                "ヒープデータの解放タイミングを安全に管理するため、所有権の仕組みが重要です。",
+            "difficulty": 2,
+            "tags": [
+                "ownership",
+                "heap",
+                "memory"
+            ]
+        },
+
+        {
+            "id": "ownership.borrow.q001",
+            "categoryId": "ownership.borrow",
+            "type": "basic",
+            "title": "参照の記法",
+            "body": "不変参照を作る演算子はどれ？",
+            "codeSnippet": "let s = String::from(\"hi\");",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "*"
+                },
+                {
+                    "id": "b",
+                    "text": "&"
+                },
+                {
+                    "id": "c",
+                    "text": "@"
+                },
+                {
+                    "id": "d",
+                    "text": "ref"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation": "`&s` で不変参照（借用）を作ります。",
+            "difficulty": 1,
+            "tags": [
+                "borrow",
+                "reference"
+            ]
+        },
+        {
+            "id": "ownership.borrow.q002",
+            "categoryId": "ownership.borrow",
+            "type": "codeReading",
+            "title": "借用で所有権を保持",
+            "body": "次の関数呼び出し後に `s1` を使える理由は？",
+            "codeSnippet":
+                "fn calculate_length(s: &String) -> usize { s.len() }\nlet s1 = String::from(\"hello\");\nlet len = calculate_length(&s1);",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "cloneされたから"
+                },
+                {
+                    "id": "b",
+                    "text": "Copy型だから"
+                },
+                {
+                    "id": "c",
+                    "text": "参照を渡しており所有権は移っていないから"
+                },
+                {
+                    "id": "d",
+                    "text": "len() が所有権を戻すから"
+                }
+            ],
+            "correctChoiceId": "c",
+            "explanation":
+                "関数は `&String` を受け取るので借用のみで、所有権は `s1` に残ります。",
+            "difficulty": 2,
+            "tags": [
+                "borrow",
+                "function"
+            ]
+        },
+        {
+            "id": "ownership.borrow.q003",
+            "categoryId": "ownership.borrow",
+            "type": "basic",
+            "title": "可変参照の記法",
+            "body": "可変参照の型として正しいのはどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "&String mut"
+                },
+                {
+                    "id": "b",
+                    "text": "mut &String"
+                },
+                {
+                    "id": "c",
+                    "text": "&mut String"
+                },
+                {
+                    "id": "d",
+                    "text": "*mut String"
+                }
+            ],
+            "correctChoiceId": "c",
+            "explanation": "可変借用は `&mut T` と書きます。",
+            "difficulty": 1,
+            "tags": [
+                "borrow",
+                "mutable-reference"
+            ]
+        },
+        {
+            "id": "ownership.borrow.q004",
+            "categoryId": "ownership.borrow",
+            "type": "codeReading",
+            "title": "可変参照は1つ",
+            "body": "次のコードはどうなる？",
+            "codeSnippet":
+                "let mut s = String::from(\"hello\");\nlet r1 = &mut s;\nlet r2 = &mut s;",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "正常にコンパイル"
+                },
+                {
+                    "id": "b",
+                    "text": "コンパイルエラー（同時に複数の可変参照）"
+                },
+                {
+                    "id": "c",
+                    "text": "実行時パニック"
+                },
+                {
+                    "id": "d",
+                    "text": "r2 が r1 を上書き"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "同一スコープで同時に複数の可変参照は作れません（データ競合防止）。",
+            "difficulty": 2,
+            "tags": [
+                "borrow",
+                "mutable",
+                "aliasing"
+            ]
+        },
+        {
+            "id": "ownership.borrow.q005",
+            "categoryId": "ownership.borrow",
+            "type": "codeReading",
+            "title": "不変参照と可変参照の混在",
+            "body": "次のコードはどうなる？",
+            "codeSnippet":
+                "let mut s = String::from(\"hello\");\nlet r1 = &s;\nlet r2 = &mut s;",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "正常にコンパイル"
+                },
+                {
+                    "id": "b",
+                    "text": "コンパイルエラー（不変参照がある間の可変借用）"
+                },
+                {
+                    "id": "c",
+                    "text": "実行時パニック"
+                },
+                {
+                    "id": "d",
+                    "text": "r1 が自動で無効化される"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "同時に不変参照と可変参照を有効にできません（厳密にはスコープ/使用位置に依存）。",
+            "difficulty": 2,
+            "tags": [
+                "borrow",
+                "mutable",
+                "immutable"
+            ]
+        },
+        {
+            "id": "ownership.borrow.q006",
+            "categoryId": "ownership.borrow",
+            "type": "basic",
+            "title": "ダングリング参照",
+            "body": "Rustが防ぎたい問題の1つである「ダングリング参照」とは何？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "長すぎる変数名"
+                },
+                {
+                    "id": "b",
+                    "text": "解放済みデータを指す参照"
+                },
+                {
+                    "id": "c",
+                    "text": "参照のネストが深いこと"
+                },
+                {
+                    "id": "d",
+                    "text": "NULL参照"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "解放済みメモリを指す参照は危険で、Rustは所有権/借用規則で防ぎます。",
+            "difficulty": 2,
+            "tags": [
+                "borrow",
+                "dangling",
+                "safety"
+            ]
+        },
+        {
+            "id": "ownership.borrow.q007",
+            "categoryId": "ownership.borrow",
+            "type": "codeReading",
+            "title": "参照外し演算子",
+            "body": "参照 `&i32` から値を取り出すのに使う演算子はどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "&"
+                },
+                {
+                    "id": "b",
+                    "text": "*"
+                },
+                {
+                    "id": "c",
+                    "text": "!"
+                },
+                {
+                    "id": "d",
+                    "text": "^"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation": "`*` は参照外し（dereference）に使います。",
+            "difficulty": 1,
+            "tags": [
+                "dereference",
+                "reference"
+            ]
+        },
+        {
+            "id": "ownership.borrow.q008",
+            "categoryId": "ownership.borrow",
+            "type": "codeReading",
+            "title": "可変借用で変更",
+            "body": "次の関数内で `push_str` が可能なのはなぜ？",
+            "codeSnippet":
+                "fn change(s: &mut String) {\n    s.push_str(\", world\");\n}",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "String は常に可変だから"
+                },
+                {
+                    "id": "b",
+                    "text": "可変参照 `&mut String` を受け取っているから"
+                },
+                {
+                    "id": "c",
+                    "text": "push_str が unsafe だから"
+                },
+                {
+                    "id": "d",
+                    "text": "所有権を奪っているから"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "可変借用 `&mut String` を受け取ることで、所有権を移さずに中身を変更できます。",
+            "difficulty": 2,
+            "tags": [
+                "borrow",
+                "mutable-reference",
+                "string"
+            ]
+        },
+
+        {
+            "id": "ownership.slice.q001",
+            "categoryId": "ownership.slice",
+            "type": "basic",
+            "title": "スライスとは",
+            "body": "スライスの主な目的として適切なのはどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "所有権を持つ新しい配列を作る"
+                },
+                {
+                    "id": "b",
+                    "text": "コレクションの一部を参照する"
+                },
+                {
+                    "id": "c",
+                    "text": "要素を自動ソートする"
+                },
+                {
+                    "id": "d",
+                    "text": "型変換を行う"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "スライスはデータの一部を所有権なしで参照する仕組みです。",
+            "difficulty": 1,
+            "tags": [
+                "slice",
+                "reference"
+            ]
+        },
+        {
+            "id": "ownership.slice.q002",
+            "categoryId": "ownership.slice",
+            "type": "codeReading",
+            "title": "文字列スライス型",
+            "body":
+                "`let hello = &s[0..5];` の `hello` の型は？（`s` は `String`）",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "String"
+                },
+                {
+                    "id": "b",
+                    "text": "&String"
+                },
+                {
+                    "id": "c",
+                    "text": "&str"
+                },
+                {
+                    "id": "d",
+                    "text": "[char]"
+                }
+            ],
+            "correctChoiceId": "c",
+            "explanation": "String の部分参照は文字列スライス `&str` です。",
+            "difficulty": 2,
+            "tags": [
+                "slice",
+                "str",
+                "string"
+            ]
+        },
+        {
+            "id": "ownership.slice.q003",
+            "categoryId": "ownership.slice",
+            "type": "codeReading",
+            "title": "配列スライス",
+            "body": "次の `slice` の型はどれ？",
+            "codeSnippet": "let a = [1,2,3,4,5];\nlet slice = &a[1..3];",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "[i32; 2]"
+                },
+                {
+                    "id": "b",
+                    "text": "&[i32]"
+                },
+                {
+                    "id": "c",
+                    "text": "Vec<i32>"
+                },
+                {
+                    "id": "d",
+                    "text": "&Vec<i32>"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation": "配列の部分参照は配列スライス `&[i32]` です。",
+            "difficulty": 2,
+            "tags": [
+                "slice",
+                "array"
+            ]
+        },
+        {
+            "id": "ownership.slice.q004",
+            "categoryId": "ownership.slice",
+            "type": "basic",
+            "title": "スライスの範囲",
+            "body": "`&s[..]` は何を意味する？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "先頭1文字"
+                },
+                {
+                    "id": "b",
+                    "text": "末尾1文字"
+                },
+                {
+                    "id": "c",
+                    "text": "文字列全体のスライス"
+                },
+                {
+                    "id": "d",
+                    "text": "空スライス"
+                }
+            ],
+            "correctChoiceId": "c",
+            "explanation": "`..` を省略形で使うと全範囲を表せます。",
+            "difficulty": 1,
+            "tags": [
+                "slice",
+                "range"
+            ]
+        },
+        {
+            "id": "ownership.slice.q005",
+            "categoryId": "ownership.slice",
+            "type": "codeReading",
+            "title": "first_word の返り値改善",
+            "body":
+                "`first_word` 関数の返り値を `usize` ではなく `&str` にすると良い理由は？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "数値計算が速くなるから"
+                },
+                {
+                    "id": "b",
+                    "text":
+                        "元文字列の変更に対して位置情報の不整合を減らせるから"
+                },
+                {
+                    "id": "c",
+                    "text": "所有権が移るから"
+                },
+                {
+                    "id": "d",
+                    "text": "UTF-8を無視できるから"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "インデックスだけ返すより、スライスを返した方が元データとの整合性を保ちやすい設計になります。",
+            "difficulty": 3,
+            "tags": [
+                "slice",
+                "api-design",
+                "string"
+            ]
+        },
+        {
+            "id": "ownership.slice.q006",
+            "categoryId": "ownership.slice",
+            "type": "basic",
+            "title": "文字列リテラルとスライス",
+            "body":
+                "文字列リテラル `\"hello\"` が `&str` である理由として正しいのはどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "常にヒープ確保されるから"
+                },
+                {
+                    "id": "b",
+                    "text":
+                        "バイナリに埋め込まれた文字列データへのスライスだから"
+                },
+                {
+                    "id": "c",
+                    "text": "String の別名だから"
+                },
+                {
+                    "id": "d",
+                    "text": "マクロが変換するから"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "文字列リテラルはプログラムに埋め込まれた文字列データへの参照（`&str`）です。",
+            "difficulty": 2,
+            "tags": [
+                "str",
+                "slice",
+                "literal"
+            ]
+        },
+
+        {
+            "id": "structs_enums.structs.q001",
+            "categoryId": "structs_enums.structs",
+            "type": "basic",
+            "title": "構造体定義",
+            "body": "構造体を定義するキーワードはどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "class"
+                },
+                {
+                    "id": "b",
+                    "text": "struct"
+                },
+                {
+                    "id": "c",
+                    "text": "record"
+                },
+                {
+                    "id": "d",
+                    "text": "type"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation": "構造体は `struct` キーワードで定義します。",
+            "difficulty": 1,
+            "tags": [
+                "struct"
+            ]
+        },
+        {
+            "id": "structs_enums.structs.q002",
+            "categoryId": "structs_enums.structs",
+            "type": "codeReading",
+            "title": "フィールド初期化",
+            "body": "次の構造体インスタンス生成として正しいものはどれ？",
+            "codeSnippet":
+                "struct User { active: bool, username: String, sign_in_count: u64 }",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "User(true, \"a\", 1)"
+                },
+                {
+                    "id": "b",
+                    "text":
+                        "User { active: true, username: String::from(\"a\"), sign_in_count: 1 }"
+                },
+                {
+                    "id": "c",
+                    "text": "new User { ... }"
+                },
+                {
+                    "id": "d",
+                    "text": "User => { ... }"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation": "通常の構造体はフィールド名を指定して初期化します。",
+            "difficulty": 1,
+            "tags": [
+                "struct",
+                "instance"
+            ]
+        },
+        {
+            "id": "structs_enums.structs.q003",
+            "categoryId": "structs_enums.structs",
+            "type": "codeReading",
+            "title": "フィールド更新",
+            "body":
+                "構造体インスタンスのフィールドを変更する条件として必要なのは？",
+            "codeSnippet": "let mut user1 = User { ... };",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "構造体定義に `mutable` を付ける"
+                },
+                {
+                    "id": "b",
+                    "text": "インスタンス変数を `mut` にする"
+                },
+                {
+                    "id": "c",
+                    "text": "全フィールドを `pub` にする"
+                },
+                {
+                    "id": "d",
+                    "text": "Clone を実装する"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "インスタンス自体を `mut` で束縛すればフィールド変更ができます。",
+            "difficulty": 1,
+            "tags": [
+                "struct",
+                "mutability"
+            ]
+        },
+        {
+            "id": "structs_enums.structs.q004",
+            "categoryId": "structs_enums.structs",
+            "type": "basic",
+            "title": "フィールド初期化省略記法",
+            "body":
+                "関数引数 `username: String` を使って `User { username, ... }` と書ける機能は何？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "デストラクチャリング"
+                },
+                {
+                    "id": "b",
+                    "text": "フィールド初期化省略記法"
+                },
+                {
+                    "id": "c",
+                    "text": "型推論"
+                },
+                {
+                    "id": "d",
+                    "text": "借用省略"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "変数名とフィールド名が同じとき、`username: username` を `username` と省略できます。",
+            "difficulty": 2,
+            "tags": [
+                "struct",
+                "syntax"
+            ]
+        },
+        {
+            "id": "structs_enums.structs.q005",
+            "categoryId": "structs_enums.structs",
+            "type": "codeReading",
+            "title": "構造体更新記法",
+            "body": "次の `..user1` の意味として正しいものは？",
+            "codeSnippet":
+                "let user2 = User {\n    email: String::from(\"another@example.com\"),\n    ..user1\n};",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "user1 を完全コピーする"
+                },
+                {
+                    "id": "b",
+                    "text": "指定していない残りのフィールドを user1 から使う"
+                },
+                {
+                    "id": "c",
+                    "text": "user1 への参照を保持する"
+                },
+                {
+                    "id": "d",
+                    "text": "user1 を破棄するだけ"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "構造体更新記法で、未指定フィールドを別インスタンスから引き継げます（所有権移動に注意）。",
+            "difficulty": 2,
+            "tags": [
+                "struct",
+                "update-syntax",
+                "ownership"
+            ]
+        },
+
+        {
+            "id": "structs_enums.methods.q001",
+            "categoryId": "structs_enums.methods",
+            "type": "basic",
+            "title": "メソッドの定義場所",
+            "body": "構造体のメソッドは通常どこに定義する？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "trait ブロックのみ"
+                },
+                {
+                    "id": "b",
+                    "text": "impl ブロック"
+                },
+                {
+                    "id": "c",
+                    "text": "main 関数内"
+                },
+                {
+                    "id": "d",
+                    "text": "mod.rs 固定"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "メソッドや関連関数は `impl StructName { ... }` に定義します。",
+            "difficulty": 1,
+            "tags": [
+                "impl",
+                "method"
+            ]
+        },
+        {
+            "id": "structs_enums.methods.q002",
+            "categoryId": "structs_enums.methods",
+            "type": "codeReading",
+            "title": "self 引数",
+            "body": "メソッドの第1引数 `&self` の意味は？",
+            "codeSnippet":
+                "impl Rectangle {\n    fn area(&self) -> u32 { self.width * self.height }\n}",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "所有権を受け取る"
+                },
+                {
+                    "id": "b",
+                    "text": "不変参照としてインスタンスを借用する"
+                },
+                {
+                    "id": "c",
+                    "text": "可変参照として借用する"
+                },
+                {
+                    "id": "d",
+                    "text": "static メソッドを表す"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "`&self` は `self: &Self` の糖衣構文で、不変借用です。",
+            "difficulty": 1,
+            "tags": [
+                "method",
+                "self",
+                "borrow"
+            ]
+        },
+        {
+            "id": "structs_enums.methods.q003",
+            "categoryId": "structs_enums.methods",
+            "type": "codeReading",
+            "title": "関連関数",
+            "body": "`Rectangle::square(3)` のように呼ぶ関数は何と呼ばれる？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "クロージャ"
+                },
+                {
+                    "id": "b",
+                    "text": "関連関数"
+                },
+                {
+                    "id": "c",
+                    "text": "ジェネリック関数"
+                },
+                {
+                    "id": "d",
+                    "text": "トレイトメソッド"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "`self` を取らず型名から呼ぶ関数は関連関数です（コンストラクタ風に使うことが多い）。",
+            "difficulty": 2,
+            "tags": [
+                "associated-function",
+                "impl"
+            ]
+        },
+
+        {
+            "id": "structs_enums.enums.q001",
+            "categoryId": "structs_enums.enums",
+            "type": "basic",
+            "title": "enum 定義",
+            "body": "列挙型を定義するキーワードはどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "variant"
+                },
+                {
+                    "id": "b",
+                    "text": "enum"
+                },
+                {
+                    "id": "c",
+                    "text": "choice"
+                },
+                {
+                    "id": "d",
+                    "text": "union"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation": "列挙型は `enum` で定義します。",
+            "difficulty": 1,
+            "tags": [
+                "enum"
+            ]
+        },
+        {
+            "id": "structs_enums.enums.q002",
+            "categoryId": "structs_enums.enums",
+            "type": "codeReading",
+            "title": "enum と match",
+            "body": "列挙型の各パターンに応じて分岐するのに使う構文はどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "switch"
+                },
+                {
+                    "id": "b",
+                    "text": "case"
+                },
+                {
+                    "id": "c",
+                    "text": "match"
+                },
+                {
+                    "id": "d",
+                    "text": "if enum"
+                }
+            ],
+            "correctChoiceId": "c",
+            "explanation":
+                "Rustでは `match` を使ってパターンに応じた分岐を行います。",
+            "difficulty": 1,
+            "tags": [
+                "enum",
+                "match"
+            ]
+        },
+        {
+            "id": "structs_enums.enums.q003",
+            "categoryId": "structs_enums.enums",
+            "type": "codeReading",
+            "title": "Option 型",
+            "body": "値がある/ないを表す標準の列挙型はどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "Result<T, E>"
+                },
+                {
+                    "id": "b",
+                    "text": "Maybe<T>"
+                },
+                {
+                    "id": "c",
+                    "text": "Option<T>"
+                },
+                {
+                    "id": "d",
+                    "text": "Nullable<T>"
+                }
+            ],
+            "correctChoiceId": "c",
+            "explanation":
+                "`Option<T>` は `Some(T)` または `None` を取り、nullの代替としてよく使われます。",
+            "difficulty": 1,
+            "tags": [
+                "option",
+                "enum",
+                "stdlib"
+            ]
+        },
+        {
+            "id": "structs_enums.enums.q004",
+            "categoryId": "structs_enums.enums",
+            "type": "codeReading",
+            "title": "if let",
+            "body": "`if let` の主な用途は？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "ループを作る"
+                },
+                {
+                    "id": "b",
+                    "text": "1つのパターンにマッチした場合だけ簡潔に処理する"
+                },
+                {
+                    "id": "c",
+                    "text": "型変換する"
+                },
+                {
+                    "id": "d",
+                    "text": "借用を外す"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "`if let` は `match` の簡略記法として、1パターンだけ扱いたいときに便利です。",
+            "difficulty": 2,
+            "tags": [
+                "if-let",
+                "match",
+                "enum"
+            ]
+        },
+
+        {
+            "id": "generics_traits.generics.q001",
+            "categoryId": "generics_traits.generics",
+            "type": "basic",
+            "title": "ジェネリクスの型パラメータ",
+            "body": "型パラメータを使う関数定義の例として正しいものはどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "fn id(T x) -> T"
+                },
+                {
+                    "id": "b",
+                    "text": "fn id<T>(x: T) -> T"
+                },
+                {
+                    "id": "c",
+                    "text": "generic fn id(x) -> T"
+                },
+                {
+                    "id": "d",
+                    "text": "fn<T> id(x: T): T"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "型パラメータは `fn name<T>(arg: T) -> T` のように書きます。",
+            "difficulty": 2,
+            "tags": [
+                "generics",
+                "function"
+            ]
+        },
+        {
+            "id": "generics_traits.generics.q002",
+            "categoryId": "generics_traits.generics",
+            "type": "codeReading",
+            "title": "ジェネリック構造体",
+            "body":
+                "次の定義 `struct Point<T> { x: T, y: T }` について正しい説明は？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "x と y は必ず異なる型にできる"
+                },
+                {
+                    "id": "b",
+                    "text": "x と y は同じ型 T になる"
+                },
+                {
+                    "id": "c",
+                    "text": "数値型にしか使えない"
+                },
+                {
+                    "id": "d",
+                    "text": "trait を必ず実装しないと使えない"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "同じ `T` を使っているため、`x` と `y` は同一型になります。",
+            "difficulty": 2,
+            "tags": [
+                "generics",
+                "struct"
+            ]
+        },
+
+        {
+            "id": "generics_traits.traits.q001",
+            "categoryId": "generics_traits.traits",
+            "type": "basic",
+            "title": "トレイトとは",
+            "body": "Rustのトレイトの役割として最も近いものはどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "メモリ確保ルール"
+                },
+                {
+                    "id": "b",
+                    "text": "共有できる振る舞い（インターフェース）の定義"
+                },
+                {
+                    "id": "c",
+                    "text": "例外処理"
+                },
+                {
+                    "id": "d",
+                    "text": "モジュール分割"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "トレイトは型に共通の振る舞いを定義する仕組みで、他言語のインターフェースに近いです。",
+            "difficulty": 2,
+            "tags": [
+                "trait",
+                "abstraction"
+            ]
+        },
+        {
+            "id": "generics_traits.traits.q002",
+            "categoryId": "generics_traits.traits",
+            "type": "codeReading",
+            "title": "トレイト境界",
+            "body":
+                "関数引数が特定トレイトを実装していることを要求する書き方として正しいのはどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "fn notify(item: Summary)"
+                },
+                {
+                    "id": "b",
+                    "text": "fn notify<T: Summary>(item: T)"
+                },
+                {
+                    "id": "c",
+                    "text": "fn notify(item: impl)"
+                },
+                {
+                    "id": "d",
+                    "text": "fn notify<T>(item) where T"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "代表的な書き方の一つは `fn notify<T: Summary>(item: T)` です（`impl Summary` も可）。",
+            "difficulty": 3,
+            "tags": [
+                "trait-bound",
+                "generics",
+                "trait"
+            ]
+        },
+        {
+            "id": "generics_traits.traits.q003",
+            "categoryId": "generics_traits.traits",
+            "type": "codeReading",
+            "title": "impl Trait",
+            "body":
+                "`fn notify(item: impl Summary)` の意味として正しいのはどれ？",
+            "codeSnippet": "",
+            "choices": [
+                {
+                    "id": "a",
+                    "text": "Summary 型そのものだけを受け取る"
+                },
+                {
+                    "id": "b",
+                    "text": "Summary トレイトを実装した任意の型を受け取る"
+                },
+                {
+                    "id": "c",
+                    "text": "トレイトを実装する関数を返す"
+                },
+                {
+                    "id": "d",
+                    "text": "ジェネリクスとは無関係"
+                }
+            ],
+            "correctChoiceId": "b",
+            "explanation":
+                "`impl Trait` はそのトレイトを実装した型を受け取る簡潔な記法です。",
+            "difficulty": 3,
+            "tags": [
+                "impl-trait",
+                "trait",
+                "generics"
+            ]
+        }
+    ]
 }
