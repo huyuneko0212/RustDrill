@@ -1,47 +1,36 @@
-//
-//  RustDrillApp.swift
-//  Rust Drill
-//
-//  Created by huyuneko on 2026/02/21.
-//
-
-import SwiftData
 import SwiftUI
+import SwiftData
 
 @main
 struct RustDrillApp: App {
     let container: ModelContainer
-    let dependency: AppDependency
-
+    @StateObject private var appContainer: AppContainer
+    
     init() {
         do {
-            container = try ModelContainer(
-                for:
-                    SDCategory.self,
-                SDQuestion.self,
-                SDChoice.self,
-                SDQuestionProgress.self,
-                SDAnswerHistory.self
+            let modelContainer = try ModelContainer(for:
+                                                        SDCategory.self,
+                                                    SDQuestion.self,
+                                                    SDChoice.self,
+                                                    SDQuestionProgress.self,
+                                                    SDAnswerHistory.self
             )
-
-            let context = ModelContext(container)
+            self.container = modelContainer
+            
+            let context = ModelContext(modelContainer)
             let repo = LocalQuizRepository(context: context)
-            print("Bundle path:", Bundle.main.bundlePath)
-            print("All json:", Bundle.main.paths(forResourcesOfType: "json", inDirectory: nil))
-            print("Seed json:", Bundle.main.paths(forResourcesOfType: "json", inDirectory: "Seed"))
             try repo.seedIfNeeded()
-
-            dependency = AppDependency(repository: repo)
+            
+            _appContainer = StateObject(wrappedValue: AppContainer(repository: repo))
         } catch {
             fatalError("Failed to initialize app: \(error)")
         }
     }
-
+    
     var body: some Scene {
         WindowGroup {
-            HomeView(
-                viewModel: HomeViewModel(repository: dependency.repository)
-            )
+            RootTabView()
+                .environmentObject(appContainer)
         }
         .modelContainer(container)
     }

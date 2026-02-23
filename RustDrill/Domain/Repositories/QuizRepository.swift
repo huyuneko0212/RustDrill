@@ -14,6 +14,10 @@ protocol QuizRepository {
     
     // Question
     func fetchQuestions(categoryId: String) throws -> [QuizQuestion]
+    func countQuestionsRecursively(categoryId: String) throws -> Int
+    
+    // Category Progress
+    func fetchCategoryProgress(categoryId: String) throws -> CategoryProgress
     
     // Progress
     func fetchProgress(questionId: String) throws -> QuestionProgress?

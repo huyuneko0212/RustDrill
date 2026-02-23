@@ -8,25 +8,47 @@
 import SwiftUI
 
 struct HomeView: View {
-    @StateObject var viewModel: HomeViewModel
-
+    @EnvironmentObject private var appContainer: AppContainer
+    
+    @State private var categories: [Category] = []
+    @State private var errorMessage: String?
+    @State private var isLoading = false
+    @State private var didLoad = false
+    
     var body: some View {
         NavigationStack {
             List {
-                Section("カリキュラム") {
-                    ForEach(viewModel.categories) { category in
-                        NavigationLink(category.name) {
-                            CategoryChildrenView(
-                                parentCategory: category,
-                                repository: getRepository(from: viewModel)
-                            )
+                if isLoading && !didLoad {
+                    ProgressView("読み込み中...")
+                        .frame(maxWidth: .infinity, alignment: .center)
+                } else {
+                    Section("カリキュラム") {
+                        ForEach(categories) { category in
+                            NavigationLink {
+                                CategoryChildrenView(parentCategory: category)
+                            } label: {
+                                CategoryRowView(category: category)
+                            }
+                        }
+                    }
+                    
+                    Section("ショートカット") {
+                        NavigationLink("復習問題を解く") {
+                            ReviewQuizEntryView()
                         }
                     }
                 }
             }
             .navigationTitle("Rust Drill")
+            .task {
+                guard !didLoad else { return }
+                await loadRootCategories()
+            }
+            .refreshable {
+                await loadRootCategories(force: true)
+            }
             .overlay {
-                if let message = viewModel.errorMessage {
+                if let message = errorMessage {
                     ContentUnavailableView(
                         "エラー",
                         systemImage: "exclamationmark.triangle",
@@ -36,78 +58,22 @@ struct HomeView: View {
             }
         }
     }
-
-    // 簡易。実際はDIをもう少し綺麗にしてOK
-    private func getRepository(from vm: HomeViewModel) -> QuizRepository {
-        Mirror(reflecting: vm).children.first { $0.label == "repository" }?
-            .value as? QuizRepository
-            ?? DummyQuizRepository()
-    }
-}
-
-// 子カテゴリを辿る画面（大→中→小）
-struct CategoryChildrenView: View {
-    let parentCategory: Category
-    let repository: QuizRepository
-
-    @State private var children: [Category] = []
-    @State private var errorMessage: String?
-
-    var body: some View {
-        List {
-            if children.isEmpty {
-                // 子がなければそのカテゴリの問題を開始
-                NavigationLink("このカテゴリを開始") {
-                    QuizView(
-                        viewModel: QuizViewModel(
-                            repository: repository,
-                            categoryId: parentCategory.id
-                        )
-                    )
-                }
-            } else {
-                ForEach(children) { child in
-                    NavigationLink(child.name) {
-                        CategoryChildrenView(
-                            parentCategory: child,
-                            repository: repository
-                        )
-                    }
-                }
-            }
+    
+    private func loadRootCategories(force: Bool = false) async {
+        if isLoading { return }
+        if didLoad && !force { return }
+        
+        isLoading = true
+        errorMessage = nil
+        defer {
+            isLoading = false
+            didLoad = true
         }
-        .navigationTitle(parentCategory.name)
-        .task {
-            do {
-                children = try repository.fetchChildren(of: parentCategory.id)
-            } catch {
-                errorMessage = error.localizedDescription
-            }
-        }
-        .overlay {
-            if let message = errorMessage {
-                ContentUnavailableView(
-                    "エラー",
-                    systemImage: "exclamationmark.triangle",
-                    description: Text(message)
-                )
-            }
+        
+        do {
+            categories = try appContainer.repository.fetchRootCategories()
+        } catch {
+            errorMessage = error.localizedDescription
         }
     }
-}
-
-// 仮のダミー（上のMirrorを避けたいならDI設計を後で整理）
-private struct DummyQuizRepository: QuizRepository {
-    func fetchRootCategories() throws -> [Category] { [] }
-    func fetchChildren(of parentId: String) throws -> [Category] { [] }
-    func fetchQuestions(categoryId: String) throws -> [QuizQuestion] { [] }
-    func fetchProgress(questionId: String) throws -> QuestionProgress? { nil }
-    func saveAnswer(
-        questionId: String,
-        selectedChoiceId: String,
-        isCorrect: Bool
-    ) throws {}
-    func toggleFavorite(questionId: String) throws {}
-    func fetchReviewQuestions() throws -> [QuizQuestion] { [] }
-    func seedIfNeeded() throws {}
 }

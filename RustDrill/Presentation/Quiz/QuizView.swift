@@ -27,7 +27,6 @@ struct QuizView: View {
     @ViewBuilder
     private func content(question: QuizQuestion) -> some View {
         VStack(spacing: 16) {
-            // 問題ヘッダ
             VStack(alignment: .leading, spacing: 8) {
                 Text("Q\(viewModel.currentIndex + 1) / \(viewModel.questions.count)")
                     .font(.caption)
@@ -41,12 +40,10 @@ struct QuizView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             
-            // コード表示
             if let code = question.codeSnippet, !code.isEmpty {
                 CodeBlockView(code: code)
             }
             
-            // 選択肢
             VStack(spacing: 10) {
                 ForEach(question.choices) { choice in
                     ChoiceButton(
@@ -60,7 +57,6 @@ struct QuizView: View {
             
             Spacer()
             
-            // 下部ボタン
             if let result = viewModel.submittedResult {
                 NavigationLink {
                     ExplanationView(
@@ -71,7 +67,7 @@ struct QuizView: View {
                         isLastQuestion: viewModel.isLastQuestion
                     )
                 } label: {
-                    Text(viewModel.isLastQuestion ? "結果を見る" : "解説へ")
+                    Text(viewModel.isLastQuestion ? "解説を見る（最後）" : "解説へ")
                         .frame(maxWidth: .infinity, minHeight: 50)
                 }
                 .buttonStyle(.borderedProminent)
