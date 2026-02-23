@@ -11,8 +11,10 @@ import Combine
 @MainActor
 final class AppContainer: ObservableObject {
     let repository: QuizRepository
+    let adGateService: AdGateService
     
-    init(repository: QuizRepository) {
+    init(repository: QuizRepository, adGateService: AdGateService? = nil) {
         self.repository = repository
+        self.adGateService = adGateService ?? NoopAdGateService()
     }
 }

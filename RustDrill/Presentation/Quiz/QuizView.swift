@@ -8,7 +8,12 @@
 import SwiftUI
 
 struct QuizView: View {
+    @EnvironmentObject private var appContainer: AppContainer
     @StateObject var viewModel: QuizViewModel
+    
+    @State private var showExplanation = false
+    @State private var isOpeningExplanation = false
+    @State private var explanationResult: QuizResult?
     
     var body: some View {
         Group {
@@ -22,12 +27,20 @@ struct QuizView: View {
         }
         .navigationTitle("クイズ")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationDestination(isPresented: $showExplanation) {
+            if let result = explanationResult {
+                ExplanationView(
+                    result: result,
+                    onNext: { viewModel.nextQuestion() },
+                    isLastQuestion: viewModel.isLastQuestion
+                )
+            }
+        }
     }
     
     @ViewBuilder
     private func content(question: QuizQuestion) -> some View {
         VStack(spacing: 14) {
-            // 進行表示
             HStack {
                 Text("Q\(viewModel.currentIndex + 1) / \(viewModel.questions.count)")
                     .font(.caption)
@@ -35,7 +48,6 @@ struct QuizView: View {
                 Spacer()
             }
             
-            // 問題カード
             VStack(alignment: .leading, spacing: 10) {
                 Text(question.title)
                     .font(.title3)
@@ -59,7 +71,6 @@ struct QuizView: View {
                     .fill(Color.gray.opacity(0.08))
             )
             
-            // 選択肢
             ChoiceListView(
                 choices: question.choices,
                 selectedChoiceId: viewModel.selectedChoiceId,
@@ -72,17 +83,40 @@ struct QuizView: View {
             Spacer(minLength: 8)
             
             if let result = viewModel.submittedResult {
-                NavigationLink {
-                    ExplanationView(
-                        result: result,
-                        onNext: { viewModel.nextQuestion() },
-                        isLastQuestion: viewModel.isLastQuestion
-                    )
-                } label: {
-                    Text(viewModel.isLastQuestion ? "解説を見る（最後）" : "解説へ")
+                // 回答後: 解説へ + 次へ（or 終了）
+                VStack(spacing: 10) {
+                    Button {
+                        Task { await openExplanation(result: result) }
+                    } label: {
+                        HStack {
+                            if isOpeningExplanation {
+                                ProgressView()
+                                    .controlSize(.small)
+                            }
+                            Text("解説へ")
+                        }
                         .frame(maxWidth: .infinity, minHeight: 50)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(isOpeningExplanation)
+                    
+                    if viewModel.isLastQuestion {
+                        // 最後の問題なら「次へ」の代わりに終了（解説スキップ）
+                        Button("終了（解説をスキップ）") {
+                            // 親のナビゲーションに戻る
+                            // ここでは QuizView を閉じたいので dismiss を使う
+                            dismissQuiz()
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 46)
+                        .buttonStyle(.bordered)
+                    } else {
+                        Button("次へ（解説をスキップ）") {
+                            viewModel.nextQuestion()
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 46)
+                        .buttonStyle(.bordered)
+                    }
                 }
-                .buttonStyle(.borderedProminent)
             } else {
                 Button("回答する") {
                     viewModel.submit()
@@ -93,5 +127,24 @@ struct QuizView: View {
             }
         }
         .padding()
+    }
+    
+    @Environment(\.dismiss) private var dismiss
+    
+    private func dismissQuiz() {
+        dismiss()
+    }
+    
+    private func openExplanation(result: QuizResult) async {
+        guard !isOpeningExplanation else { return }
+        isOpeningExplanation = true
+        defer { isOpeningExplanation = false }
+        
+        // 将来ここで広告表示（今はダミーで即true）
+        let ok = await appContainer.adGateService.showGateIfNeeded()
+        guard ok else { return }
+        
+        explanationResult = result
+        showExplanation = true
     }
 }
