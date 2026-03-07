@@ -80,13 +80,13 @@ struct QuizView: View {
                 .font(.title3)
                 .fontWeight(.bold)
                 .frame(maxWidth: .infinity, alignment: .leading)
-
+            
             Divider()
-
+            
             Text(question.body)
                 .font(.body)
                 .frame(maxWidth: .infinity, alignment: .leading)
-
+            
             if let code = question.codeSnippet, !code.isEmpty {
                 CodeBlockView(code: code)
                     .padding(.top, 2)
@@ -96,6 +96,10 @@ struct QuizView: View {
         .background(
             RoundedRectangle(cornerRadius: 14)
                 .fill(Color.gray.opacity(0.08))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(Color.gray.opacity(0.25), lineWidth: 1)
         )
     }
 

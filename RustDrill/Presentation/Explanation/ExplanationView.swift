@@ -47,8 +47,7 @@ struct ExplanationView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    Text(result.question.explanation)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    TextBlockView(text: result.question.explanation)
                     
                     ForEach(result.question.explanationContent.sections) { section in
                         VStack(alignment: .leading, spacing: 8) {
@@ -59,20 +58,12 @@ struct ExplanationView: View {
                             switch section.kind {
                             case .text:
                                 if let body = section.body, !body.isEmpty {
-                                    Text(body)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    TextBlockView(text: body)
                                 }
                                 
                             case .code:
                                 if let code = section.code, !code.isEmpty {
-                                    ScrollView(.horizontal) {
-                                        Text(code)
-                                            .font(.system(.body, design: .monospaced))
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                            .padding()
-                                    }
-                                    .background(.gray.opacity(0.1))
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        CodeBlockView(code: code)
                                 }
                                 
                             case .diagram:
