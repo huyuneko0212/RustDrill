@@ -46,10 +46,47 @@ struct ExplanationView: View {
                 .font(.headline)
 
             ScrollView {
-                Text(result.question.explanation)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                VStack(alignment: .leading, spacing: 16) {
+                    Text(result.question.explanation)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    ForEach(result.question.explanationContent.sections) { section in
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(section.title)
+                                .font(.headline)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            switch section.kind {
+                            case .text:
+                                if let body = section.body, !body.isEmpty {
+                                    Text(body)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                
+                            case .code:
+                                if let code = section.code, !code.isEmpty {
+                                    ScrollView(.horizontal) {
+                                        Text(code)
+                                            .font(.system(.body, design: .monospaced))
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                            .padding()
+                                    }
+                                    .background(.gray.opacity(0.1))
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                }
+                                
+                            case .diagram:
+                                if let body = section.body, !body.isEmpty {
+                                    Text(body)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+                .padding()
             }
-
             Spacer()
 
             Button(isLastQuestion ? "クイズを終了" : "次の問題へ") {

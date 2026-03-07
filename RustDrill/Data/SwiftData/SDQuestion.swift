@@ -18,12 +18,13 @@ final class SDQuestion {
     var codeSnippet: String?
     var correctChoiceId: String
     var explanation: String
+    var explanationContentRaw: String
     var difficulty: Int
     var tags: [String]
-
+    
     @Relationship(deleteRule: .cascade)
     var choices: [SDChoice]
-
+    
     init(
         id: String,
         categoryId: String,
@@ -33,6 +34,7 @@ final class SDQuestion {
         codeSnippet: String?,
         correctChoiceId: String,
         explanation: String,
+        explanationContentRaw: String,
         difficulty: Int,
         tags: [String],
         choices: [SDChoice] = []
@@ -45,8 +47,34 @@ final class SDQuestion {
         self.codeSnippet = codeSnippet
         self.correctChoiceId = correctChoiceId
         self.explanation = explanation
+        self.explanationContentRaw = explanationContentRaw
         self.difficulty = difficulty
         self.tags = tags
         self.choices = choices
+    }
+    
+}
+
+@MainActor
+extension SDQuestion {
+    var explanationContent: ExplanationContent {
+        get {
+            guard
+                let data = explanationContentRaw.data(using: .utf8),
+                let decoded = try? JSONDecoder().decode(ExplanationContent.self, from: data)
+            else {
+                return ExplanationContent(
+                    summary: explanation,
+                    sections: []
+                )
+            }
+            return decoded
+        }
+        set {
+            let data = try? JSONEncoder().encode(newValue)
+            explanationContentRaw = data.flatMap {
+                String(data: $0, encoding: .utf8)
+            } ?? ""
+        }
     }
 }

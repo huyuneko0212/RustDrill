@@ -1,12 +1,15 @@
 import Foundation
 import SwiftData
 
+@MainActor
 final class LocalQuizRepository: QuizRepository {
     private let context: ModelContext
     
     init(context: ModelContext) {
         self.context = context
     }
+    
+    
     
     // MARK: - Seed
     func seedIfNeeded() throws {
@@ -16,7 +19,6 @@ final class LocalQuizRepository: QuizRepository {
         
         let seed = try SeedLoader.loadQuestionsJSON()
         
-        // Categories
         for c in seed.categories {
             let model = SDCategory(
                 id: c.id,
@@ -28,7 +30,6 @@ final class LocalQuizRepository: QuizRepository {
             context.insert(model)
         }
         
-        // Questions + Choices
         for q in seed.questions {
             let sdChoices: [SDChoice] = q.choices.enumerated().map { idx, choice in
                 let globalChoiceId = "\(q.id)::\(choice.id)"
@@ -40,6 +41,11 @@ final class LocalQuizRepository: QuizRepository {
                 )
             }
             
+            let explanationContentRaw = (
+                try? JSONEncoder().encode(q.explanationContent)
+            )
+                .flatMap { String(data: $0, encoding: .utf8) } ?? ""
+            
             let question = SDQuestion(
                 id: q.id,
                 categoryId: q.categoryId,
@@ -47,21 +53,19 @@ final class LocalQuizRepository: QuizRepository {
                 title: q.title,
                 body: q.body,
                 codeSnippet: q.codeSnippet,
-                correctChoiceId: "\(q.id)::\(q.correctChoiceId)", // グローバル化
+                correctChoiceId: "\(q.id)::\(q.correctChoiceId)",
                 explanation: q.explanation,
+                explanationContentRaw: explanationContentRaw,
                 difficulty: q.difficulty,
                 tags: q.tags,
                 choices: sdChoices
             )
             
             context.insert(question)
-            // q.choices は relationship に入っているので通常はこれでOK
-            // （必要なら sdChoices.forEach { context.insert($0) } を追加）
         }
         
         try context.save()
     }
-    
     // MARK: - Category
     func fetchRootCategories() throws -> [Category] {
         let descriptor = FetchDescriptor<SDCategory>(
@@ -252,6 +256,7 @@ final class LocalQuizRepository: QuizRepository {
             },
             correctChoiceId: q.correctChoiceId, // グローバルID
             explanation: q.explanation,
+            explanationContent: q.explanationContent,
             difficulty: q.difficulty,
             tags: q.tags
         )
