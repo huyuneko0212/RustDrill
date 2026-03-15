@@ -10,24 +10,34 @@ import SwiftUI
 struct QuestionRowView: View {
     let index: Int
     let question: QuizQuestion
+    let isSolved: Bool
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Q\(index)")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            
-            Text(question.title)
-                .font(.headline)
-                .foregroundStyle(.primary)
-            
-            if !question.body.isEmpty {
-                Text(question.body)
-                    .font(.subheadline)
+        HStack(alignment: .center, spacing: 12) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Q\(index)")
+                    .font(.caption)
                     .foregroundStyle(.secondary)
+                
+                Text(question.title)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
                     .lineLimit(2)
             }
+            
+            Spacer()
+            
+            Text(isSolved ? "解答済み" : "未解答")
+                .font(.caption)
+                .fontWeight(.semibold)
+                .foregroundStyle(isSolved ? .green : .orange)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(
+                    Capsule()
+                        .fill((isSolved ? Color.green : Color.orange).opacity(0.12))
+                )
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 6)
     }
 }

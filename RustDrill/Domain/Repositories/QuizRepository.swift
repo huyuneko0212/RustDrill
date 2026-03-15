@@ -23,6 +23,7 @@ protocol QuizRepository {
     func fetchProgress(questionId: String) throws -> QuestionProgress?
     func saveAnswer(questionId: String, selectedChoiceId: String, isCorrect: Bool) throws
     func toggleFavorite(questionId: String) throws
+    func fetchSolvedQuestionIds(categoryId: String) throws -> Set<String>
     
     // Review
     func fetchReviewQuestions() throws -> [QuizQuestion]

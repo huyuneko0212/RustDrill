@@ -150,6 +150,24 @@ final class LocalQuizRepository: QuizRepository {
     }
     
     // MARK: - Progress
+    func fetchSolvedQuestionIds(categoryId: String) throws -> Set<String> {
+        let questions = try fetchQuestions(categoryId: categoryId)
+        let questionIds = Set(questions.map(\.id))
+        
+        let descriptor = FetchDescriptor<SDQuestionProgress>(
+            predicate: #Predicate {
+                $0.correctCount > 0 || $0.wrongCount > 0
+            }
+        )
+        let solvedProgress = try context.fetch(descriptor)
+        
+        return Set(
+            solvedProgress
+                .map(\.questionId)
+                .filter { questionIds.contains($0) }
+        )
+    }
+
     func fetchProgress(questionId: String) throws -> QuestionProgress? {
         let descriptor = FetchDescriptor<SDQuestionProgress>(
             predicate: #Predicate { $0.questionId == questionId }

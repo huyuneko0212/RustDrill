@@ -15,6 +15,8 @@ struct QuestionListView: View {
     @State private var isLoading = false
     @State private var didLoad = false
     @State private var errorMessage: String?
+    @State private var solvedQuestionIds: Set<String> = []
+    
     
     var body: some View {
         Group {
@@ -41,13 +43,14 @@ struct QuestionListView: View {
                                 QuizView(
                                     viewModel: QuizViewModel(
                                         repository: appContainer.repository,
-                                        source: .category(category.id, initialQuestionId: question.id)
+                                        source: .category(category.id, initialQuestionId: question.categoryId)
                                     )
                                 )
                             } label: {
                                 QuestionRowView(
                                     index: index + 1,
-                                    question: question
+                                    question: question,
+                                    isSolved: solvedQuestionIds.contains(question.id)
                                 )
                             }
                         }
@@ -78,6 +81,7 @@ struct QuestionListView: View {
         
         do {
             questions = try repositoryFetchQuestions(force: force)
+            solvedQuestionIds = try appContainer.repository.fetchSolvedQuestionIds(categoryId: category.id)
         } catch {
             errorMessage = error.localizedDescription
         }
