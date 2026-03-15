@@ -14,3 +14,4 @@ struct Category: Identifiable, Codable, Hashable {
     let order: Int
     let level: Int  // 1=大,2=中,3=小
 }
+

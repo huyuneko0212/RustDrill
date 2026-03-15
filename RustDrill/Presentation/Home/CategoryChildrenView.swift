@@ -5,21 +5,28 @@
 //  Created by huyuneko on 2026/02/23.
 //
 
+//
+//  CategoryChildrenView.swift
+//  RustDrill
+//
+//  Created by huyuneko on 2026/02/23.
+//
+
 import SwiftUI
 
 struct CategoryChildrenView: View {
     @EnvironmentObject private var appContainer: AppContainer
-
+    
     let parentCategory: Category
-
+    
     @State private var children: [Category] = []
     @State private var errorMessage: String?
     @State private var isLoading = false
     @State private var didLoad = false
-
-    // 最下層判定用（UI表示には使わない）
+    
+    // 最下層カテゴリに問題があるか確認するため
     @State private var questionsCount: Int = 0
-
+    
     var body: some View {
         Group {
             if let message = errorMessage {
@@ -35,16 +42,9 @@ struct CategoryChildrenView: View {
                         maxHeight: .infinity,
                         alignment: .center
                     )
-
             } else if children.isEmpty {
-                // 最下層カテゴリは直接クイズ画面へ
                 if questionsCount > 0 {
-                    QuizView(
-                        viewModel: QuizViewModel(
-                            repository: appContainer.repository,
-                            source: .category(parentCategory.id)
-                        )
-                    )
+                    QuestionListView(category: parentCategory)
                 } else {
                     ContentUnavailableView(
                         "問題がありません",
@@ -57,7 +57,7 @@ struct CategoryChildrenView: View {
                     Section("カテゴリ") {
                         ForEach(children) { child in
                             NavigationLink {
-                                CategoryChildrenView(parentCategory: child)
+                                destination(for: child)
                             } label: {
                                 CategoryRowView(category: child)
                             }
@@ -70,27 +70,40 @@ struct CategoryChildrenView: View {
                 }
             }
         }
+        .navigationTitle(parentCategory.name)
         .task {
             guard !didLoad else { return }
             await loadCategoryState()
         }
     }
-
+    
+    @ViewBuilder
+    private func destination(for category: Category) -> some View {
+        if isLeafCategory(category) {
+            QuestionListView(category: category)
+        } else {
+            CategoryChildrenView(parentCategory: category)
+        }
+    }
+    
+    private func isLeafCategory(_ category: Category) -> Bool {
+        category.level >= 3
+    }
+    
     private func loadCategoryState(force: Bool = false) async {
         if isLoading { return }
         if didLoad && !force { return }
-
+        
         isLoading = true
         errorMessage = nil
+        
         defer {
             isLoading = false
             didLoad = true
         }
-
+        
         do {
-            children = try appContainer.repository.fetchChildren(
-                of: parentCategory.id
-            )
+            children = try appContainer.repository.fetchChildren(of: parentCategory.id)
             questionsCount = try appContainer.repository
                 .countQuestionsRecursively(categoryId: parentCategory.id)
         } catch {

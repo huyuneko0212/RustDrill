@@ -11,7 +11,7 @@ import Combine
 @MainActor
 final class QuizViewModel: ObservableObject {
     enum Source {
-        case category(String)
+        case category(String, initialQuestionId: String? = nil)
         case review
     }
     
@@ -46,11 +46,23 @@ final class QuizViewModel: ObservableObject {
     func loadQuestions() {
         do {
             switch source {
-            case .category(let categoryId):
+            case .category(let categoryId, let initialQuestionId):
                 questions = try repository.fetchQuestions(categoryId: categoryId)
+                
+                if let initialQuestionId,
+                   let index = questions.firstIndex(where: { $0.id == initialQuestionId }) {
+                    currentIndex = index
+                } else {
+                    currentIndex = 0
+                }
+                
             case .review:
                 questions = try repository.fetchReviewQuestions()
+                currentIndex = 0
             }
+            
+            selectedChoiceId = nil
+            submittedResult = nil
         } catch {
             errorMessage = error.localizedDescription
         }
