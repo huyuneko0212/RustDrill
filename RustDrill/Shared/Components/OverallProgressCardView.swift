@@ -33,7 +33,7 @@ struct OverallProgressCardView: View {
                     Circle()
                         .trim(from: 0, to: progress)
                         .stroke(
-                            Color.blue,
+                            Color.accentOrange,
                             style: StrokeStyle(lineWidth: 12, lineCap: .round)
                         )
                         .rotationEffect(.degrees(-90))
@@ -65,6 +65,7 @@ struct OverallProgressCardView: View {
                 Spacer()
             }
         }
-        .padding(.vertical, 8)
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

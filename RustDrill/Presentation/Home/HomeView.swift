@@ -24,13 +24,17 @@ struct HomeView: View {
                 if isLoading && !didLoad {
                     ProgressView("読み込み中...")
                         .frame(maxWidth: .infinity, alignment: .center)
+                        .listRowSeparator(.hidden)
                 } else {
                     Section {
                         OverallProgressCardView(
                             solvedCount: totalSolvedCount,
                             totalCount: totalQuestionCount
                         )
-                        .listRowInsets(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
+                        .listRowInsets(.init())
+                        
+                    } header: {
+                        EmptyView()
                     }
                     
                     Section("カリキュラム") {
@@ -44,6 +48,7 @@ struct HomeView: View {
                     }
                 }
             }
+            .listStyle(.insetGrouped)
             .navigationTitle("Rust Drill")
             .task {
                 guard !didLoad else { return }
