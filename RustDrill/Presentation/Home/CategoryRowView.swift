@@ -15,27 +15,34 @@ struct CategoryRowView: View {
     @State private var isLoading = false
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(category.name)
-                .font(.body)
-                .foregroundStyle(.primary)
-            
-            if isLoading {
-                HStack(spacing: 8) {
-                    ProgressView()
-                        .controlSize(.small)
-                    Text("進捗を読み込み中...")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+        HStack(alignment: .center, spacing: 12) {
+            VStack(alignment: .leading, spacing: 12) {
+                Text(category.name)
+                    .font(.system(size: 19, weight: .semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                
+                if isLoading {
+                    HStack(spacing: 8) {
+                        ProgressView()
+                            .controlSize(.small)
+                        
+                        Text("進捗を読み込み中...")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                } else {
+                    CategoryProgressBar(
+                        solvedCount: progress.solvedCount,
+                        totalCount: progress.totalCount
+                    )
                 }
-            } else {
-                CategoryProgressBar(
-                    solvedCount: progress.solvedCount,
-                    totalCount: progress.totalCount
-                )
             }
+            
+            Spacer(minLength: 8)
+            
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 10)
         .contentShape(Rectangle())
         .task {
             await loadProgressIfNeeded()
