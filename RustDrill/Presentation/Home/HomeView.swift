@@ -15,6 +15,9 @@ struct HomeView: View {
     @State private var isLoading = false
     @State private var didLoad = false
     
+    @State private var totalSolvedCount = 0
+    @State private var totalQuestionCount = 0
+    
     var body: some View {
         NavigationStack {
             List {
@@ -22,6 +25,14 @@ struct HomeView: View {
                     ProgressView("読み込み中...")
                         .frame(maxWidth: .infinity, alignment: .center)
                 } else {
+                    Section {
+                        OverallProgressCardView(
+                            solvedCount: totalSolvedCount,
+                            totalCount: totalQuestionCount
+                        )
+                        .listRowInsets(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
+                    }
+                    
                     Section("カリキュラム") {
                         ForEach(categories) { category in
                             NavigationLink {
@@ -29,12 +40,6 @@ struct HomeView: View {
                             } label: {
                                 CategoryRowView(category: category)
                             }
-                        }
-                    }
-                    
-                    Section("ショートカット") {
-                        NavigationLink("復習問題を解く") {
-                            ReviewQuizEntryView()
                         }
                     }
                 }
@@ -72,6 +77,19 @@ struct HomeView: View {
         
         do {
             categories = try appContainer.repository.fetchRootCategories()
+            
+            var solved = 0
+            var total = 0
+            
+            for category in categories {
+                let progress = try appContainer.repository.fetchCategoryProgress(categoryId: category.id)
+                solved += progress.solvedCount
+                total += progress.totalCount
+            }
+            
+            totalSolvedCount = solved
+            totalQuestionCount = total
+            
         } catch {
             errorMessage = error.localizedDescription
         }
