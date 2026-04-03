@@ -10,6 +10,7 @@ import SwiftUI
 struct CategoryRowView: View {
     @EnvironmentObject private var appContainer: AppContainer
     let category: Category
+    let isRecommended: Bool
     
     @State private var progress = CategoryProgress(solvedCount: 0, totalCount: 0)
     @State private var isLoading = false
@@ -17,20 +18,10 @@ struct CategoryRowView: View {
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
             VStack(alignment: .leading, spacing: 12) {
-                Text(category.name)
-                    .font(.system(size: 19, weight: .semibold))
-                    .foregroundStyle(.primary)
-                    .lineLimit(1)
+                titleView
                 
                 if isLoading {
-                    HStack(spacing: 8) {
-                        ProgressView()
-                            .controlSize(.small)
-                        
-                        Text("進捗を読み込み中...")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
+                    loadingView
                 } else {
                     CategoryProgressBar(
                         solvedCount: progress.solvedCount,
@@ -41,12 +32,38 @@ struct CategoryRowView: View {
             
             Spacer(minLength: 8)
             
+            chevronView
         }
         .padding(.vertical, 10)
         .contentShape(Rectangle())
         .task {
             await loadProgressIfNeeded()
         }
+    }
+    
+    private var titleView: some View {
+        Text(category.name)
+            .font(.system(size: 19, weight: .semibold))
+            .foregroundStyle(.primary)
+            .lineLimit(1)
+    }
+    
+    private var loadingView: some View {
+        HStack(spacing: 8) {
+            ProgressView()
+                .controlSize(.small)
+            
+            Text("進捗を読み込み中...")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+    
+    private var chevronView: some View {
+        Image(systemName: "chevron.right")
+            .font(.system(size: 12, weight: .semibold))
+            .foregroundStyle(.secondary.opacity(0.75))
+            .padding(.trailing, 2)
     }
     
     private func loadProgressIfNeeded() async {

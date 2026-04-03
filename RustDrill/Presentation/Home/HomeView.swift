@@ -147,6 +147,7 @@ struct HomeView: View {
                 } label: {
                     CategoryRowView(
                         category: category,
+                        isRecommended: category.id == recommendedCategoryId
                     )
                 }
                 .buttonStyle(.plain)

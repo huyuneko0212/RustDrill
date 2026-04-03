@@ -18,62 +18,95 @@ struct CategoryChildrenView: View {
     @EnvironmentObject private var appContainer: AppContainer
     
     let parentCategory: Category
+    let isRecommended: Bool = false
     
     @State private var children: [Category] = []
     @State private var errorMessage: String?
     @State private var isLoading = false
     @State private var didLoad = false
-    
-    // 最下層カテゴリに問題があるか確認するため
     @State private var questionsCount: Int = 0
+    
+    @State private var selectedChild: Category?
     
     var body: some View {
         Group {
             if let message = errorMessage {
-                ContentUnavailableView(
-                    "エラー",
-                    systemImage: "exclamationmark.triangle",
-                    description: Text(message)
-                )
+                errorView(message)
             } else if isLoading && !didLoad {
-                ProgressView("読み込み中...")
-                    .frame(
-                        maxWidth: .infinity,
-                        maxHeight: .infinity,
-                        alignment: .center
-                    )
+                loadingView
             } else if children.isEmpty {
-                if questionsCount > 0 {
-                    QuestionListView(category: parentCategory)
-                } else {
-                    ContentUnavailableView(
-                        "問題がありません",
-                        systemImage: "questionmark.circle",
-                        description: Text("このカテゴリにはまだ問題が登録されていません。")
-                    )
-                }
+                emptyStateView
             } else {
-                List {
-                    Section("カテゴリ") {
-                        ForEach(children) { child in
-                            NavigationLink {
-                                destination(for: child)
-                            } label: {
-                                CategoryRowView(category: child)
-                            }
-                        }
-                    }
-                }
-                .navigationTitle(parentCategory.name)
-                .refreshable {
-                    await loadCategoryState(force: true)
-                }
+                childrenListView
             }
         }
         .navigationTitle(parentCategory.name)
+        .navigationDestination(item: $selectedChild) { category in
+            destination(for: category)
+        }
         .task {
             guard !didLoad else { return }
             await loadCategoryState()
+        }
+    }
+    
+    private var loadingView: some View {
+        ProgressView("読み込み中...")
+            .frame(
+                maxWidth: .infinity,
+                maxHeight: .infinity,
+                alignment: .center
+            )
+    }
+    
+    private func errorView(_ message: String) -> some View {
+        ContentUnavailableView(
+            "エラー",
+            systemImage: "exclamationmark.triangle",
+            description: Text(message)
+        )
+    }
+    
+    @ViewBuilder
+    private var emptyStateView: some View {
+        if questionsCount > 0 {
+            QuestionListView(category: parentCategory)
+        } else {
+            ContentUnavailableView(
+                "問題がありません",
+                systemImage: "questionmark.circle",
+                description: Text("このカテゴリにはまだ問題が登録されていません。")
+            )
+        }
+    }
+    
+    private var childrenListView: some View {
+        List {
+            Section {
+                ForEach(children) { child in
+                    Button {
+                        selectedChild = child
+                    } label: {
+                        CategoryRowView(category: child,
+                        isRecommended: isRecommended)
+                    }
+                    .buttonStyle(.plain)
+                }
+            } header: {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("カテゴリ")
+                        .font(.headline)
+                    
+                    Text("学習したいカテゴリを選択してください")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .textCase(nil)
+            }
+        }
+        .listStyle(.insetGrouped)
+        .refreshable {
+            await loadCategoryState(force: true)
         }
     }
     
