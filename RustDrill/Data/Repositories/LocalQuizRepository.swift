@@ -156,7 +156,7 @@ final class LocalQuizRepository: QuizRepository {
         
         let descriptor = FetchDescriptor<SDQuestionProgress>(
             predicate: #Predicate {
-                $0.correctCount > 0 || $0.wrongCount > 0
+                $0.correctCount > 0
             }
         )
         let solvedProgress = try context.fetch(descriptor)

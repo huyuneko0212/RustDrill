@@ -43,7 +43,7 @@ struct QuestionListView: View {
                                 QuizView(
                                     viewModel: QuizViewModel(
                                         repository: appContainer.repository,
-                                        source: .category(category.id, initialQuestionId: question.categoryId)
+                                        source: .category(category.id, initialQuestionId: question.id)
                                     )
                                 )
                             } label: {
