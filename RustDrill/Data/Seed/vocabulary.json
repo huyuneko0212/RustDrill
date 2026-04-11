@@ -1,6 +1,11 @@
 {
-    "version": 3,
+    "version": 5,
     "categories": [
+        {
+            "id": "basics-and-types",
+            "title": "基本文法と型",
+            "description": "変数、型、式などRustの読み書きの土台です。"
+        },
         {
             "id": "memory-safety",
             "title": "所有権と参照",
@@ -15,9 +20,140 @@
             "id": "control-and-errors",
             "title": "制御フローとエラー処理",
             "description": "分岐、値の有無、失敗を扱うための用語です。"
+        },
+        {
+            "id": "collections-and-text",
+            "title": "コレクションと文字列",
+            "description": "複数の値やテキストを扱うための用語です。"
+        },
+        {
+            "id": "modules-and-crates",
+            "title": "モジュールとパッケージ",
+            "description": "コードを分けて再利用するための用語です。"
+        },
+        {
+            "id": "concurrency",
+            "title": "並行処理",
+            "description": "スレッドや共有データを安全に扱うための用語です。"
+        },
+        {
+            "id": "smart-pointers",
+            "title": "スマートポインタと内部可変性",
+            "description": "所有権ルールを保ちながら特別な参照や共有を扱う用語です。"
+        },
+        {
+            "id": "testing-and-tools",
+            "title": "テストとツール",
+            "description": "Cargo、テスト、属性、ドキュメントに関する用語です。"
         }
     ],
     "terms": [
+        {
+            "id": "mut",
+            "categoryId": "basics-and-types",
+            "title": "mut",
+            "reading": "ミュータブル",
+            "description": "変数や参照を変更可能にするためのキーワードです。",
+            "detailDescription": "Rust の変数はデフォルトで不変です。値を再代入したり、可変参照を作ったりするには mut を明示します。変更できる場所をコード上で分かりやすくすることで、意図しない状態変更を減らします。",
+            "keyPoints": [
+                "let mut name の形で再代入できる変数を作ります。",
+                "&mut T は値を書き換えるための可変参照です。",
+                "必要な場所だけ mut にするのが基本です。"
+            ],
+            "pitfalls": [
+                "mut を付けても型そのものが変わるわけではありません。",
+                "可変参照は同じタイミングで複数持てません。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "可変変数",
+                    "code": "let mut count = 1;\ncount = 2;\nprintln!(\"{}\", count);"
+                }
+            ],
+            "relatedTermIds": [
+                "borrow",
+                "ownership"
+            ]
+        },
+        {
+            "id": "shadowing",
+            "categoryId": "basics-and-types",
+            "title": "Shadowing",
+            "reading": "シャドーイング",
+            "description": "同じ名前で新しい変数を宣言し、前の変数を隠す仕組みです。",
+            "detailDescription": "shadowing は let を使って同じ名前の新しい変数を作ることです。mut による再代入とは違い、新しい束縛を作るため型を変えることもできます。値の変換を段階的に表したいときに役立ちます。",
+            "keyPoints": [
+                "let を再度使って同じ名前を宣言します。",
+                "再代入ではなく新しい変数を作ります。",
+                "型を変えられる点が mut と違います。"
+            ],
+            "pitfalls": [
+                "前の値を更新しているのではなく、名前を隠しています。",
+                "同じ名前が続くと、どの時点の値か読み間違えやすくなります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "型を変えるシャドーイング",
+                    "code": "let input = \"42\";\nlet input = input.parse::<i32>().unwrap();\nprintln!(\"{}\", input + 1);"
+                }
+            ],
+            "relatedTermIds": [
+                "mut",
+                "unwrap"
+            ]
+        },
+        {
+            "id": "const",
+            "categoryId": "basics-and-types",
+            "title": "const",
+            "reading": "定数",
+            "description": "プログラム中で変わらない値に名前を付けるためのキーワードです。",
+            "detailDescription": "const はコンパイル時に決まる定数を定義します。let で作る不変変数とは違い、型注釈が必須で、mut は使えません。アプリ全体で共有したい固定値や意味のある数値に名前を付けるときに使います。",
+            "keyPoints": [
+                "const NAME: Type = value; の形で定義します。",
+                "型注釈が必須です。",
+                "慣習的に名前は大文字のスネークケースにします。"
+            ],
+            "pitfalls": [
+                "実行時に計算される値は const にできません。",
+                "let の不変変数と同じものではありません。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "定数宣言",
+                    "code": "const MAX_SCORE: u32 = 100;\nprintln!(\"{}\", MAX_SCORE);"
+                }
+            ],
+            "relatedTermIds": [
+                "mut"
+            ]
+        },
+        {
+            "id": "unit",
+            "categoryId": "basics-and-types",
+            "title": "Unit",
+            "reading": "ユニット型",
+            "description": "値を持たないことを表す型で、書き方は () です。",
+            "detailDescription": "Unit は意味のある値を返さないことを表す型です。関数が戻り値を明示しない場合、戻り値は unit になります。Swift の Void に近い考え方です。",
+            "keyPoints": [
+                "型も値も () と書きます。",
+                "戻り値を返さない関数の戻り値です。",
+                "式としては値がないことを表します。"
+            ],
+            "pitfalls": [
+                "空のタプルとして扱われます。",
+                "セミコロンを付けると式の値が unit になることがあります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "unit を返す関数",
+                    "code": "fn log_message() {\n    println!(\"done\");\n}"
+                }
+            ],
+            "relatedTermIds": [
+                "result"
+            ]
+        },
         {
             "id": "ownership",
             "categoryId": "memory-safety",
@@ -317,6 +453,961 @@
                 "closure",
                 "trait",
                 "borrow"
+            ]
+        },
+        {
+            "id": "struct",
+            "categoryId": "types-and-abstractions",
+            "title": "Struct",
+            "reading": "構造体",
+            "description": "関連する値を1つの型としてまとめる仕組みです。",
+            "detailDescription": "struct は複数のフィールドをまとめて、新しいデータ型を定義する仕組みです。名前付きフィールドを持つ通常の struct、位置で値を持つ tuple struct、フィールドを持たない unit-like struct があります。状態を表すデータは struct にまとめ、振る舞いは impl ブロックで定義するのがよくある形です。",
+            "keyPoints": [
+                "関連する値を名前付きフィールドとしてまとめられます。",
+                "フィールドごとに型を指定します。",
+                "メソッドは impl ブロックで追加します。"
+            ],
+            "pitfalls": [
+                "struct の値を別の変数へ渡すと、所有権が移動する場合があります。",
+                "フィールドを外部から使うには pub が必要になることがあります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "ユーザーを表す struct",
+                    "code": "struct User {\n    name: String,\n    score: u32,\n}\n\nlet user = User {\n    name: String::from(\"Ferris\"),\n    score: 100,\n};"
+                }
+            ],
+            "relatedTermIds": [
+                "impl",
+                "ownership",
+                "trait"
+            ]
+        },
+        {
+            "id": "impl",
+            "categoryId": "types-and-abstractions",
+            "title": "impl",
+            "reading": "実装ブロック",
+            "description": "型にメソッドや関連関数を定義するためのブロックです。",
+            "detailDescription": "impl ブロックは struct や enum などの型に対して、メソッドや関連関数を追加します。第一引数に self、&self、&mut self を取るものはメソッドとして呼び出せます。trait の実装にも impl を使います。",
+            "keyPoints": [
+                "型にメソッドを追加できます。",
+                "self の受け取り方で所有権や借用の扱いが変わります。",
+                "関連関数は Type::function の形で呼び出します。"
+            ],
+            "pitfalls": [
+                "&mut self を使うメソッドは、呼び出し側の値も mut である必要があります。",
+                "trait 実装の impl と固有メソッドの impl は役割が違います。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "メソッドを追加する",
+                    "code": "struct Counter {\n    value: u32,\n}\n\nimpl Counter {\n    fn increment(&mut self) {\n        self.value += 1;\n    }\n}"
+                }
+            ],
+            "relatedTermIds": [
+                "struct",
+                "trait",
+                "borrow"
+            ]
+        },
+        {
+            "id": "generic",
+            "categoryId": "types-and-abstractions",
+            "title": "Generics",
+            "reading": "ジェネリクス",
+            "description": "型をあとから決められるようにして、同じ処理を複数の型で使う仕組みです。",
+            "detailDescription": "Generics は型パラメータを使って、具体的な型に依存しないコードを書く仕組みです。Vec<T> や Option<T> の T が代表例です。trait bound と組み合わせると、「どんな型でもよい」ではなく「この振る舞いを持つ型」と条件を指定できます。",
+            "keyPoints": [
+                "T のような型パラメータで汎用的な型や関数を書けます。",
+                "trait bound で利用できる操作を制限できます。",
+                "Option<T> や Result<T, E> でも使われています。"
+            ],
+            "pitfalls": [
+                "型パラメータだけでは、その型にどんなメソッドがあるか分かりません。",
+                "trait bound を増やしすぎるとシグネチャが読みにくくなることがあります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "ジェネリック関数",
+                    "code": "fn first<T>(items: &[T]) -> Option<&T> {\n    items.first()\n}"
+                }
+            ],
+            "relatedTermIds": [
+                "trait",
+                "option",
+                "result"
+            ]
+        },
+        {
+            "id": "string",
+            "categoryId": "collections-and-text",
+            "title": "String",
+            "reading": "文字列",
+            "description": "所有権を持つ、変更可能なUTF-8文字列です。",
+            "detailDescription": "String はヒープ上に確保される、所有権を持つ文字列型です。文字列リテラルの &str とは違い、push_str などで内容を変更できます。Rust の文字列はUTF-8なので、バイト数と文字数が一致しない場合があります。",
+            "keyPoints": [
+                "String は所有権を持つ文字列です。",
+                "&str は文字列スライスで、借用として扱うことが多いです。",
+                "UTF-8なのでインデックスで1文字を直接取り出せません。"
+            ],
+            "pitfalls": [
+                "String と &str の違いで型エラーになりやすいです。",
+                "日本語などは1文字が複数バイトになるため、len は文字数ではなくバイト数を返します。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "String を作って変更する",
+                    "code": "let mut message = String::from(\"Rust\");\nmessage.push_str(\" Drill\");\nprintln!(\"{}\", message);"
+                }
+            ],
+            "relatedTermIds": [
+                "ownership",
+                "borrow",
+                "slice"
+            ]
+        },
+        {
+            "id": "vec",
+            "categoryId": "collections-and-text",
+            "title": "Vec",
+            "reading": "ベクタ",
+            "description": "同じ型の値を可変長で並べて持つコレクションです。",
+            "detailDescription": "Vec<T> は同じ型の値を順番に保持する可変長配列です。push で追加し、get で安全に取り出せます。所有権のある値を入れると、Vec がその値を所有します。",
+            "keyPoints": [
+                "同じ型の値を複数持てます。",
+                "push、pop、get などで要素を操作します。",
+                "iter と組み合わせて順番に処理できます。"
+            ],
+            "pitfalls": [
+                "インデックスアクセスは範囲外で panic します。",
+                "Vec に値を入れると所有権が移動する場合があります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "値を追加して読む",
+                    "code": "let mut scores = Vec::new();\nscores.push(10);\nscores.push(20);\n\nif let Some(score) = scores.get(0) {\n    println!(\"{}\", score);\n}"
+                }
+            ],
+            "relatedTermIds": [
+                "iterator",
+                "option",
+                "ownership"
+            ]
+        },
+        {
+            "id": "slice",
+            "categoryId": "collections-and-text",
+            "title": "Slice",
+            "reading": "スライス",
+            "description": "配列や文字列などの一部分を参照するための型です。",
+            "detailDescription": "slice は連続したデータの一部分を借用として見る仕組みです。代表的な型は &[T] と &str です。所有権を取らずに範囲だけを渡せるため、関数の引数としてよく使われます。",
+            "keyPoints": [
+                "所有権を持たず、元データの一部を参照します。",
+                "&[T] は配列や Vec の一部を表します。",
+                "&str は文字列スライスです。"
+            ],
+            "pitfalls": [
+                "slice は元データより長く生きられません。",
+                "文字列の途中をバイト位置で切ると、UTF-8境界で panic することがあります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "Vec の一部を借用する",
+                    "code": "let numbers = vec![1, 2, 3, 4];\nlet part: &[i32] = &numbers[1..3];\nprintln!(\"{:?}\", part);"
+                }
+            ],
+            "relatedTermIds": [
+                "borrow",
+                "lifetime",
+                "string"
+            ]
+        },
+        {
+            "id": "crate",
+            "categoryId": "modules-and-crates",
+            "title": "Crate",
+            "reading": "クレート",
+            "description": "Rust のコンパイル単位で、ライブラリや実行ファイルを表します。",
+            "detailDescription": "crate は Rust のコンパイル単位です。バイナリ crate は実行ファイルを作り、ライブラリ crate は他の crate から使える機能を提供します。Cargo.toml で依存 crate を管理することが多いです。",
+            "keyPoints": [
+                "Rust のコンパイル単位です。",
+                "binary crate と library crate があります。",
+                "外部 crate は Cargo.toml に依存関係として追加します。"
+            ],
+            "pitfalls": [
+                "crate と package は近い言葉ですが、完全に同じ意味ではありません。",
+                "外部 crate を使うには、依存関係と use の両方を意識します。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "外部 crate を使う流れ",
+                    "code": "// Cargo.toml に依存関係を追加したあと\nuse serde::Deserialize;\n\n#[derive(Deserialize)]\nstruct Config {\n    name: String,\n}"
+                }
+            ],
+            "relatedTermIds": [
+                "module",
+                "use",
+                "trait"
+            ]
+        },
+        {
+            "id": "module",
+            "categoryId": "modules-and-crates",
+            "title": "Module",
+            "reading": "モジュール",
+            "description": "コードを名前空間として整理する仕組みです。",
+            "detailDescription": "module はコードを階層化し、名前の衝突を避けるための仕組みです。mod で宣言し、pub で外部へ公開できます。大きくなったコードを機能ごとに分けるときに使います。",
+            "keyPoints": [
+                "mod でモジュールを宣言します。",
+                "pub を付けた項目だけ外側から使えます。",
+                "use でパスを短くできます。"
+            ],
+            "pitfalls": [
+                "mod はファイルを読み込む宣言で、use は名前をスコープへ持ち込む宣言です。",
+                "pub を付け忘れると、外部モジュールから見えません。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "モジュールと公開",
+                    "code": "mod math {\n    pub fn double(value: i32) -> i32 {\n        value * 2\n    }\n}\n\nlet result = math::double(3);"
+                }
+            ],
+            "relatedTermIds": [
+                "crate",
+                "use",
+                "impl"
+            ]
+        },
+        {
+            "id": "use",
+            "categoryId": "modules-and-crates",
+            "title": "use",
+            "reading": "名前の取り込み",
+            "description": "長いパスの名前を現在のスコープへ持ち込むための宣言です。",
+            "detailDescription": "use はモジュールや型、関数などのパスを現在のスコープに持ち込む宣言です。毎回長いパスを書かずに済むため、コードを読みやすくできます。別名を付ける as や、複数の項目をまとめる波括弧の構文もあります。",
+            "keyPoints": [
+                "長いパスを短く書けます。",
+                "as で別名を付けられます。",
+                "crate、self、super などのパス指定と一緒に使います。"
+            ],
+            "pitfalls": [
+                "use は項目を定義するものではなく、見え方を変える宣言です。",
+                "同じ名前を複数持ち込むと衝突するため、as が役立ちます。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "名前を短くする",
+                    "code": "use std::collections::HashMap;\n\nlet mut scores = HashMap::new();\nscores.insert(\"Rust\", 100);"
+                }
+            ],
+            "relatedTermIds": [
+                "module",
+                "crate",
+                "struct"
+            ]
+        },
+        {
+            "id": "copy",
+            "categoryId": "memory-safety",
+            "title": "Copy",
+            "reading": "コピー",
+            "description": "代入や関数呼び出しで所有権が移動せず、値が複製される性質です。",
+            "detailDescription": "Copy は小さく単純な値に付けられる trait です。i32 や bool などは Copy なので、代入しても元の変数を続けて使えます。ヒープ上のデータを持つ String や Vec は基本的に Copy ではありません。",
+            "keyPoints": [
+                "Copy 型は代入後も元の変数を使えます。",
+                "整数、bool、char などは代表的な Copy 型です。",
+                "Copy は Clone の一種として扱われます。"
+            ],
+            "pitfalls": [
+                "String は Copy ではなく、代入すると所有権が移動します。",
+                "Copy を実装できる型には制限があります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "Copy 型の代入",
+                    "code": "let a = 10;\nlet b = a;\nprintln!(\"{} {}\", a, b);"
+                }
+            ],
+            "relatedTermIds": [
+                "clone",
+                "ownership",
+                "trait"
+            ]
+        },
+        {
+            "id": "clone",
+            "categoryId": "memory-safety",
+            "title": "Clone",
+            "reading": "クローン",
+            "description": "値を明示的に複製するための trait とメソッドです。",
+            "detailDescription": "Clone は値の複製方法を定義する trait です。String や Vec のように所有権が移動する型でも、clone を呼ぶと別の値として複製できます。ただし、ヒープの確保や中身のコピーが発生することがあります。",
+            "keyPoints": [
+                "clone() で明示的に値を複製します。",
+                "所有権を移動させずに同じ内容を使いたいときに使います。",
+                "derive(Clone) で自動実装できることがあります。"
+            ],
+            "pitfalls": [
+                "clone を多用すると不要なコストが増えることがあります。",
+                "借用で済む場面では &T を使う方が自然です。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "String を複製する",
+                    "code": "let original = String::from(\"Rust\");\nlet copied = original.clone();\nprintln!(\"{} {}\", original, copied);"
+                }
+            ],
+            "relatedTermIds": [
+                "copy",
+                "ownership",
+                "derive"
+            ]
+        },
+        {
+            "id": "if-let",
+            "categoryId": "control-and-errors",
+            "title": "if let",
+            "reading": "イフレット",
+            "description": "1つのパターンだけを簡潔に取り出して分岐する構文です。",
+            "detailDescription": "if let は match のうち、特定の1パターンだけを扱いたいときに使う短い書き方です。Option の Some だけを取り出したい場合などに便利です。すべてのケースを明示したい場合は match の方が向いています。",
+            "keyPoints": [
+                "特定のパターンに一致したときだけ処理します。",
+                "Option や Result の一部ケースを扱うときに便利です。",
+                "else を付けて一致しない場合も処理できます。"
+            ],
+            "pitfalls": [
+                "網羅性を確認したい場合は match を使います。",
+                "見落としてはいけないケースを if let で捨てないようにします。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "Some だけ取り出す",
+                    "code": "let maybe_score = Some(100);\n\nif let Some(score) = maybe_score {\n    println!(\"{}\", score);\n}"
+                }
+            ],
+            "relatedTermIds": [
+                "match",
+                "option",
+                "result"
+            ]
+        },
+        {
+            "id": "panic",
+            "categoryId": "control-and-errors",
+            "title": "panic!",
+            "reading": "パニック",
+            "description": "回復不能なエラーとして実行を終了させるマクロです。",
+            "detailDescription": "panic! はプログラムがこれ以上安全に続けられないと判断したときに使うマクロです。通常の失敗を呼び出し元へ返す Result とは違い、基本的には現在の処理を中断します。テストや本当にありえない状態の検出で使われます。",
+            "keyPoints": [
+                "回復不能なエラーを表します。",
+                "panic! が起きると通常の処理は続きません。",
+                "Result は回復可能なエラーに向いています。"
+            ],
+            "pitfalls": [
+                "ユーザー入力やファイルI/Oの失敗を panic! で処理するのは避けます。",
+                "unwrap や expect も失敗時に panic します。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "明示的に panic する",
+                    "code": "fn require_positive(value: i32) {\n    if value <= 0 {\n        panic!(\"positive value required\");\n    }\n}"
+                }
+            ],
+            "relatedTermIds": [
+                "result",
+                "unwrap",
+                "expect"
+            ]
+        },
+        {
+            "id": "unwrap",
+            "categoryId": "control-and-errors",
+            "title": "unwrap",
+            "reading": "アンラップ",
+            "description": "Option や Result から値を強制的に取り出すメソッドです。",
+            "detailDescription": "unwrap は Option が Some、Result が Ok のとき中身を取り出します。None や Err の場合は panic します。学習中や失敗しないと分かっている短い例では便利ですが、実用コードでは match、?、unwrap_or などを検討します。",
+            "keyPoints": [
+                "Some や Ok の中身を取り出します。",
+                "None や Err では panic します。",
+                "安全に扱うなら match や ? が候補になります。"
+            ],
+            "pitfalls": [
+                "失敗しうる入力に unwrap を使うとアプリが落ちます。",
+                "エラー理由を残したい場合は expect の方が分かりやすいことがあります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "parse の結果を取り出す",
+                    "code": "let number = \"42\".parse::<i32>().unwrap();\nprintln!(\"{}\", number);"
+                }
+            ],
+            "relatedTermIds": [
+                "option",
+                "result",
+                "panic",
+                "expect"
+            ]
+        },
+        {
+            "id": "expect",
+            "categoryId": "control-and-errors",
+            "title": "expect",
+            "reading": "エクスペクト",
+            "description": "失敗時のメッセージを指定して値を強制的に取り出すメソッドです。",
+            "detailDescription": "expect は unwrap と同じく Option や Result から値を取り出しますが、失敗時の panic メッセージを自分で指定できます。失敗したときの前提や原因をログに残したい短いコードで役立ちます。",
+            "keyPoints": [
+                "成功時は中身を取り出します。",
+                "失敗時は指定したメッセージ付きで panic します。",
+                "unwrap より失敗時の意図を伝えやすいです。"
+            ],
+            "pitfalls": [
+                "expect も失敗時に panic する点は unwrap と同じです。",
+                "回復したい失敗には Result のまま扱う方が向いています。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "メッセージ付きで取り出す",
+                    "code": "let port = \"8080\"\n    .parse::<u16>()\n    .expect(\"port must be a number\");"
+                }
+            ],
+            "relatedTermIds": [
+                "unwrap",
+                "panic",
+                "result"
+            ]
+        },
+        {
+            "id": "hashmap",
+            "categoryId": "collections-and-text",
+            "title": "HashMap",
+            "reading": "ハッシュマップ",
+            "description": "キーと値の組み合わせを保存するコレクションです。",
+            "detailDescription": "HashMap<K, V> はキーから値を探すためのコレクションです。キーは一意で、同じキーに値を入れると更新されます。標準ライブラリでは std::collections::HashMap から使います。",
+            "keyPoints": [
+                "キーと値のペアを保存します。",
+                "insert で追加や更新を行います。",
+                "get は Option を返します。"
+            ],
+            "pitfalls": [
+                "HashMap は prelude に入っていないため use が必要です。",
+                "所有権を持つキーや値を insert すると、HashMap へ移動します。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "HashMap を使う",
+                    "code": "use std::collections::HashMap;\n\nlet mut scores = HashMap::new();\nscores.insert(String::from(\"Rust\"), 100);"
+                }
+            ],
+            "relatedTermIds": [
+                "use",
+                "option",
+                "entry-api"
+            ]
+        },
+        {
+            "id": "entry-api",
+            "categoryId": "collections-and-text",
+            "title": "entry API",
+            "reading": "エントリーAPI",
+            "description": "HashMap のキーがある場合とない場合をまとめて扱うAPIです。",
+            "detailDescription": "entry API は HashMap でキーの存在を確認しながら値を追加・更新するための仕組みです。or_insert を使うと、キーがなければ初期値を入れ、あれば既存の値への可変参照を得られます。カウント処理でよく使われます。",
+            "keyPoints": [
+                "entry(key) でキーの状態を扱います。",
+                "or_insert はなければ値を挿入します。",
+                "戻り値は値への可変参照です。"
+            ],
+            "pitfalls": [
+                "or_insert に渡す値は必要に応じて生成されます。",
+                "既存値を書き換えるため、取得した参照の扱いに注意します。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "単語数を数える",
+                    "code": "use std::collections::HashMap;\n\nlet mut counts = HashMap::new();\nfor word in [\"rust\", \"rust\", \"drill\"] {\n    *counts.entry(word).or_insert(0) += 1;\n}"
+                }
+            ],
+            "relatedTermIds": [
+                "hashmap",
+                "borrow",
+                "mut"
+            ]
+        },
+        {
+            "id": "derive",
+            "categoryId": "types-and-abstractions",
+            "title": "derive",
+            "reading": "自動導出",
+            "description": "よく使う trait 実装をコンパイラに自動生成させる属性です。",
+            "detailDescription": "derive は Debug、Clone、PartialEq などの定番 trait 実装を自動生成する属性です。手で実装しなくても、型のフィールドから自然な実装を作れる場合に使えます。テストやデバッグ表示でもよく登場します。",
+            "keyPoints": [
+                "#[derive(...)] の形で型に付けます。",
+                "Debug、Clone、PartialEq などを自動実装できます。",
+                "すべての trait が derive できるわけではありません。"
+            ],
+            "pitfalls": [
+                "フィールドの型も対象 trait を実装している必要があります。",
+                "独自の比較や表示が必要なら手動実装を検討します。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "Debug と PartialEq を導出する",
+                    "code": "#[derive(Debug, PartialEq)]\nstruct Point {\n    x: i32,\n    y: i32,\n}"
+                }
+            ],
+            "relatedTermIds": [
+                "trait",
+                "debug",
+                "partialeq"
+            ]
+        },
+        {
+            "id": "debug",
+            "categoryId": "types-and-abstractions",
+            "title": "Debug",
+            "reading": "デバッグ表示",
+            "description": "開発者向けの表示を {:?} で出すための trait です。",
+            "detailDescription": "Debug は値を開発者向けに表示するための trait です。println! で {:?} や {:#?} を使うときに必要になります。多くの型では derive(Debug) で簡単に実装できます。",
+            "keyPoints": [
+                "{:?} でデバッグ表示できます。",
+                "{:#?} は整形されたデバッグ表示です。",
+                "derive(Debug) で自動実装できます。"
+            ],
+            "pitfalls": [
+                "{} で表示する Display とは別の trait です。",
+                "ユーザー向け表示には Display の方が適していることがあります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "Debug 表示",
+                    "code": "#[derive(Debug)]\nstruct User {\n    name: String,\n}\n\nprintln!(\"{:?}\", User { name: String::from(\"Ferris\") });"
+                }
+            ],
+            "relatedTermIds": [
+                "derive",
+                "trait",
+                "struct"
+            ]
+        },
+        {
+            "id": "partialeq",
+            "categoryId": "testing-and-tools",
+            "title": "PartialEq",
+            "reading": "部分等価",
+            "description": "== や != で値を比較するための trait です。",
+            "detailDescription": "PartialEq は値同士が等しいかどうかを比較するための trait です。assert_eq! を使うテストでは、比較対象の型が PartialEq を実装している必要があります。多くの場合は derive(PartialEq) で自動実装できます。",
+            "keyPoints": [
+                "== と != を使うための trait です。",
+                "assert_eq! の比較にも必要です。",
+                "derive(PartialEq) で自動実装できます。"
+            ],
+            "pitfalls": [
+                "すべての型で自然な等価性があるとは限りません。",
+                "浮動小数点数は NaN などの事情で比較に注意が必要です。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "比較できる型にする",
+                    "code": "#[derive(PartialEq)]\nenum Status {\n    Ready,\n    Done,\n}\n\nassert!(Status::Ready != Status::Done);"
+                }
+            ],
+            "relatedTermIds": [
+                "derive",
+                "assert-eq",
+                "trait"
+            ]
+        },
+        {
+            "id": "thread",
+            "categoryId": "concurrency",
+            "title": "thread",
+            "reading": "スレッド",
+            "description": "処理を並行して実行するための実行単位です。",
+            "detailDescription": "Rust では std::thread::spawn で新しいスレッドを作れます。スレッドへデータを渡すときは所有権や Send の制約が関わります。終了を待つには JoinHandle の join を使います。",
+            "keyPoints": [
+                "thread::spawn で新しいスレッドを作ります。",
+                "move クロージャで所有権をスレッドへ渡すことがあります。",
+                "join でスレッドの終了を待てます。"
+            ],
+            "pitfalls": [
+                "参照をそのまま別スレッドへ渡すとライフタイムや所有権の問題が起きやすいです。",
+                "共有データを書き換える場合は Mutex や Arc が必要になることがあります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "スレッドを作って待つ",
+                    "code": "let handle = std::thread::spawn(|| {\n    println!(\"from thread\");\n});\n\nhandle.join().unwrap();"
+                }
+            ],
+            "relatedTermIds": [
+                "closure",
+                "joinhandle",
+                "arc",
+                "mutex"
+            ]
+        },
+        {
+            "id": "joinhandle",
+            "categoryId": "concurrency",
+            "title": "JoinHandle",
+            "reading": "ジョインハンドル",
+            "description": "生成したスレッドの終了待ちや結果取得に使う値です。",
+            "detailDescription": "JoinHandle は thread::spawn が返す値です。join を呼ぶとスレッドの終了を待ち、スレッド内の戻り値を Result として受け取れます。join しないとメインスレッドが先に終了することがあります。",
+            "keyPoints": [
+                "thread::spawn の戻り値です。",
+                "join でスレッド終了を待ちます。",
+                "スレッド内で panic すると join は Err を返します。"
+            ],
+            "pitfalls": [
+                "join を忘れると処理完了を待たないまま進むことがあります。",
+                "join の戻り値も Result なので失敗処理が必要です。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "戻り値を受け取る",
+                    "code": "let handle = std::thread::spawn(|| 42);\nlet answer = handle.join().unwrap();\nprintln!(\"{}\", answer);"
+                }
+            ],
+            "relatedTermIds": [
+                "thread",
+                "result",
+                "unwrap"
+            ]
+        },
+        {
+            "id": "arc",
+            "categoryId": "concurrency",
+            "title": "Arc",
+            "reading": "アーク",
+            "description": "複数スレッドで共有できる参照カウント付きスマートポインタです。",
+            "detailDescription": "Arc<T> は atomic reference counting の略で、複数スレッドから同じ値を共有するためのスマートポインタです。値を書き換えるには Arc<Mutex<T>> のように、排他制御を行う型と組み合わせます。",
+            "keyPoints": [
+                "複数スレッドで所有権を共有できます。",
+                "clone して参照カウントを増やします。",
+                "共有して書き換える場合は Mutex と組み合わせます。"
+            ],
+            "pitfalls": [
+                "Arc だけでは中身を自由に書き換えられません。",
+                "単一スレッドなら Rc の方が軽量です。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "Arc をクローンして渡す",
+                    "code": "use std::sync::Arc;\n\nlet value = Arc::new(String::from(\"shared\"));\nlet copied = Arc::clone(&value);"
+                }
+            ],
+            "relatedTermIds": [
+                "mutex",
+                "thread",
+                "rc",
+                "clone"
+            ]
+        },
+        {
+            "id": "mutex",
+            "categoryId": "concurrency",
+            "title": "Mutex",
+            "reading": "ミューテックス",
+            "description": "同時に1つの処理だけがデータへアクセスできるようにする仕組みです。",
+            "detailDescription": "Mutex<T> はデータをロックで守り、同時に1つのスレッドだけが中身へアクセスできるようにします。lock を呼ぶとガードを取得し、ガードがスコープを抜けるとロックが解放されます。スレッド間共有では Arc<Mutex<T>> がよく使われます。",
+            "keyPoints": [
+                "lock で排他アクセスを開始します。",
+                "ガードが破棄されるとロックが解放されます。",
+                "Arc と組み合わせて複数スレッドで共有できます。"
+            ],
+            "pitfalls": [
+                "lock は失敗することがあるため Result を返します。",
+                "ロックの順番を誤るとデッドロックの原因になります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "共有カウンタ",
+                    "code": "use std::sync::{Arc, Mutex};\n\nlet counter = Arc::new(Mutex::new(0));\nlet mut value = counter.lock().unwrap();\n*value += 1;"
+                }
+            ],
+            "relatedTermIds": [
+                "arc",
+                "thread",
+                "unwrap"
+            ]
+        },
+        {
+            "id": "channel",
+            "categoryId": "concurrency",
+            "title": "Channel",
+            "reading": "チャネル",
+            "description": "スレッド間で値を送受信するメッセージパッシングの仕組みです。",
+            "detailDescription": "channel は送信側 Sender と受信側 Receiver に分かれ、スレッド間で値を渡すために使います。共有メモリを書き換える代わりにメッセージを送る設計にできます。std::sync::mpsc が標準ライブラリの代表です。",
+            "keyPoints": [
+                "send で値を送り、recv で受け取ります。",
+                "送った値の所有権は受信側へ移動します。",
+                "mpsc は複数送信者、単一受信者を表します。"
+            ],
+            "pitfalls": [
+                "送信後に元の値を使えない場合があります。",
+                "受信待ちでブロックすることがあります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "メッセージを送る",
+                    "code": "use std::sync::mpsc;\n\nlet (tx, rx) = mpsc::channel();\ntx.send(String::from(\"hello\")).unwrap();\nprintln!(\"{}\", rx.recv().unwrap());"
+                }
+            ],
+            "relatedTermIds": [
+                "thread",
+                "ownership",
+                "result"
+            ]
+        },
+        {
+            "id": "box",
+            "categoryId": "smart-pointers",
+            "title": "Box",
+            "reading": "ボックス",
+            "description": "値をヒープに置き、所有権を持つスマートポインタです。",
+            "detailDescription": "Box<T> は値をヒープに確保し、その所有権を持つスマートポインタです。サイズがコンパイル時に決まらない再帰的な型などで使われます。Box 自体がスコープを抜けると中身も解放されます。",
+            "keyPoints": [
+                "Box::new(value) で値をヒープに置きます。",
+                "所有者は1つです。",
+                "Deref により参照のように使える場面があります。"
+            ],
+            "pitfalls": [
+                "Box は共有所有権のための型ではありません。",
+                "ヒープ確保が必要な理由がない場合は普通の値で十分です。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "値をヒープに置く",
+                    "code": "let value = Box::new(10);\nprintln!(\"{}\", value);"
+                }
+            ],
+            "relatedTermIds": [
+                "ownership",
+                "deref",
+                "drop"
+            ]
+        },
+        {
+            "id": "rc",
+            "categoryId": "smart-pointers",
+            "title": "Rc",
+            "reading": "参照カウント",
+            "description": "単一スレッドで共有所有権を実現するスマートポインタです。",
+            "detailDescription": "Rc<T> は reference counting の略で、複数の所有者で同じ値を共有できます。clone すると値そのものではなく参照カウントが増えます。スレッド間では使えないため、その場合は Arc を使います。",
+            "keyPoints": [
+                "単一スレッドで共有所有権を作れます。",
+                "Rc::clone で参照カウントを増やします。",
+                "参照カウントが0になると中身が破棄されます。"
+            ],
+            "pitfalls": [
+                "Rc はスレッド間共有には使えません。",
+                "循環参照を作ると値が解放されないことがあります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "Rc を共有する",
+                    "code": "use std::rc::Rc;\n\nlet value = Rc::new(String::from(\"shared\"));\nlet another = Rc::clone(&value);"
+                }
+            ],
+            "relatedTermIds": [
+                "arc",
+                "weak",
+                "clone"
+            ]
+        },
+        {
+            "id": "refcell",
+            "categoryId": "smart-pointers",
+            "title": "RefCell",
+            "reading": "リフセル",
+            "description": "借用規則を実行時にチェックする内部可変性のための型です。",
+            "detailDescription": "RefCell<T> はコンパイル時ではなく実行時に借用規則をチェックします。不変の外側から中身を変更できる内部可変性を提供します。単一スレッド向けで、借用規則に違反すると実行時に panic します。",
+            "keyPoints": [
+                "borrow と borrow_mut で中身を借用します。",
+                "借用チェックは実行時に行われます。",
+                "単一スレッドで内部可変性が必要なときに使います。"
+            ],
+            "pitfalls": [
+                "実行時に借用規則へ違反すると panic します。",
+                "スレッド間で使う型ではありません。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "内部可変性",
+                    "code": "use std::cell::RefCell;\n\nlet value = RefCell::new(1);\n*value.borrow_mut() += 1;"
+                }
+            ],
+            "relatedTermIds": [
+                "borrow",
+                "panic",
+                "rc"
+            ]
+        },
+        {
+            "id": "weak",
+            "categoryId": "smart-pointers",
+            "title": "Weak",
+            "reading": "弱参照",
+            "description": "Rc の参照カウントを強く増やさずに値を指すための型です。",
+            "detailDescription": "Weak<T> は Rc<T> と組み合わせて使う弱参照です。所有権を共有する強い参照ではないため、循環参照を避けるために使えます。中身へアクセスするには upgrade して Option<Rc<T>> を得ます。",
+            "keyPoints": [
+                "Rc の強い参照カウントを増やしません。",
+                "循環参照を避けるために使えます。",
+                "upgrade は Option を返します。"
+            ],
+            "pitfalls": [
+                "参照先がすでに解放されている場合、upgrade は None になります。",
+                "Weak だけでは値を所有しません。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "弱参照を作る",
+                    "code": "use std::rc::Rc;\n\nlet value = Rc::new(10);\nlet weak = Rc::downgrade(&value);\nassert!(weak.upgrade().is_some());"
+                }
+            ],
+            "relatedTermIds": [
+                "rc",
+                "option",
+                "ownership"
+            ]
+        },
+        {
+            "id": "deref",
+            "categoryId": "smart-pointers",
+            "title": "Deref",
+            "reading": "参照外し",
+            "description": "スマートポインタを参照のように扱うための trait です。",
+            "detailDescription": "Deref は * 演算子で中身を取り出す動きを定義する trait です。Box<T> や Rc<T> などは Deref を実装しているため、参照のように使えます。関数呼び出しでは deref coercion により型変換が自動で行われることがあります。",
+            "keyPoints": [
+                "*value の参照外しを支えます。",
+                "スマートポインタが参照のように振る舞えます。",
+                "deref coercion で引数の型が合うことがあります。"
+            ],
+            "pitfalls": [
+                "Deref は所有権を取り出す操作とは限りません。",
+                "自作型に実装するときは直感的な振る舞いにする必要があります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "Box の参照外し",
+                    "code": "let value = Box::new(5);\nassert_eq!(5, *value);"
+                }
+            ],
+            "relatedTermIds": [
+                "box",
+                "trait",
+                "borrow"
+            ]
+        },
+        {
+            "id": "drop",
+            "categoryId": "smart-pointers",
+            "title": "Drop",
+            "reading": "ドロップ",
+            "description": "値がスコープを抜けるときの後片付けを定義する trait です。",
+            "detailDescription": "Drop は値が破棄されるときに実行される処理を定義する trait です。ファイルやロックなどのリソース解放に使われます。通常は所有者がスコープを抜けると自動的に呼ばれます。",
+            "keyPoints": [
+                "スコープ終了時の後片付けを定義します。",
+                "drop メソッドを直接呼ぶのではなく、自動で呼ばれます。",
+                "std::mem::drop で早めに破棄できます。"
+            ],
+            "pitfalls": [
+                "Drop 実装内で失敗を通常の Result として返すことはできません。",
+                "循環参照があると Drop が呼ばれない原因になります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "Drop を実装する",
+                    "code": "struct Guard;\n\nimpl Drop for Guard {\n    fn drop(&mut self) {\n        println!(\"cleanup\");\n    }\n}"
+                }
+            ],
+            "relatedTermIds": [
+                "ownership",
+                "trait",
+                "rc"
+            ]
+        },
+        {
+            "id": "cargo",
+            "categoryId": "testing-and-tools",
+            "title": "Cargo",
+            "reading": "カーゴ",
+            "description": "Rust のビルド、依存関係、テストを扱う標準ツールです。",
+            "detailDescription": "Cargo は Rust のパッケージマネージャ兼ビルドツールです。Cargo.toml で依存関係やパッケージ情報を管理し、cargo build、cargo test、cargo run などのコマンドを提供します。",
+            "keyPoints": [
+                "Cargo.toml で依存関係を管理します。",
+                "cargo build でビルドします。",
+                "cargo test でテストを実行します。"
+            ],
+            "pitfalls": [
+                "crate と package の関係を混同しやすいです。",
+                "依存関係を追加しただけでは、コード側で use が必要なことがあります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "よく使うコマンド",
+                    "code": "cargo build\ncargo run\ncargo test"
+                }
+            ],
+            "relatedTermIds": [
+                "crate",
+                "use",
+                "test"
+            ]
+        },
+        {
+            "id": "test",
+            "categoryId": "testing-and-tools",
+            "title": "#[test]",
+            "reading": "テスト属性",
+            "description": "関数をテストとして扱うための属性です。",
+            "detailDescription": "#[test] は関数をテストとして登録する属性です。cargo test を実行すると、#[test] が付いた関数が実行されます。テスト内では assert!、assert_eq!、assert_ne! などのマクロをよく使います。",
+            "keyPoints": [
+                "テスト関数の直前に #[test] を付けます。",
+                "cargo test で実行されます。",
+                "失敗するとテスト結果が failed になります。"
+            ],
+            "pitfalls": [
+                "テスト関数は通常、引数を取りません。",
+                "panic するとそのテストは失敗として扱われます。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "テスト関数",
+                    "code": "#[test]\nfn adds_numbers() {\n    assert_eq!(2 + 2, 4);\n}"
+                }
+            ],
+            "relatedTermIds": [
+                "cargo",
+                "assert-eq",
+                "panic"
+            ]
+        },
+        {
+            "id": "assert-eq",
+            "categoryId": "testing-and-tools",
+            "title": "assert_eq!",
+            "reading": "等価性チェック",
+            "description": "2つの値が等しいことを確認するテスト用マクロです。",
+            "detailDescription": "assert_eq! は左右の値が等しいことを確認し、違っていれば panic します。テストで期待値と実際の値を比較するときによく使います。比較対象には PartialEq が必要で、失敗時の表示には Debug が使われます。",
+            "keyPoints": [
+                "左右の値が等しいか確認します。",
+                "等しくなければ panic します。",
+                "テストで期待値と実際の値を比較する定番です。"
+            ],
+            "pitfalls": [
+                "比較対象の型に PartialEq が必要です。",
+                "失敗時に見やすくするには Debug も必要です。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "期待値を確認する",
+                    "code": "let actual = 2 + 2;\nassert_eq!(actual, 4);"
+                }
+            ],
+            "relatedTermIds": [
+                "test",
+                "partialeq",
+                "debug"
             ]
         }
     ]
