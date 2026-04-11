@@ -13,6 +13,8 @@ struct ExplanationView: View {
     let isLastQuestion: Bool
 
     @Environment(\.dismiss) private var dismiss
+    
+    private let bottomButtonHeight: CGFloat = 56
 
     private var correctChoiceText: String {
         result.question.choices.first(where: {
@@ -80,15 +82,21 @@ struct ExplanationView: View {
             }
             Spacer()
 
-            Button(isLastQuestion ? "クイズを終了" : "次の問題へ") {
+            Button {
                 if isLastQuestion {
                     dismiss()
                 } else {
                     onNext()
                     dismiss()
                 }
+            } label: {
+                Text(isLastQuestion ? "クイズを終了" : "次の問題へ")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: bottomButtonHeight)
+                    .contentShape(Rectangle())
             }
-            .frame(maxWidth: .infinity, minHeight: 50)
             .buttonStyle(.borderedProminent)
         }
         .padding()

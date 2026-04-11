@@ -17,7 +17,7 @@ struct QuizView: View {
     @State private var isOpeningExplanation = false
     @State private var explanationResult: QuizResult?
     
-    private let bottomButtonHeight: CGFloat = 50
+    private let bottomButtonHeight: CGFloat = 56
     
     var body: some View {
         Group {
@@ -136,11 +136,11 @@ struct QuizView: View {
                     nextOrEndButtonUnified()
                 }
             } else {
-                Button("回答する") {
+                Button {
                     viewModel.submit()
+                } label: {
+                    bottomActionLabel("回答する")
                 }
-                .frame(maxWidth: .infinity, minHeight: bottomButtonHeight)
-                .font(.headline)
                 .buttonStyle(.borderedProminent)
                 .disabled(!viewModel.canSubmit)
             }
@@ -194,9 +194,11 @@ struct QuizView: View {
                 }
                 
                 Text("解説へ")
-                    .fontWeight(.semibold)
             }
-            .frame(maxWidth: .infinity, minHeight: bottomButtonHeight)
+            .fontWeight(.semibold)
+            .frame(maxWidth: .infinity)
+            .frame(height: bottomButtonHeight)
+            .contentShape(Rectangle())
         }
             .font(.headline)
             .disabled(isOpeningExplanation)
@@ -223,11 +225,20 @@ struct QuizView: View {
         title: String,
         action: @escaping () -> Void
     ) -> some View {
-        let button = Button(title, action: action)
-            .frame(maxWidth: .infinity, minHeight: bottomButtonHeight)
-            .font(.headline)
+        let button = Button(action: action) {
+            bottomActionLabel(title)
+        }
             .disabled(isOpeningExplanation)
         button.buttonStyle(.borderedProminent)
+    }
+
+    private func bottomActionLabel(_ title: String) -> some View {
+        Text(title)
+            .font(.headline)
+            .fontWeight(.semibold)
+            .frame(maxWidth: .infinity)
+            .frame(height: bottomButtonHeight)
+            .contentShape(Rectangle())
     }
     
     // MARK: - Actions
