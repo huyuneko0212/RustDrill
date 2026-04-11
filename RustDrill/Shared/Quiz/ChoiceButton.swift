@@ -45,13 +45,13 @@ struct ChoiceButton: View {
                     
                     if showCorrectBadge {
                         HStack(spacing: 4) {
-                            Image(systemName: "checkmark.circle.fill")
+                            Image(systemName: QuizUIConstants.Symbols.result(isCorrect: true))
                                 .font(.caption)
-                            Text("正解")
+                            Text(QuizUIConstants.Strings.correctChoiceLabel)
                                 .font(.caption)
                                 .fontWeight(.semibold)
                         }
-                        .foregroundStyle(.green)
+                        .foregroundStyle(QuizUIConstants.Colors.correctTone)
                     }
                 }
             }
@@ -83,32 +83,32 @@ struct ChoiceButton: View {
             
         case .selected:
             Circle()
-                .stroke(Color.blue, lineWidth: 1.5)
+                .stroke(AppUIConstants.Colors.selectedTone, lineWidth: 1.5)
                 .frame(width: 18, height: 18)
                 .overlay {
                     Circle()
-                        .fill(Color.blue)
+                        .fill(AppUIConstants.Colors.selectedTone)
                         .frame(width: 10, height: 10)
                 }
             
         case .correct:
             Circle()
-                .stroke(Color.green, lineWidth: 1.5)
+                .stroke(QuizUIConstants.Colors.correctTone, lineWidth: 1.5)
                 .frame(width: 18, height: 18)
                 .overlay {
-                    Image(systemName: "checkmark")
+                    Image(systemName: QuizUIConstants.Symbols.correctMark)
                         .font(.system(size: 9, weight: .bold))
-                        .foregroundStyle(.green)
+                        .foregroundStyle(QuizUIConstants.Colors.correctTone)
                 }
             
         case .wrongSelected:
             Circle()
-                .stroke(Color.red, lineWidth: 1.5)
+                .stroke(QuizUIConstants.Colors.incorrectTone, lineWidth: 1.5)
                 .frame(width: 18, height: 18)
                 .overlay {
-                    Image(systemName: "xmark")
+                    Image(systemName: QuizUIConstants.Symbols.incorrectMark)
                         .font(.system(size: 9, weight: .bold))
-                        .foregroundStyle(.red)
+                        .foregroundStyle(QuizUIConstants.Colors.incorrectTone)
                 }
         }
     }
@@ -118,11 +118,11 @@ struct ChoiceButton: View {
         case .normal:
             return Color.gray.opacity(0.08)
         case .selected:
-            return Color.blue.opacity(0.10)
+            return AppUIConstants.Colors.selectedTone.opacity(0.10)
         case .correct:
-            return Color.green.opacity(0.10)
+            return QuizUIConstants.Colors.correctTone.opacity(0.10)
         case .wrongSelected:
-            return Color.red.opacity(0.10)
+            return QuizUIConstants.Colors.incorrectTone.opacity(0.10)
         }
     }
     
@@ -131,11 +131,11 @@ struct ChoiceButton: View {
         case .normal:
             return .clear
         case .selected:
-            return .blue.opacity(0.6)
+            return AppUIConstants.Colors.selectedTone.opacity(0.6)
         case .correct:
-            return .green.opacity(0.7)
+            return QuizUIConstants.Colors.correctTone.opacity(0.7)
         case .wrongSelected:
-            return .red.opacity(0.7)
+            return QuizUIConstants.Colors.incorrectTone.opacity(0.7)
         }
     }
 }

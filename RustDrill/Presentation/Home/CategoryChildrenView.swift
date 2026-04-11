@@ -53,7 +53,7 @@ struct CategoryChildrenView: View {
     }
     
     private var loadingView: some View {
-        ProgressView("読み込み中...")
+        ProgressView(AppUIConstants.Strings.loading)
             .frame(
                 maxWidth: .infinity,
                 maxHeight: .infinity,
@@ -63,8 +63,8 @@ struct CategoryChildrenView: View {
     
     private func errorView(_ message: String) -> some View {
         ContentUnavailableView(
-            "エラー",
-            systemImage: "exclamationmark.triangle",
+            AppUIConstants.Strings.errorTitle,
+            systemImage: AppUIConstants.Symbols.error,
             description: Text(message)
         )
     }
@@ -75,9 +75,9 @@ struct CategoryChildrenView: View {
             QuestionListView(category: parentCategory)
         } else {
             ContentUnavailableView(
-                "問題がありません",
-                systemImage: "questionmark.circle",
-                description: Text("このカテゴリにはまだ問題が登録されていません。")
+                AppUIConstants.Strings.emptyQuestionsTitle,
+                systemImage: AppUIConstants.Symbols.emptyQuestions,
+                description: Text(AppUIConstants.Strings.emptyQuestionsDescription)
             )
         }
     }
@@ -86,7 +86,7 @@ struct CategoryChildrenView: View {
         List {
             if questionsCount > 0 {
                 Section {
-                    NavigationLink("このカテゴリの問題 (\(questionsCount)問)") {
+                    NavigationLink(Constants.Strings.categoryQuestionsLink(count: questionsCount)) {
                         QuestionListView(category: parentCategory)
                     }
                 }
@@ -165,6 +165,14 @@ struct CategoryChildrenView: View {
             )
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+}
+
+private enum Constants {
+    enum Strings {
+        static func categoryQuestionsLink(count: Int) -> String {
+            "このカテゴリの問題 (\(AppUIConstants.Strings.questionCount(count)))"
         }
     }
 }

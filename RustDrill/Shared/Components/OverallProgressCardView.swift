@@ -17,7 +17,7 @@ struct OverallProgressCardView: View {
     }
     
     private var percentageText: String {
-        "\(Int(progress * 100))%"
+        AppUIConstants.Strings.progressPercentage(progress)
     }
     
     var body: some View {
@@ -33,7 +33,7 @@ struct OverallProgressCardView: View {
                     Circle()
                         .trim(from: 0, to: progress)
                         .stroke(
-                            Color.accentOrange,
+                            AppUIConstants.Colors.accent,
                             style: StrokeStyle(lineWidth: 12, lineCap: .round)
                         )
                         .rotationEffect(.degrees(-90))
@@ -42,7 +42,7 @@ struct OverallProgressCardView: View {
                         Text(percentageText)
                             .font(.title2.bold())
                         
-                        Text("\(solvedCount) / \(totalCount)")
+                        Text(AppUIConstants.Strings.progressCount(solvedCount: solvedCount, totalCount: totalCount))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -54,10 +54,10 @@ struct OverallProgressCardView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     
-                    Text("\(solvedCount)問")
+                    Text(AppUIConstants.Strings.questionCount(solvedCount))
                         .font(.title3.bold())
                     
-                    Text("全 \(totalCount) 問")
+                    Text(Constants.Strings.totalQuestionCount(totalCount))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -67,5 +67,13 @@ struct OverallProgressCardView: View {
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private enum Constants {
+    enum Strings {
+        static func totalQuestionCount(_ count: Int) -> String {
+            "全 \(count) 問"
+        }
     }
 }

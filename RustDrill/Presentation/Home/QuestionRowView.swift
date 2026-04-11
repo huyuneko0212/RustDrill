@@ -27,17 +27,25 @@ struct QuestionRowView: View {
             
             Spacer()
             
-            Text(isSolved ? "解答済み" : "未解答")
+            Text(Constants.Strings.statusLabel(isSolved: isSolved))
                 .font(.caption)
                 .fontWeight(.semibold)
-                .foregroundStyle(isSolved ? .green : .orange)
+                .foregroundStyle(AppUIConstants.Colors.solvedStatusTone(isSolved: isSolved))
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
                 .background(
                     Capsule()
-                        .fill((isSolved ? Color.green : Color.orange).opacity(0.12))
+                        .fill(AppUIConstants.Colors.solvedStatusTone(isSolved: isSolved).opacity(0.12))
                 )
         }
         .padding(.vertical, 6)
+    }
+}
+
+private enum Constants {
+    enum Strings {
+        static func statusLabel(isSolved: Bool) -> String {
+            isSolved ? "解答済み" : "未解答"
+        }
     }
 }

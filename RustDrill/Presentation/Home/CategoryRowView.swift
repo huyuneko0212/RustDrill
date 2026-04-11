@@ -39,7 +39,7 @@ struct CategoryRowView: View {
     }
     
     private var chevronView: some View {
-        Image(systemName: "chevron.right")
+        Image(systemName: AppUIConstants.Symbols.chevronRight)
             .font(.system(size: 12, weight: .semibold))
             .foregroundStyle(.secondary.opacity(0.75))
             .padding(.trailing, 2)

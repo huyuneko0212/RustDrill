@@ -50,7 +50,7 @@ struct HomeView: View {
                 content
             }
             .listStyle(.insetGrouped)
-            .navigationTitle("Rust Drill")
+            .navigationTitle(AppUIConstants.Strings.appTitle)
             .navigationDestination(item: $selectedCategory) { category in
                 CategoryChildrenView(parentCategory: category)
             }
@@ -71,8 +71,8 @@ struct HomeView: View {
             .overlay {
                 if let message = errorMessage {
                     ContentUnavailableView(
-                        "エラー",
-                        systemImage: "exclamationmark.triangle",
+                        AppUIConstants.Strings.errorTitle,
+                        systemImage: AppUIConstants.Symbols.error,
                         description: Text(message)
                     )
                 }
@@ -83,7 +83,7 @@ struct HomeView: View {
     @ViewBuilder
     private var content: some View {
         if isLoading && !didLoad {
-            ProgressView("読み込み中...")
+            ProgressView(AppUIConstants.Strings.loading)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .listRowSeparator(.hidden)
         } else {
@@ -122,7 +122,7 @@ struct HomeView: View {
                 selectedCategory = recommendedCategory
             } label: {
                 HStack(spacing: 8) {
-                    Image(systemName: "play.fill")
+                    Image(systemName: AppUIConstants.Symbols.play)
                         .font(.caption)
 
                     Text("続きから再開")
@@ -140,7 +140,7 @@ struct HomeView: View {
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 14)
-                        .fill(Color.orange.opacity(0.10))
+                        .fill(AppUIConstants.Colors.unsolvedTone.opacity(0.10))
                 )
             }
             .buttonStyle(.plain)

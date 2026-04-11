@@ -22,18 +22,18 @@ struct QuestionListView: View {
         Group {
             if let message = errorMessage {
                 ContentUnavailableView(
-                    "エラー",
-                    systemImage: "exclamationmark.triangle",
+                    AppUIConstants.Strings.errorTitle,
+                    systemImage: AppUIConstants.Symbols.error,
                     description: Text(message)
                 )
             } else if isLoading && !didLoad {
-                ProgressView("読み込み中...")
+                ProgressView(AppUIConstants.Strings.loading)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if questions.isEmpty {
                 ContentUnavailableView(
-                    "問題がありません",
-                    systemImage: "questionmark.circle",
-                    description: Text("このカテゴリにはまだ問題が登録されていません。")
+                    AppUIConstants.Strings.emptyQuestionsTitle,
+                    systemImage: AppUIConstants.Symbols.emptyQuestions,
+                    description: Text(AppUIConstants.Strings.emptyQuestionsDescription)
                 )
             } else {
                 List {

@@ -19,7 +19,7 @@ struct ReviewListView: View {
         NavigationStack {
             List {
                 if isLoading && !didLoad {
-                    ProgressView("読み込み中...")
+                    ProgressView(AppUIConstants.Strings.loading)
                         .frame(maxWidth: .infinity, alignment: .center)
                 } else if reviewQuestions.isEmpty {
                     ContentUnavailableView(
@@ -28,7 +28,7 @@ struct ReviewListView: View {
                         description: Text("間違えた問題があるとここに表示されます")
                     )
                 } else {
-                    Section("復習対象 (\(reviewQuestions.count)問)") {
+                    Section(Constants.Strings.reviewSectionTitle(count: reviewQuestions.count)) {
                         ForEach(reviewQuestions) { question in
                             VStack(alignment: .leading, spacing: 6) {
                                 Text(question.title)
@@ -61,7 +61,7 @@ struct ReviewListView: View {
                     }
                 }
             }
-            .navigationTitle("復習")
+            .navigationTitle(AppUIConstants.Strings.reviewTitle)
             .task {
                 guard !didLoad else { return }
                 await loadReviewQuestions()
@@ -79,8 +79,8 @@ struct ReviewListView: View {
             .overlay {
                 if let message = errorMessage {
                     ContentUnavailableView(
-                        "エラー",
-                        systemImage: "exclamationmark.triangle",
+                        AppUIConstants.Strings.errorTitle,
+                        systemImage: AppUIConstants.Symbols.error,
                         description: Text(message)
                     )
                 }
@@ -103,6 +103,14 @@ struct ReviewListView: View {
             reviewQuestions = try appContainer.repository.fetchReviewQuestions()
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+}
+
+private enum Constants {
+    enum Strings {
+        static func reviewSectionTitle(count: Int) -> String {
+            "復習対象 (\(AppUIConstants.Strings.questionCount(count)))"
         }
     }
 }

@@ -12,12 +12,18 @@ struct RootTabView: View {
         TabView {
             HomeView()
                 .tabItem {
-                    Label("ホーム", systemImage: "house")
+                    Label(
+                        AppUIConstants.Strings.homeTitle,
+                        systemImage: AppUIConstants.Symbols.home
+                    )
                 }
             
             ReviewListView()
                 .tabItem {
-                    Label("復習", systemImage: "arrow.clockwise.circle")
+                    Label(
+                        AppUIConstants.Strings.reviewTitle,
+                        systemImage: AppUIConstants.Symbols.review
+                    )
                 }
         }
     }

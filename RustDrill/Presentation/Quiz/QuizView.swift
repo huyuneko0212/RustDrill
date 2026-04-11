@@ -17,13 +17,11 @@ struct QuizView: View {
     @State private var isOpeningExplanation = false
     @State private var explanationResult: QuizResult?
     
-    private let bottomButtonHeight: CGFloat = 56
-    
     var body: some View {
         Group {
             if let question = viewModel.currentQuestion {
                 ScrollView {
-                    VStack(spacing: 14) {
+                    VStack(spacing: Constants.Layout.contentSpacing) {
                         questionHeader
                         
                         if let result = viewModel.submittedResult {
@@ -35,7 +33,7 @@ struct QuizView: View {
                         choiceList(question)
                     }
                     .padding()
-                    .padding(.bottom, 8)
+                    .padding(.bottom, Constants.Layout.scrollBottomPadding)
                 }
                 .safeAreaInset(edge: .bottom) {
                     bottomBar
@@ -44,19 +42,22 @@ struct QuizView: View {
                 
             } else if let message = viewModel.errorMessage {
                 ContentUnavailableView(
-                    "エラー",
-                    systemImage: "exclamationmark.triangle",
+                    AppUIConstants.Strings.errorTitle,
+                    systemImage: AppUIConstants.Symbols.error,
                     description: Text(message)
                 )
             } else {
                 ContentUnavailableView(
-                    "問題がありません",
-                    systemImage: "questionmark.circle"
+                    AppUIConstants.Strings.emptyQuestionsTitle,
+                    systemImage: AppUIConstants.Symbols.emptyQuestions
                 )
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: viewModel.submittedResult != nil)
-        .navigationTitle("クイズ")
+        .animation(
+            .easeInOut(duration: Constants.Animation.resultDuration),
+            value: viewModel.submittedResult != nil
+        )
+        .navigationTitle(Constants.Strings.navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $showExplanation) {
             if let result = explanationResult {
@@ -73,7 +74,12 @@ struct QuizView: View {
     
     private var questionHeader: some View {
         HStack {
-            Text("Q\(viewModel.currentIndex + 1) / \(viewModel.questions.count)")
+            Text(
+                Constants.Strings.questionProgress(
+                    currentIndex: viewModel.currentIndex,
+                    questionCount: viewModel.questions.count
+                )
+            )
                 .font(.caption)
                 .foregroundStyle(.secondary)
             Spacer()
@@ -82,7 +88,7 @@ struct QuizView: View {
     
     @ViewBuilder
     private func questionCard(_ question: QuizQuestion) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: Constants.Layout.questionCardSpacing) {
             Text(question.title)
                 .font(.title3)
                 .fontWeight(.bold)
@@ -96,17 +102,20 @@ struct QuizView: View {
             
             if let code = question.codeSnippet, !code.isEmpty {
                 CodeBlockView(code: code)
-                    .padding(.top, 2)
+                    .padding(.top, Constants.Layout.codeBlockTopPadding)
             }
         }
-        .padding(14)
+        .padding(Constants.Layout.questionCardPadding)
         .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color.gray.opacity(0.08))
+            RoundedRectangle(cornerRadius: Constants.Layout.questionCardCornerRadius)
+                .fill(Color.gray.opacity(Constants.Colors.cardFillOpacity))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+            RoundedRectangle(cornerRadius: Constants.Layout.questionCardCornerRadius)
+                .stroke(
+                    Color.gray.opacity(Constants.Colors.cardStrokeOpacity),
+                    lineWidth: Constants.Layout.strokeWidth
+                )
         )
     }
     
@@ -127,11 +136,11 @@ struct QuizView: View {
     // MARK: - Fixed Bottom Bar
     
     private var bottomBar: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: Constants.Layout.bottomBarSpacing) {
             Divider()
             
             if let result = viewModel.submittedResult {
-                HStack(spacing: 12) {
+                HStack(spacing: Constants.Layout.bottomButtonSpacing) {
                     explanationButtonUnified(result: result)
                     nextOrEndButtonUnified()
                 }
@@ -139,27 +148,27 @@ struct QuizView: View {
                 Button {
                     viewModel.submit()
                 } label: {
-                    bottomActionLabel("回答する")
+                    bottomActionLabel(Constants.Strings.submitButtonTitle)
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(!viewModel.canSubmit)
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 6)
-        .padding(.bottom, 12)
+        .padding(.horizontal, Constants.Layout.bottomBarHorizontalPadding)
+        .padding(.top, Constants.Layout.bottomBarTopPadding)
+        .padding(.bottom, Constants.Layout.bottomBarBottomPadding)
     }
     
     @ViewBuilder
     private func resultBanner(isCorrect: Bool) -> some View {
-        let title = isCorrect ? "正解！" : "不正解。解説を確認しましょう"
-        let symbol = isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill"
-        let toneColor: Color = isCorrect ? .green : .red
+        let title = Constants.Strings.resultBannerTitle(isCorrect: isCorrect)
+        let symbol = QuizUIConstants.Symbols.result(isCorrect: isCorrect)
+        let toneColor = QuizUIConstants.Colors.resultTone(isCorrect: isCorrect)
         
-        HStack(alignment: .top, spacing: 8) {
+        HStack(alignment: .top, spacing: Constants.Layout.resultBannerSpacing) {
             Image(systemName: symbol)
                 .foregroundStyle(toneColor)
-                .padding(.top, 1)
+                .padding(.top, Constants.Layout.resultIconTopPadding)
             
             Text(title)
                 .font(.subheadline)
@@ -170,15 +179,18 @@ struct QuizView: View {
             
             Spacer(minLength: 0)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
+        .padding(.horizontal, Constants.Layout.resultBannerHorizontalPadding)
+        .padding(.vertical, Constants.Layout.resultBannerVerticalPadding)
         .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(toneColor.opacity(0.08))
+            RoundedRectangle(cornerRadius: Constants.Layout.resultBannerCornerRadius)
+                .fill(toneColor.opacity(Constants.Colors.resultFillOpacity))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(toneColor.opacity(0.25), lineWidth: 1)
+            RoundedRectangle(cornerRadius: Constants.Layout.resultBannerCornerRadius)
+                .stroke(
+                    toneColor.opacity(Constants.Colors.resultStrokeOpacity),
+                    lineWidth: Constants.Layout.strokeWidth
+                )
         )
     }
     
@@ -187,17 +199,17 @@ struct QuizView: View {
         let button = Button {
             Task { await openExplanation(result: result) }
         } label: {
-            HStack(spacing: 8) {
+            HStack(spacing: Constants.Layout.explanationButtonSpacing) {
                 if isOpeningExplanation {
                     ProgressView()
                         .controlSize(.small)
                 }
                 
-                Text("解説へ")
+                Text(Constants.Strings.explanationButtonTitle)
             }
             .fontWeight(.semibold)
             .frame(maxWidth: .infinity)
-            .frame(height: bottomButtonHeight)
+            .frame(height: QuizUIConstants.Layout.bottomButtonHeight)
             .contentShape(Rectangle())
         }
             .font(.headline)
@@ -209,12 +221,12 @@ struct QuizView: View {
     private func nextOrEndButtonUnified() -> some View {
         if viewModel.isLastQuestion {
             actionButton(
-                title: "終了",
+                title: Constants.Strings.finishButtonTitle,
                 action: { dismissQuiz() }
             )
         } else {
             actionButton(
-                title: "次へ",
+                title: Constants.Strings.nextButtonTitle,
                 action: { viewModel.nextQuestion() }
             )
         }
@@ -237,7 +249,7 @@ struct QuizView: View {
             .font(.headline)
             .fontWeight(.semibold)
             .frame(maxWidth: .infinity)
-            .frame(height: bottomButtonHeight)
+            .frame(height: QuizUIConstants.Layout.bottomButtonHeight)
             .contentShape(Rectangle())
     }
     
@@ -258,5 +270,58 @@ struct QuizView: View {
         
         explanationResult = result
         showExplanation = true
+    }
+}
+
+private enum Constants {
+    enum Strings {
+        static let navigationTitle = "クイズ"
+        static let submitButtonTitle = "回答する"
+        static let explanationButtonTitle = "解説へ"
+        static let finishButtonTitle = "終了"
+        static let nextButtonTitle = "次へ"
+        
+        static func questionProgress(currentIndex: Int, questionCount: Int) -> String {
+            "Q\(currentIndex + 1) / \(questionCount)"
+        }
+        
+        static func resultBannerTitle(isCorrect: Bool) -> String {
+            QuizUIConstants.Strings.resultTitle(
+                isCorrect: isCorrect,
+                incorrectTitle: QuizUIConstants.Strings.incorrectResultPrompt
+            )
+        }
+    }
+    
+    enum Layout {
+        static let bottomBarBottomPadding: CGFloat = 12
+        static let bottomBarHorizontalPadding: CGFloat = 16
+        static let bottomBarSpacing: CGFloat = 12
+        static let bottomBarTopPadding: CGFloat = 6
+        static let bottomButtonSpacing: CGFloat = 12
+        static let codeBlockTopPadding: CGFloat = 2
+        static let contentSpacing: CGFloat = 14
+        static let explanationButtonSpacing: CGFloat = 8
+        static let questionCardCornerRadius: CGFloat = 14
+        static let questionCardPadding: CGFloat = 14
+        static let questionCardSpacing: CGFloat = 10
+        static let resultBannerCornerRadius: CGFloat = 10
+        static let resultBannerHorizontalPadding: CGFloat = 12
+        static let resultBannerSpacing: CGFloat = 8
+        static let resultBannerVerticalPadding: CGFloat = 10
+        static let resultIconTopPadding: CGFloat = 1
+        static let scrollBottomPadding: CGFloat = 8
+        static let strokeWidth: CGFloat = 1
+    }
+    
+    enum Colors {
+        static let cardFillOpacity = 0.08
+        static let cardStrokeOpacity = 0.25
+        static let resultFillOpacity = 0.08
+        static let resultStrokeOpacity = 0.25
+    }
+    
+    enum Animation {
+        static let resultDuration = 0.2
     }
 }

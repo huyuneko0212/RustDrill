@@ -19,22 +19,32 @@ struct CategoryProgressBar: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                Text("\(solvedCount) / \(totalCount)問")
+                Text(
+                    AppUIConstants.Strings.progressQuestionCount(
+                        solvedCount: solvedCount,
+                        totalCount: totalCount
+                    )
+                )
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 
                 Spacer()
                 
-                Text("\(Int(progressValue * 100))%")
+                Text(AppUIConstants.Strings.progressPercentage(progressValue))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
             
             ProgressView(value: progressValue)
                 .progressViewStyle(.linear)
-                .tint(.blue)
+                .tint(AppUIConstants.Colors.selectedTone)
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("進捗 \(solvedCount) / \(totalCount) 問")
+        .accessibilityLabel(
+            AppUIConstants.Strings.progressAccessibility(
+                solvedCount: solvedCount,
+                totalCount: totalCount
+            )
+        )
     }
 }

@@ -11,26 +11,31 @@ struct TextBlockView: View {
     let text: String
     
     var body: some View {
-        buildText(from: text)
+        Text(attributedText(from: text))
             .font(.body)
             .foregroundStyle(.primary)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
     
-    private func buildText(from text: String) -> Text {
+    private func attributedText(from text: String) -> AttributedString {
         let parts = splitBacktickText(text)
+        var result = AttributedString()
         
-        return parts.reduce(Text("")) { partial, part in
-            partial + styledText(for: part)
+        for part in parts {
+            result.append(attributedSegment(for: part))
         }
+        
+        return result
     }
     
-    private func styledText(for part: TextPart) -> Text {
+    private func attributedSegment(for part: TextPart) -> AttributedString {
         switch part {
         case .normal(let value):
-            return Text(value)
+            return AttributedString(value)
         case .emphasis(let value):
-            return Text(value).fontWeight(.bold)
+            var segment = AttributedString(value)
+            segment.inlinePresentationIntent = .stronglyEmphasized
+            return segment
         }
     }
     
