@@ -6,28 +6,45 @@
 //
 
 import Foundation
+import Combine
 
-protocol QuizRepository {
-    // Category
+struct CategoryNodeState {
+    let children: [Category]
+    let ownQuestionCount: Int
+
+    var isLeaf: Bool {
+        children.isEmpty
+    }
+}
+
+@MainActor
+protocol QuestionCatalogRepository {
     func fetchRootCategories() throws -> [Category]
     func fetchChildren(of parentId: String) throws -> [Category]
-    
-    // Question
+    func fetchCategoryNodeState(categoryId: String) throws -> CategoryNodeState
+    func fetchCategoryNodeStates(categoryIds: [String]) throws -> [String: CategoryNodeState]
     func fetchQuestions(categoryId: String) throws -> [QuizQuestion]
-    func countQuestionsRecursively(categoryId: String) throws -> Int
-    
-    // Category Progress
-    func fetchCategoryProgress(categoryId: String) throws -> CategoryProgress
-    
-    // Progress
+}
+
+@MainActor
+protocol ProgressRepository {
+    var progressDidChange: AnyPublisher<Void, Never> { get }
+
     func fetchProgress(questionId: String) throws -> QuestionProgress?
+    func fetchProgressByCategory(categoryIds: [String]) throws -> [String: CategoryProgress]
     func saveAnswer(questionId: String, selectedChoiceId: String, isCorrect: Bool) throws
     func toggleFavorite(questionId: String) throws
     func fetchSolvedQuestionIds(categoryId: String) throws -> Set<String>
-    
-    // Review
+}
+
+@MainActor
+protocol ReviewRepository {
     func fetchReviewQuestions() throws -> [QuizQuestion]
-    
-    // Seed
+}
+
+@MainActor
+protocol SeedService {
     func seedIfNeeded() throws
 }
+
+typealias QuizRepository = QuestionCatalogRepository & ProgressRepository & ReviewRepository & SeedService

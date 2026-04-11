@@ -5,13 +5,6 @@
 //  Created by huyuneko on 2026/02/23.
 //
 
-//
-//  CategoryChildrenView.swift
-//  RustDrill
-//
-//  Created by huyuneko on 2026/02/23.
-//
-
 import SwiftUI
 
 struct CategoryChildrenView: View {
@@ -25,6 +18,8 @@ struct CategoryChildrenView: View {
     @State private var isLoading = false
     @State private var didLoad = false
     @State private var questionsCount: Int = 0
+    @State private var childNodeStates: [Category.ID: CategoryNodeState] = [:]
+    @State private var progressByCategoryId: [Category.ID: CategoryProgress] = [:]
     
     @State private var selectedChild: Category?
     
@@ -47,6 +42,13 @@ struct CategoryChildrenView: View {
         .task {
             guard !didLoad else { return }
             await loadCategoryState()
+        }
+        .onAppear {
+            guard didLoad else { return }
+            Task { await loadCategoryState(force: true) }
+        }
+        .onReceive(appContainer.repository.progressDidChange) { _ in
+            Task { await loadCategoryState(force: true) }
         }
     }
     
@@ -82,13 +84,27 @@ struct CategoryChildrenView: View {
     
     private var childrenListView: some View {
         List {
+            if questionsCount > 0 {
+                Section {
+                    NavigationLink("このカテゴリの問題 (\(questionsCount)問)") {
+                        QuestionListView(category: parentCategory)
+                    }
+                }
+            }
+
             Section {
                 ForEach(children) { child in
                     Button {
                         selectedChild = child
                     } label: {
-                        CategoryRowView(category: child,
-                        isRecommended: isRecommended)
+                        CategoryRowView(
+                            category: child,
+                            isRecommended: isRecommended,
+                            progress: progressByCategoryId[
+                                child.id,
+                                default: CategoryProgress(solvedCount: 0, totalCount: 0)
+                            ]
+                        )
                     }
                     .buttonStyle(.plain)
                 }
@@ -120,7 +136,7 @@ struct CategoryChildrenView: View {
     }
     
     private func isLeafCategory(_ category: Category) -> Bool {
-        category.level >= 3
+        childNodeStates[category.id]?.isLeaf ?? false
     }
     
     private func loadCategoryState(force: Bool = false) async {
@@ -136,9 +152,17 @@ struct CategoryChildrenView: View {
         }
         
         do {
-            children = try appContainer.repository.fetchChildren(of: parentCategory.id)
-            questionsCount = try appContainer.repository
-                .countQuestionsRecursively(categoryId: parentCategory.id)
+            let nodeState = try appContainer.repository.fetchCategoryNodeState(
+                categoryId: parentCategory.id
+            )
+            children = nodeState.children
+            questionsCount = nodeState.ownQuestionCount
+            childNodeStates = try appContainer.repository.fetchCategoryNodeStates(
+                categoryIds: children.map(\.id)
+            )
+            progressByCategoryId = try appContainer.repository.fetchProgressByCategory(
+                categoryIds: children.map(\.id)
+            )
         } catch {
             errorMessage = error.localizedDescription
         }

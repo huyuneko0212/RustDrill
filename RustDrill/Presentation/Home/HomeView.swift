@@ -15,6 +15,7 @@ struct HomeView: View {
     @State private var isLoading = false
     @State private var didLoad = false
 
+    @State private var progressByCategoryId: [Category.ID: CategoryProgress] = [:]
     @State private var totalSolvedCount = 0
     @State private var totalQuestionCount = 0
     @State private var selectedCategory: Category?
@@ -56,6 +57,13 @@ struct HomeView: View {
             .task {
                 guard !didLoad else { return }
                 await loadRootCategories()
+            }
+            .onAppear {
+                guard didLoad else { return }
+                Task { await loadRootCategories(force: true) }
+            }
+            .onReceive(appContainer.repository.progressDidChange) { _ in
+                Task { await loadRootCategories(force: true) }
             }
             .refreshable {
                 await loadRootCategories(force: true)
@@ -147,7 +155,11 @@ struct HomeView: View {
                 } label: {
                     CategoryRowView(
                         category: category,
-                        isRecommended: category.id == recommendedCategoryId
+                        isRecommended: category.id == recommendedCategoryId,
+                        progress: progressByCategoryId[
+                            category.id,
+                            default: CategoryProgress(solvedCount: 0, totalCount: 0)
+                        ]
                     )
                 }
                 .buttonStyle(.plain)
@@ -182,19 +194,16 @@ struct HomeView: View {
 
         do {
             categories = try appContainer.repository.fetchRootCategories()
+            progressByCategoryId = try appContainer.repository.fetchProgressByCategory(
+                categoryIds: categories.map(\.id)
+            )
 
-            var solved = 0
-            var total = 0
-
-            for category in categories {
-                let progress = try appContainer.repository
-                    .fetchCategoryProgress(categoryId: category.id)
-                solved += progress.solvedCount
-                total += progress.totalCount
+            totalSolvedCount = progressByCategoryId.values.reduce(0) {
+                $0 + $1.solvedCount
             }
-
-            totalSolvedCount = solved
-            totalQuestionCount = total
+            totalQuestionCount = progressByCategoryId.values.reduce(0) {
+                $0 + $1.totalCount
+            }
         } catch {
             errorMessage = error.localizedDescription
         }

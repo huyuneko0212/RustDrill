@@ -66,6 +66,13 @@ struct ReviewListView: View {
                 guard !didLoad else { return }
                 await loadReviewQuestions()
             }
+            .onAppear {
+                guard didLoad else { return }
+                Task { await loadReviewQuestions(force: true) }
+            }
+            .onReceive(appContainer.repository.progressDidChange) { _ in
+                Task { await loadReviewQuestions(force: true) }
+            }
             .refreshable {
                 await loadReviewQuestions(force: true)
             }

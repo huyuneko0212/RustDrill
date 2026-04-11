@@ -132,12 +132,8 @@ struct QuizView: View {
             
             if let result = viewModel.submittedResult {
                 HStack(spacing: 12) {
-                    explanationButtonUnified(
-                        result: result,
-                        emphasize: !result.isCorrect
-                    )
-                    
-                    nextOrEndButtonUnified(emphasize: result.isCorrect)
+                    explanationButtonUnified(result: result)
+                    nextOrEndButtonUnified()
                 }
             } else {
                 Button("回答する") {
@@ -187,10 +183,7 @@ struct QuizView: View {
     }
     
     @ViewBuilder
-    private func explanationButtonUnified(
-        result: QuizResult,
-        emphasize: Bool
-    ) -> some View {
+    private func explanationButtonUnified(result: QuizResult) -> some View {
         let button = Button {
             Task { await openExplanation(result: result) }
         } label: {
@@ -208,25 +201,18 @@ struct QuizView: View {
             .font(.headline)
             .disabled(isOpeningExplanation)
         button.buttonStyle(.bordered)
-//        if emphasize {
-//            button.buttonStyle(.borderedProminent)
-//        } else {
-//            button.buttonStyle(.bordered)
-//        }
     }
     
     @ViewBuilder
-    private func nextOrEndButtonUnified(emphasize: Bool) -> some View {
+    private func nextOrEndButtonUnified() -> some View {
         if viewModel.isLastQuestion {
             actionButton(
                 title: "終了",
-                emphasize: emphasize,
                 action: { dismissQuiz() }
             )
         } else {
             actionButton(
                 title: "次へ",
-                emphasize: emphasize,
                 action: { viewModel.nextQuestion() }
             )
         }
@@ -235,7 +221,6 @@ struct QuizView: View {
     @ViewBuilder
     private func actionButton(
         title: String,
-        emphasize: Bool,
         action: @escaping () -> Void
     ) -> some View {
         let button = Button(title, action: action)
@@ -243,11 +228,6 @@ struct QuizView: View {
             .font(.headline)
             .disabled(isOpeningExplanation)
         button.buttonStyle(.borderedProminent)
-//        if emphasize {
-//            button.buttonStyle(.borderedProminent)
-//        } else {
-//            button.buttonStyle(.bordered)
-//        }
     }
     
     // MARK: - Actions

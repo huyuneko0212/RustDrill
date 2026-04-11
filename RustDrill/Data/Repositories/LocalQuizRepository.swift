@@ -1,71 +1,116 @@
 import Foundation
+import Combine
+import CryptoKit
 import SwiftData
 
 @MainActor
 final class LocalQuizRepository: QuizRepository {
+    private static let seedVersionKey = "RustDrill.seed.questionsJSON.sha256"
+
     private let context: ModelContext
-    
+    private let progressSubject = PassthroughSubject<Void, Never>()
+
+    var progressDidChange: AnyPublisher<Void, Never> {
+        progressSubject.eraseToAnyPublisher()
+    }
+
     init(context: ModelContext) {
         self.context = context
     }
-    
-    
-    
+
     // MARK: - Seed
     func seedIfNeeded() throws {
-        let descriptor = FetchDescriptor<SDQuestion>()
-        let count = try context.fetchCount(descriptor)
-        if count > 0 { return }
-        
-        let seed = try SeedLoader.loadQuestionsJSON()
-        
+        let seedData = try SeedLoader.loadQuestionsJSONData()
+        let seedVersion = Self.sha256Hex(seedData)
+        let storedVersion = UserDefaults.standard.string(forKey: Self.seedVersionKey)
+        let questionCount = try context.fetchCount(FetchDescriptor<SDQuestion>())
+
+        guard storedVersion != seedVersion || questionCount == 0 else { return }
+
+        let seed = try JSONDecoder().decode(SeedData.self, from: seedData)
+        try syncCatalog(with: seed)
+        UserDefaults.standard.set(seedVersion, forKey: Self.seedVersionKey)
+    }
+
+    private func syncCatalog(with seed: SeedData) throws {
+        let existingCategories = try context.fetch(FetchDescriptor<SDCategory>())
+        var categoriesById = Dictionary(uniqueKeysWithValues: existingCategories.map { ($0.id, $0) })
+        let seedCategoryIds = Set(seed.categories.map(\.id))
+
         for c in seed.categories {
-            let model = SDCategory(
-                id: c.id,
-                name: c.name,
-                parentId: c.parentId,
-                order: c.order,
-                level: c.level
-            )
-            context.insert(model)
-        }
-        
-        for q in seed.questions {
-            let sdChoices: [SDChoice] = q.choices.enumerated().map { idx, choice in
-                let globalChoiceId = "\(q.id)::\(choice.id)"
-                return SDChoice(
-                    id: globalChoiceId,
-                    questionId: q.id,
-                    text: choice.text,
-                    order: idx
+            if let model = categoriesById[c.id] {
+                model.name = c.name
+                model.parentId = c.parentId
+                model.order = c.order
+                model.level = c.level
+            } else {
+                let model = SDCategory(
+                    id: c.id,
+                    name: c.name,
+                    parentId: c.parentId,
+                    order: c.order,
+                    level: c.level
                 )
+                context.insert(model)
+                categoriesById[c.id] = model
             }
-            
+        }
+
+        for category in existingCategories where !seedCategoryIds.contains(category.id) {
+            context.delete(category)
+        }
+
+        let existingQuestions = try context.fetch(FetchDescriptor<SDQuestion>())
+        var questionsById = Dictionary(uniqueKeysWithValues: existingQuestions.map { ($0.id, $0) })
+        let seedQuestionIds = Set(seed.questions.map(\.id))
+
+        for q in seed.questions {
+            let sdChoices = makeChoices(for: q)
+
             let explanationContentRaw = (
                 try? JSONEncoder().encode(q.explanationContent)
             )
                 .flatMap { String(data: $0, encoding: .utf8) } ?? ""
-            
-            let question = SDQuestion(
-                id: q.id,
-                categoryId: q.categoryId,
-                typeRaw: q.type.rawValue,
-                title: q.title,
-                body: q.body,
-                codeSnippet: q.codeSnippet,
-                correctChoiceId: "\(q.id)::\(q.correctChoiceId)",
-                explanation: q.explanation,
-                explanationContentRaw: explanationContentRaw,
-                difficulty: q.difficulty,
-                tags: q.tags,
-                choices: sdChoices
-            )
-            
-            context.insert(question)
+
+            if let question = questionsById[q.id] {
+                question.categoryId = q.categoryId
+                question.typeRaw = q.type.rawValue
+                question.title = q.title
+                question.body = q.body
+                question.codeSnippet = q.codeSnippet
+                question.correctChoiceId = "\(q.id)::\(q.correctChoiceId)"
+                question.explanation = q.explanation
+                question.explanationContentRaw = explanationContentRaw
+                question.difficulty = q.difficulty
+                question.tags = q.tags
+                syncChoices(for: question, with: q)
+            } else {
+                let question = SDQuestion(
+                    id: q.id,
+                    categoryId: q.categoryId,
+                    typeRaw: q.type.rawValue,
+                    title: q.title,
+                    body: q.body,
+                    codeSnippet: q.codeSnippet,
+                    correctChoiceId: "\(q.id)::\(q.correctChoiceId)",
+                    explanation: q.explanation,
+                    explanationContentRaw: explanationContentRaw,
+                    difficulty: q.difficulty,
+                    tags: q.tags,
+                    choices: sdChoices
+                )
+                context.insert(question)
+                questionsById[q.id] = question
+            }
         }
-        
+
+        for question in existingQuestions where !seedQuestionIds.contains(question.id) {
+            context.delete(question)
+        }
+
         try context.save()
     }
+
     // MARK: - Category
     func fetchRootCategories() throws -> [Category] {
         let descriptor = FetchDescriptor<SDCategory>(
@@ -74,6 +119,36 @@ final class LocalQuizRepository: QuizRepository {
         )
         let models = try context.fetch(descriptor)
         return models.map(mapCategory)
+    }
+
+    func fetchCategoryNodeState(categoryId: String) throws -> CategoryNodeState {
+        let children = try fetchChildren(of: categoryId)
+        let ownQuestionCount = try countQuestions(categoryId: categoryId)
+        return CategoryNodeState(children: children, ownQuestionCount: ownQuestionCount)
+    }
+
+    func fetchCategoryNodeStates(categoryIds: [String]) throws -> [String: CategoryNodeState] {
+        guard !categoryIds.isEmpty else { return [:] }
+
+        let allChildren = try context.fetch(FetchDescriptor<SDCategory>())
+            .map(mapCategory)
+            .reduce(into: [String: [Category]]()) { result, category in
+                guard let parentId = category.parentId else { return }
+                result[parentId, default: []].append(category)
+            }
+            .mapValues { $0.sorted { $0.order < $1.order } }
+
+        let questionCounts = try questionCountsByCategory()
+
+        return Dictionary(uniqueKeysWithValues: categoryIds.map { categoryId in
+            (
+                categoryId,
+                CategoryNodeState(
+                    children: allChildren[categoryId] ?? [],
+                    ownQuestionCount: questionCounts[categoryId, default: 0]
+                )
+            )
+        })
     }
     
     func fetchChildren(of parentId: String) throws -> [Category] {
@@ -93,79 +168,48 @@ final class LocalQuizRepository: QuizRepository {
         let models = try context.fetch(descriptor)
         return models.map(mapQuestion)
     }
-    
-    // Protocol準拠に必要
-    func countQuestionsRecursively(categoryId: String) throws -> Int {
-        try countQuestionsRecursivelyInternal(categoryId: categoryId)
-    }
-    
-    private func countQuestionsRecursivelyInternal(categoryId: String) throws -> Int {
-        let ownCount = try fetchQuestions(categoryId: categoryId).count
-        let children = try fetchChildren(of: categoryId)
-        
-        let childCount = try children.reduce(0) { partial, child in
-            partial + (try countQuestionsRecursivelyInternal(categoryId: child.id))
-        }
-        
-        return ownCount + childCount
-    }
-    
+
     // MARK: - Category Progress
-    func fetchCategoryProgress(categoryId: String) throws -> CategoryProgress {
-        let questionIds = try collectQuestionIdsRecursively(categoryId: categoryId)
-        let totalCount = questionIds.count
-        
-        guard totalCount > 0 else {
-            return CategoryProgress(solvedCount: 0, totalCount: 0)
+    func fetchProgressByCategory(categoryIds: [String]) throws -> [String: CategoryProgress] {
+        guard !categoryIds.isEmpty else { return [:] }
+
+        let categoryChildren = try childrenByCategory()
+        let questions = try context.fetch(FetchDescriptor<SDQuestion>())
+        let questionIdsByCategory = questions.reduce(into: [String: Set<String>]()) { result, question in
+            result[question.categoryId, default: []].insert(question.id)
         }
-        
-        let progressDescriptor = FetchDescriptor<SDQuestionProgress>()
-        let allProgress = try context.fetch(progressDescriptor)
-        
-        let solvedCount = allProgress.filter { p in
-            questionIds.contains(p.questionId) && p.correctCount > 0
-        }.count
-        
-        return CategoryProgress(
-            solvedCount: solvedCount,
-            totalCount: totalCount
-        )
-    }
-    
-    private func collectQuestionIdsRecursively(categoryId: String) throws -> Set<String> {
-        var result = Set<String>()
-        
-        // 直下の問題
-        let ownQuestions = try fetchQuestions(categoryId: categoryId)
-        ownQuestions.forEach { result.insert($0.id) }
-        
-        // 子カテゴリ再帰
-        let children = try fetchChildren(of: categoryId)
-        for child in children {
-            let childIds = try collectQuestionIdsRecursively(categoryId: child.id)
-            result.formUnion(childIds)
+
+        var questionIdsByRequestedCategory: [String: Set<String>] = [:]
+        var allQuestionIds = Set<String>()
+
+        for categoryId in categoryIds {
+            let descendantIds = collectCategoryIdsRecursively(
+                categoryId: categoryId,
+                childrenByCategory: categoryChildren
+            )
+            let questionIds = descendantIds.reduce(into: Set<String>()) { result, descendantId in
+                result.formUnion(questionIdsByCategory[descendantId, default: []])
+            }
+            questionIdsByRequestedCategory[categoryId] = questionIds
+            allQuestionIds.formUnion(questionIds)
         }
-        
-        return result
+
+        let solvedQuestionIds = try fetchSolvedQuestionIds(in: allQuestionIds)
+
+        return Dictionary(uniqueKeysWithValues: categoryIds.map { categoryId in
+            let questionIds = questionIdsByRequestedCategory[categoryId, default: []]
+            let solvedCount = questionIds.intersection(solvedQuestionIds).count
+            return (
+                categoryId,
+                CategoryProgress(solvedCount: solvedCount, totalCount: questionIds.count)
+            )
+        })
     }
-    
+
     // MARK: - Progress
     func fetchSolvedQuestionIds(categoryId: String) throws -> Set<String> {
         let questions = try fetchQuestions(categoryId: categoryId)
-        let questionIds = Set(questions.map(\.id))
-        
-        let descriptor = FetchDescriptor<SDQuestionProgress>(
-            predicate: #Predicate {
-                $0.correctCount > 0
-            }
-        )
-        let solvedProgress = try context.fetch(descriptor)
-        
-        return Set(
-            solvedProgress
-                .map(\.questionId)
-                .filter { questionIds.contains($0) }
-        )
+        return try fetchSolvedQuestionIds(in: Set(questions.map(\.id)))
     }
 
     func fetchProgress(questionId: String) throws -> QuestionProgress? {
@@ -209,6 +253,7 @@ final class LocalQuizRepository: QuizRepository {
         context.insert(history)
         
         try context.save()
+        progressSubject.send()
     }
     
     func toggleFavorite(questionId: String) throws {
@@ -216,6 +261,7 @@ final class LocalQuizRepository: QuizRepository {
         progress.isFavorite.toggle()
         progress.updatedAt = Date()
         try context.save()
+        progressSubject.send()
     }
     
     // MARK: - Review
@@ -227,12 +273,13 @@ final class LocalQuizRepository: QuizRepository {
         let ids = Set(reviewProgress.map(\.questionId))
         guard !ids.isEmpty else { return [] }
         
-        let questionDescriptor = FetchDescriptor<SDQuestion>()
-        let allQuestions = try context.fetch(questionDescriptor)
+        let questionIds = Array(ids)
+        let questionDescriptor = FetchDescriptor<SDQuestion>(
+            predicate: #Predicate { questionIds.contains($0.id) }
+        )
+        let questions = try context.fetch(questionDescriptor)
         
-        return allQuestions
-            .filter { ids.contains($0.id) }
-            .map(mapQuestion)
+        return questions.map(mapQuestion)
     }
     
     // MARK: - Helpers
@@ -247,6 +294,106 @@ final class LocalQuizRepository: QuizRepository {
         let new = SDQuestionProgress(questionId: questionId)
         context.insert(new)
         return new
+    }
+
+    private func countQuestions(categoryId: String) throws -> Int {
+        try context.fetchCount(
+            FetchDescriptor<SDQuestion>(
+                predicate: #Predicate { $0.categoryId == categoryId }
+            )
+        )
+    }
+
+    private func questionCountsByCategory() throws -> [String: Int] {
+        try context.fetch(FetchDescriptor<SDQuestion>())
+            .reduce(into: [String: Int]()) { result, question in
+                result[question.categoryId, default: 0] += 1
+            }
+    }
+
+    private func childrenByCategory() throws -> [String: [String]] {
+        try context.fetch(FetchDescriptor<SDCategory>())
+            .reduce(into: [String: [String]]()) { result, category in
+                guard let parentId = category.parentId else { return }
+                result[parentId, default: []].append(category.id)
+            }
+    }
+
+    private func collectCategoryIdsRecursively(
+        categoryId: String,
+        childrenByCategory: [String: [String]]
+    ) -> Set<String> {
+        var result: Set<String> = [categoryId]
+        var stack = childrenByCategory[categoryId, default: []]
+
+        while let next = stack.popLast() {
+            guard result.insert(next).inserted else { continue }
+            stack.append(contentsOf: childrenByCategory[next, default: []])
+        }
+
+        return result
+    }
+
+    private func fetchSolvedQuestionIds(in questionIds: Set<String>) throws -> Set<String> {
+        guard !questionIds.isEmpty else { return [] }
+
+        let ids = Array(questionIds)
+        let descriptor = FetchDescriptor<SDQuestionProgress>(
+            predicate: #Predicate {
+                ids.contains($0.questionId) && $0.correctCount > 0
+            }
+        )
+        let solvedProgress = try context.fetch(descriptor)
+
+        return Set(solvedProgress.map(\.questionId))
+    }
+
+    private func makeChoices(for question: QuizQuestion) -> [SDChoice] {
+        question.choices.enumerated().map { idx, choice in
+            SDChoice(
+                id: "\(question.id)::\(choice.id)",
+                questionId: question.id,
+                text: choice.text,
+                order: idx
+            )
+        }
+    }
+
+    private func syncChoices(for model: SDQuestion, with seedQuestion: QuizQuestion) {
+        var choicesById = Dictionary(uniqueKeysWithValues: model.choices.map { ($0.id, $0) })
+        let seedChoiceIds = Set(seedQuestion.choices.map { "\(seedQuestion.id)::\($0.id)" })
+
+        for (idx, choice) in seedQuestion.choices.enumerated() {
+            let globalChoiceId = "\(seedQuestion.id)::\(choice.id)"
+
+            if let existing = choicesById[globalChoiceId] {
+                existing.questionId = seedQuestion.id
+                existing.text = choice.text
+                existing.order = idx
+            } else {
+                let newChoice = SDChoice(
+                    id: globalChoiceId,
+                    questionId: seedQuestion.id,
+                    text: choice.text,
+                    order: idx
+                )
+                model.choices.append(newChoice)
+                choicesById[globalChoiceId] = newChoice
+            }
+        }
+
+        let removedChoices = model.choices.filter { !seedChoiceIds.contains($0.id) }
+        model.choices.removeAll { !seedChoiceIds.contains($0.id) }
+
+        for choice in removedChoices {
+            context.delete(choice)
+        }
+    }
+
+    private static func sha256Hex(_ data: Data) -> String {
+        SHA256.hash(data: data)
+            .map { String(format: "%02x", $0) }
+            .joined()
     }
     
     private func mapCategory(_ model: SDCategory) -> Category {

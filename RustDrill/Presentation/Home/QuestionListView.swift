@@ -63,12 +63,19 @@ struct QuestionListView: View {
             guard !didLoad else { return }
             await loadQuestions()
         }
+        .onAppear {
+            guard didLoad else { return }
+            Task { await loadQuestions(force: true) }
+        }
+        .onReceive(appContainer.repository.progressDidChange) { _ in
+            Task { await loadQuestions(force: true) }
+        }
         .refreshable {
             await loadQuestions(force: true)
         }
     }
     
-    private func loadQuestions(force: Bool = false) async {
+    private func loadQuestions(force _: Bool = false) async {
         if isLoading { return }
         
         isLoading = true
@@ -80,14 +87,10 @@ struct QuestionListView: View {
         }
         
         do {
-            questions = try repositoryFetchQuestions(force: force)
+            questions = try appContainer.repository.fetchQuestions(categoryId: category.id)
             solvedQuestionIds = try appContainer.repository.fetchSolvedQuestionIds(categoryId: category.id)
         } catch {
             errorMessage = error.localizedDescription
         }
-    }
-    
-    private func repositoryFetchQuestions(force: Bool) throws -> [QuizQuestion] {
-        try appContainer.repository.fetchQuestions(categoryId: category.id)
     }
 }
