@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct VocabularyView: View {
-    @AppStorage("RustDrill.settings.showRuby") private var showRuby = true
-    @AppStorage("RustDrill.settings.compactVocabulary") private var compactVocabulary = false
+    @AppStorage(Constants.StorageKeys.showRuby) private var showRuby = true
+    @AppStorage(Constants.StorageKeys.compactVocabulary) private var compactVocabulary = false
 
     @State private var terms: [VocabularyTerm] = []
     @State private var errorMessage: String?
     @State private var isLoading = false
     @State private var didLoad = false
-    @State private var searchText = ""
+    @State private var searchText = Constants.Strings.emptySearchText
 
     private var filteredTerms: [VocabularyTerm] {
         guard !searchText.isEmpty else { return terms }
@@ -24,6 +24,13 @@ struct VocabularyView: View {
             term.title.localizedStandardContains(searchText)
             || term.reading.localizedStandardContains(searchText)
             || term.description.localizedStandardContains(searchText)
+            || term.detailDescription.localizedStandardContains(searchText)
+            || term.keyPoints.contains { $0.localizedStandardContains(searchText) }
+            || term.pitfalls.contains { $0.localizedStandardContains(searchText) }
+            || term.codeExamples.contains { example in
+                example.title.localizedStandardContains(searchText)
+                || example.code.localizedStandardContains(searchText)
+            }
         }
     }
 
@@ -35,29 +42,36 @@ struct VocabularyView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                 } else if filteredTerms.isEmpty {
                     ContentUnavailableView(
-                        "単語が見つかりません",
+                        Constants.Strings.emptySearchTitle,
                         systemImage: AppUIConstants.Symbols.vocabulary,
-                        description: Text("別のキーワードで探してみましょう")
+                        description: Text(Constants.Strings.emptySearchDescription)
                     )
                 } else {
                     Section {
                         ForEach(filteredTerms) { term in
-                            VocabularyTermRow(
-                                term: term,
-                                showsReading: showRuby,
-                                isCompact: compactVocabulary
-                            )
+                            NavigationLink {
+                                VocabularyTermDetailView(
+                                    term: term,
+                                    relatedTerms: relatedTerms(for: term)
+                                )
+                            } label: {
+                                VocabularyTermRow(
+                                    term: term,
+                                    showsReading: showRuby,
+                                    isCompact: compactVocabulary
+                                )
+                            }
                         }
                     } header: {
-                        Text("Rust の基礎用語")
+                        Text(Constants.Strings.termsSectionTitle)
                     } footer: {
-                        Text("問題でよく出る言葉を短く確認できます。")
+                        Text(Constants.Strings.termsSectionFooter)
                     }
                 }
             }
             .listStyle(.insetGrouped)
             .navigationTitle(AppUIConstants.Strings.vocabularyTitle)
-            .searchable(text: $searchText, prompt: "用語を検索")
+            .searchable(text: $searchText, prompt: Constants.Strings.searchPrompt)
             .task {
                 guard !didLoad else { return }
                 loadVocabulary()
@@ -95,6 +109,12 @@ struct VocabularyView: View {
             errorMessage = error.localizedDescription
         }
     }
+
+    private func relatedTerms(for term: VocabularyTerm) -> [VocabularyTerm] {
+        term.relatedTermIds.compactMap { id in
+            terms.first { $0.id == id }
+        }
+    }
 }
 
 private struct VocabularyTermRow: View {
@@ -103,13 +123,13 @@ private struct VocabularyTermRow: View {
     let isCompact: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: isCompact ? 4 : 8) {
+        VStack(alignment: .leading, spacing: rowSpacing) {
             HStack(alignment: .firstTextBaseline) {
                 Text(term.title)
                     .font(.headline)
 
                 if showsReading {
-                    Spacer(minLength: 12)
+                    Spacer(minLength: Constants.Layout.rowReadingMinSpacing)
 
                     Text(term.reading)
                         .font(.caption)
@@ -124,13 +144,185 @@ private struct VocabularyTermRow: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
-            if let example = term.example, !isCompact {
-                Text(example)
-                    .font(.caption.monospaced())
-                    .foregroundStyle(AppUIConstants.Colors.explanation)
-                    .padding(.top, 2)
+        }
+        .padding(.vertical, Constants.Layout.rowVerticalPadding)
+    }
+
+    private var rowSpacing: CGFloat {
+        isCompact ? Constants.Layout.compactRowSpacing : Constants.Layout.rowSpacing
+    }
+}
+
+private struct VocabularyTermDetailView: View {
+    let term: VocabularyTerm
+    let relatedTerms: [VocabularyTerm]
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: Constants.Layout.detailContentSpacing) {
+                VStack(alignment: .leading, spacing: Constants.Layout.detailHeaderSpacing) {
+                    Text(term.title)
+                        .font(.largeTitle.bold())
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    Text(term.reading)
+                        .font(.title3)
+                        .foregroundStyle(.secondary)
+
+                    Text(term.detailDescription)
+                        .font(.body)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.top, Constants.Layout.detailDescriptionTopPadding)
+                }
+
+                VocabularyDetailSection(title: Constants.Strings.keyPointsSectionTitle) {
+                    VStack(alignment: .leading, spacing: Constants.Layout.detailListSpacing) {
+                        ForEach(term.keyPoints, id: \.self) { point in
+                            Label(point, systemImage: Constants.Symbols.keyPoint)
+                                .font(.body)
+                                .foregroundStyle(.primary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                }
+
+                if !term.codeExamples.isEmpty {
+                    VocabularyDetailSection(title: Constants.Strings.codeExamplesSectionTitle) {
+                        VStack(alignment: .leading, spacing: Constants.Layout.codeExamplesSpacing) {
+                            ForEach(term.codeExamples) { example in
+                                VStack(alignment: .leading, spacing: Constants.Layout.codeExampleContentSpacing) {
+                                    Text(example.title)
+                                        .font(.subheadline.weight(.semibold))
+                                    CodeBlockView(code: example.code)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if !term.pitfalls.isEmpty {
+                    VocabularyDetailSection(title: Constants.Strings.pitfallsSectionTitle) {
+                        VStack(alignment: .leading, spacing: Constants.Layout.detailListSpacing) {
+                            ForEach(term.pitfalls, id: \.self) { pitfall in
+                                Label(pitfall, systemImage: Constants.Symbols.pitfall)
+                                    .font(.body)
+                                    .foregroundStyle(.primary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                    }
+                }
+
+                if !relatedTerms.isEmpty {
+                    VocabularyDetailSection(title: Constants.Strings.relatedTermsSectionTitle) {
+                        FlowLikeRelatedTermsView(terms: relatedTerms)
+                    }
+                }
+            }
+            .padding()
+        }
+        .navigationTitle(term.title)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+private struct VocabularyDetailSection<Content: View>: View {
+    let title: String
+    private let content: Content
+
+    init(title: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.content = content()
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Constants.Layout.detailSectionSpacing) {
+            Text(title)
+                .font(.headline)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            content
+        }
+    }
+}
+
+private struct FlowLikeRelatedTermsView: View {
+    let terms: [VocabularyTerm]
+
+    var body: some View {
+        LazyVGrid(
+            columns: [
+                GridItem(
+                    .adaptive(minimum: Constants.Layout.relatedTermMinimumWidth),
+                    spacing: Constants.Layout.relatedTermGridSpacing,
+                    alignment: .leading
+                )
+            ],
+            alignment: .leading,
+            spacing: Constants.Layout.relatedTermGridSpacing
+        ) {
+            ForEach(terms) { term in
+                VStack(alignment: .leading, spacing: Constants.Layout.relatedTermTextSpacing) {
+                    Text(term.title)
+                        .font(.subheadline.weight(.semibold))
+                    Text(term.reading)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, Constants.Layout.relatedTermHorizontalPadding)
+                .padding(.vertical, Constants.Layout.relatedTermVerticalPadding)
+                .background(
+                    RoundedRectangle(cornerRadius: Constants.Layout.relatedTermCornerRadius, style: .continuous)
+                        .fill(Color.secondary.opacity(Constants.Layout.relatedTermBackgroundOpacity))
+                )
             }
         }
-        .padding(.vertical, 4)
+    }
+}
+
+private enum Constants {
+    enum StorageKeys {
+        static let showRuby = "RustDrill.settings.showRuby"
+        static let compactVocabulary = "RustDrill.settings.compactVocabulary"
+    }
+
+    enum Strings {
+        static let emptySearchText = ""
+        static let emptySearchTitle = "単語が見つかりません"
+        static let emptySearchDescription = "別のキーワードで探してみましょう"
+        static let termsSectionTitle = "Rust の基礎用語"
+        static let termsSectionFooter = "問題でよく出る言葉を短く確認できます。"
+        static let searchPrompt = "用語を検索"
+        static let keyPointsSectionTitle = "要点"
+        static let codeExamplesSectionTitle = "コード例"
+        static let pitfallsSectionTitle = "つまずきやすい点"
+        static let relatedTermsSectionTitle = "関連用語"
+    }
+
+    enum Symbols {
+        static let keyPoint = "checkmark.circle.fill"
+        static let pitfall = "exclamationmark.circle"
+    }
+
+    enum Layout {
+        static let compactRowSpacing: CGFloat = 4
+        static let rowSpacing: CGFloat = 8
+        static let rowReadingMinSpacing: CGFloat = 12
+        static let rowVerticalPadding: CGFloat = 4
+        static let detailContentSpacing: CGFloat = 24
+        static let detailHeaderSpacing: CGFloat = 10
+        static let detailDescriptionTopPadding: CGFloat = 4
+        static let detailListSpacing: CGFloat = 10
+        static let codeExamplesSpacing: CGFloat = 14
+        static let codeExampleContentSpacing: CGFloat = 8
+        static let detailSectionSpacing: CGFloat = 12
+        static let relatedTermMinimumWidth: CGFloat = 120
+        static let relatedTermGridSpacing: CGFloat = 8
+        static let relatedTermTextSpacing: CGFloat = 2
+        static let relatedTermHorizontalPadding: CGFloat = 10
+        static let relatedTermVerticalPadding: CGFloat = 8
+        static let relatedTermCornerRadius: CGFloat = 8
+        static let relatedTermBackgroundOpacity = 0.12
     }
 }

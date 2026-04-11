@@ -1,75 +1,296 @@
 {
-    "version": 1,
+    "version": 2,
     "terms": [
         {
             "id": "ownership",
             "title": "Ownership",
             "reading": "所有権",
             "description": "値の所有者を1つに決め、メモリ安全性を保つ Rust の中心的な仕組みです。",
-            "example": "let s = String::from(\"rust\");"
+            "detailDescription": "Rust ではそれぞれの値に所有者が1つだけあり、所有者がスコープを抜けると値は破棄されます。この規則によって、ガベージコレクションなしで二重解放や解放後使用を防ぎます。所有権は move、borrow、clone の判断につながるため、Rust のコードを読む最初の軸になります。",
+            "keyPoints": [
+                "値には同時に1つの所有者だけがあります。",
+                "所有者がスコープを抜けると値は自動的に破棄されます。",
+                "代入や関数呼び出しで所有権が移動することがあります。"
+            ],
+            "pitfalls": [
+                "String や Vec などは代入後に元の変数を使えない場合があります。",
+                "必要以上に clone すると動きますが、余計なメモリ確保が増えます。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "所有権の移動",
+                    "code": "let name = String::from(\"Rust\");\nlet moved = name;\n// println!(\"{}\", name); // name はもう使えない\nprintln!(\"{}\", moved);"
+                },
+                {
+                    "title": "コピーされる型",
+                    "code": "let count = 3;\nlet copied = count;\nprintln!(\"{} {}\", count, copied);"
+                }
+            ],
+            "relatedTermIds": [
+                "borrow",
+                "lifetime",
+                "closure"
+            ]
         },
         {
             "id": "borrow",
             "title": "Borrow",
             "reading": "借用",
             "description": "値を所有せずに参照として一時的に使うことです。",
-            "example": "&value / &mut value"
+            "detailDescription": "借用は所有権を移動せずに値へアクセスする仕組みです。共有参照の &T は読むため、可変参照の &mut T は変更するために使います。Rust は同じタイミングで共有参照を複数持つことは許しますが、可変参照は基本的に1つだけに制限します。",
+            "keyPoints": [
+                "&T は読み取り用の共有参照です。",
+                "&mut T は変更用の可変参照です。",
+                "可変参照と他の参照は同じ有効範囲で競合します。"
+            ],
+            "pitfalls": [
+                "可変参照を作ったあと、その参照が使われる間は元の値へ直接触れません。",
+                "参照を返す関数ではライフタイムの理解が必要になることがあります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "共有参照",
+                    "code": "fn len(text: &String) -> usize {\n    text.len()\n}\n\nlet name = String::from(\"Ferris\");\nprintln!(\"{}\", len(&name));\nprintln!(\"{}\", name);"
+                },
+                {
+                    "title": "可変参照",
+                    "code": "let mut text = String::from(\"Rust\");\nlet borrowed = &mut text;\nborrowed.push_str(\" Drill\");\nprintln!(\"{}\", borrowed);"
+                }
+            ],
+            "relatedTermIds": [
+                "ownership",
+                "lifetime"
+            ]
         },
         {
             "id": "lifetime",
             "title": "Lifetime",
             "reading": "ライフタイム",
             "description": "参照が有効でいられる範囲を表します。多くの場合はコンパイラが推論します。",
-            "example": "'a"
+            "detailDescription": "ライフタイムは参照が安全に使える期間を表す情報です。ほとんどの場合はコンパイラが推論しますが、複数の参照の関係を関数シグネチャで説明する必要があるときに明示します。値そのものを長生きさせる機能ではなく、参照同士の有効範囲の関係を伝えるための注釈です。",
+            "keyPoints": [
+                "参照が指す値より長く生きないことを保証します。",
+                "明示ライフタイムは参照同士の関係を表します。",
+                "所有権を延ばすものではありません。"
+            ],
+            "pitfalls": [
+                "'static を付けても値が自動的に永遠に生きるわけではありません。",
+                "戻り値の参照がどの引数由来なのか曖昧だと注釈が必要です。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "長い文字列を返す",
+                    "code": "fn longest<'a>(left: &'a str, right: &'a str) -> &'a str {\n    if left.len() >= right.len() {\n        left\n    } else {\n        right\n    }\n}"
+                }
+            ],
+            "relatedTermIds": [
+                "borrow",
+                "ownership"
+            ]
         },
         {
             "id": "trait",
             "title": "Trait",
             "reading": "トレイト",
             "description": "型が持つ振る舞いの約束を定義します。Swift の protocol に近い考え方です。",
-            "example": "trait DisplayName { ... }"
+            "detailDescription": "trait は型に求めるメソッドや関連機能をまとめた契約です。複数の型へ同じ振る舞いを実装したり、関数の引数に「この trait を実装している型」と条件を付けたりできます。標準ライブラリの Iterator、Display、Debug なども trait です。",
+            "keyPoints": [
+                "型が実装すべき振る舞いを定義します。",
+                "trait bound でジェネリック型の条件を指定できます。",
+                "デフォルト実装を持たせることもできます。"
+            ],
+            "pitfalls": [
+                "外部 crate の型に外部 crate の trait を直接実装することはできません。",
+                "dyn Trait と impl Trait は使い所が異なります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "trait と実装",
+                    "code": "trait Summary {\n    fn summary(&self) -> String;\n}\n\nstruct Article {\n    title: String,\n}\n\nimpl Summary for Article {\n    fn summary(&self) -> String {\n        self.title.clone()\n    }\n}"
+                },
+                {
+                    "title": "trait bound",
+                    "code": "fn print_summary<T: Summary>(item: &T) {\n    println!(\"{}\", item.summary());\n}"
+                }
+            ],
+            "relatedTermIds": [
+                "iterator",
+                "closure"
+            ]
         },
         {
             "id": "enum",
             "title": "Enum",
             "reading": "列挙型",
             "description": "複数の状態や値の形を1つの型として表します。",
-            "example": "enum Result<T, E>"
+            "detailDescription": "enum は取りうる状態を列挙し、それぞれの variant に異なるデータを持たせられる型です。Rust の Option や Result も enum で表されています。状態の種類を型に閉じ込めることで、ありえない状態を作りにくくできます。",
+            "keyPoints": [
+                "variant ごとに異なるデータを持てます。",
+                "match と組み合わせると全パターンを扱いやすくなります。",
+                "Option や Result の土台です。"
+            ],
+            "pitfalls": [
+                "variant の中身を使うには match や if let で取り出します。",
+                "状態が増えると match の分岐も更新が必要です。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "状態を表す enum",
+                    "code": "enum LoadState {\n    Loading,\n    Loaded(String),\n    Failed(String),\n}\n\nlet state = LoadState::Loaded(String::from(\"done\"));"
+                }
+            ],
+            "relatedTermIds": [
+                "match",
+                "option",
+                "result"
+            ]
         },
         {
             "id": "match",
             "title": "match",
             "reading": "パターンマッチ",
             "description": "値の形に応じて分岐します。すべての可能性を扱う必要があります。",
-            "example": "match value { ... }"
+            "detailDescription": "match は値の形をパターンで調べて分岐する式です。enum の variant、リテラル、範囲、タプルなどに対して使えます。すべての可能性を網羅する必要があるため、状態の追加漏れをコンパイル時に見つけやすくなります。",
+            "keyPoints": [
+                "match は文ではなく値を返せる式です。",
+                "すべてのパターンを網羅する必要があります。",
+                "_ は残りすべてを受けるワイルドカードです。"
+            ],
+            "pitfalls": [
+                "_ を早く使いすぎると、本来分けたいケースを見逃すことがあります。",
+                "各分岐が返す値の型はそろえる必要があります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "Option を match する",
+                    "code": "let value = Some(10);\nlet message = match value {\n    Some(number) => format!(\"{}\", number),\n    None => String::from(\"なし\"),\n};"
+                }
+            ],
+            "relatedTermIds": [
+                "enum",
+                "option",
+                "result"
+            ]
         },
         {
             "id": "option",
             "title": "Option",
             "reading": "値の有無",
             "description": "値がある場合は Some、ない場合は None で表します。",
-            "example": "Option<T>"
+            "detailDescription": "Option<T> は値が存在するかどうかを型で表す enum です。値があれば Some(T)、なければ None になります。null のように見落としやすい欠損を、match、if let、unwrap_or などで明示的に扱わせるのが特徴です。",
+            "keyPoints": [
+                "Some(T) と None の2種類があります。",
+                "値がない可能性を型として表します。",
+                "map、and_then、unwrap_or など便利なメソッドがあります。"
+            ],
+            "pitfalls": [
+                "unwrap は None のとき panic するため、学習中以外では慎重に使います。",
+                "None の型が推論できない場合は注釈が必要です。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "安全な取り出し",
+                    "code": "let maybe_name: Option<&str> = Some(\"Ferris\");\nlet greeting = match maybe_name {\n    Some(name) => format!(\"Hello, {}\", name),\n    None => String::from(\"Hello\"),\n};"
+                },
+                {
+                    "title": "既定値を使う",
+                    "code": "let score: Option<i32> = None;\nlet visible_score = score.unwrap_or(0);"
+                }
+            ],
+            "relatedTermIds": [
+                "enum",
+                "match",
+                "result"
+            ]
         },
         {
             "id": "result",
             "title": "Result",
             "reading": "成功と失敗",
             "description": "成功時の Ok と失敗時の Err で、エラーになりうる処理を表します。",
-            "example": "Result<T, E>"
+            "detailDescription": "Result<T, E> は成功と失敗を型で表す enum です。成功時は Ok(T)、失敗時は Err(E) になります。? 演算子と組み合わせると、失敗を呼び出し元へ返しながら読みやすく書けます。",
+            "keyPoints": [
+                "Ok(T) は成功、Err(E) は失敗を表します。",
+                "? は Err を早期 return します。",
+                "エラーを無視せず型として扱えます。"
+            ],
+            "pitfalls": [
+                "? を使う関数の戻り値も Result 系である必要があります。",
+                "unwrap は失敗時に panic するため、ユーザー入力やI/Oでは避けるのが基本です。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "Result を返す関数",
+                    "code": "fn parse_count(text: &str) -> Result<i32, std::num::ParseIntError> {\n    let count = text.parse::<i32>()?;\n    Ok(count)\n}"
+                }
+            ],
+            "relatedTermIds": [
+                "enum",
+                "match",
+                "option"
+            ]
         },
         {
             "id": "closure",
             "title": "Closure",
             "reading": "クロージャ",
             "description": "周囲の値を捕まえて使える無名関数です。",
-            "example": "|x| x + 1"
+            "detailDescription": "クロージャは名前を付けずにその場で定義できる関数のような値です。周囲の変数を借用、可変借用、所有権の移動のいずれかで捕まえられます。Iterator の map や filter のようなメソッドでよく使われます。",
+            "keyPoints": [
+                "|引数| 式 の形で書けます。",
+                "周囲の値を必要に応じてキャプチャします。",
+                "move を付けると所有権をクロージャへ移せます。"
+            ],
+            "pitfalls": [
+                "キャプチャ方法によって、元の変数をあとで使えるかが変わります。",
+                "複雑になりすぎる場合は通常の関数に切り出すと読みやすくなります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "map で使う",
+                    "code": "let numbers = vec![1, 2, 3];\nlet doubled: Vec<i32> = numbers.iter().map(|n| n * 2).collect();"
+                },
+                {
+                    "title": "move クロージャ",
+                    "code": "let name = String::from(\"Rust\");\nlet greet = move || println!(\"Hello, {}\", name);\ngreet();"
+                }
+            ],
+            "relatedTermIds": [
+                "iterator",
+                "ownership",
+                "trait"
+            ]
         },
         {
             "id": "iterator",
             "title": "Iterator",
             "reading": "イテレータ",
             "description": "値の列を順番に取り出す仕組みです。map や filter と組み合わせて使います。",
-            "example": ".iter().map(...)"
+            "detailDescription": "Iterator は連続する値を1つずつ取り出す trait です。map、filter、take などのアダプタは遅延評価され、collect や for で実際に消費されます。所有権を取る into_iter、借用する iter、可変借用する iter_mut の違いも重要です。",
+            "keyPoints": [
+                "Iterator trait は next メソッドを中心に動きます。",
+                "多くのアダプタは消費されるまで実行されません。",
+                "iter、iter_mut、into_iter で所有権の扱いが変わります。"
+            ],
+            "pitfalls": [
+                "map だけを書いても collect や for で消費しなければ処理されません。",
+                "into_iter はコレクションの所有権を移動する場合があります。"
+            ],
+            "codeExamples": [
+                {
+                    "title": "変換して集める",
+                    "code": "let words = vec![\"rust\", \"drill\"];\nlet upper: Vec<String> = words\n    .iter()\n    .map(|word| word.to_uppercase())\n    .collect();"
+                },
+                {
+                    "title": "filter と sum",
+                    "code": "let total: i32 = (1..=10)\n    .filter(|n| n % 2 == 0)\n    .sum();"
+                }
+            ],
+            "relatedTermIds": [
+                "closure",
+                "trait",
+                "borrow"
+            ]
         }
     ]
 }

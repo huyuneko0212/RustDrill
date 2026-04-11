@@ -12,5 +12,18 @@ struct VocabularyTerm: Identifiable, Codable, Hashable {
     let title: String
     let reading: String
     let description: String
-    let example: String?
+    let detailDescription: String
+    let keyPoints: [String]
+    let pitfalls: [String]
+    let codeExamples: [VocabularyCodeExample]
+    let relatedTermIds: [String]
+}
+
+struct VocabularyCodeExample: Identifiable, Codable, Hashable {
+    let title: String
+    let code: String
+
+    var id: String {
+        "\(title)-\(code)"
+    }
 }
