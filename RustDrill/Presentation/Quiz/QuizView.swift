@@ -10,19 +10,27 @@ import SwiftUI
 struct QuizView: View {
     @EnvironmentObject private var appContainer: AppContainer
     @Environment(\.dismiss) private var dismiss
-
+    
     @StateObject var viewModel: QuizViewModel
-
+    
     @State private var showExplanation = false
     @State private var isOpeningExplanation = false
     @State private var explanationResult: QuizResult?
-
+    
+    private let bottomButtonHeight: CGFloat = 50
+    
     var body: some View {
         Group {
             if let question = viewModel.currentQuestion {
                 ScrollView {
                     VStack(spacing: 14) {
                         questionHeader
+                        
+                        if let result = viewModel.submittedResult {
+                            resultBanner(isCorrect: result.isCorrect)
+                                .transition(.move(edge: .top).combined(with: .opacity))
+                        }
+                        
                         questionCard(question)
                         choiceList(question)
                     }
@@ -33,7 +41,7 @@ struct QuizView: View {
                     bottomBar
                         .background(.ultraThinMaterial)
                 }
-
+                
             } else if let message = viewModel.errorMessage {
                 ContentUnavailableView(
                     "エラー",
@@ -47,6 +55,7 @@ struct QuizView: View {
                 )
             }
         }
+        .animation(.easeInOut(duration: 0.2), value: viewModel.submittedResult != nil)
         .navigationTitle("クイズ")
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $showExplanation) {
@@ -59,20 +68,18 @@ struct QuizView: View {
             }
         }
     }
-
+    
     // MARK: - Content
-
+    
     private var questionHeader: some View {
         HStack {
-            Text(
-                "Q\(viewModel.currentIndex + 1) / \(viewModel.questions.count)"
-            )
-            .font(.caption)
-            .foregroundStyle(.secondary)
+            Text("Q\(viewModel.currentIndex + 1) / \(viewModel.questions.count)")
+                .font(.caption)
+                .foregroundStyle(.secondary)
             Spacer()
         }
     }
-
+    
     @ViewBuilder
     private func questionCard(_ question: QuizQuestion) -> some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -102,59 +109,54 @@ struct QuizView: View {
                 .stroke(Color.gray.opacity(0.25), lineWidth: 1)
         )
     }
-
+    
     @ViewBuilder
     private func choiceList(_ question: QuizQuestion) -> some View {
         ChoiceListView(
             choices: question.choices,
             selectedChoiceId: viewModel.selectedChoiceId,
             correctChoiceId: (viewModel.submittedResult != nil)
-                ? question.correctChoiceId : nil,
+            ? question.correctChoiceId : nil,
             isSubmitted: viewModel.submittedResult != nil,
             onSelect: { id in
                 viewModel.selectChoice(id)
             }
         )
     }
-
+    
     // MARK: - Fixed Bottom Bar
-
+    
     private var bottomBar: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 12) {
             Divider()
-
+            
             if let result = viewModel.submittedResult {
-                resultBanner(isCorrect: result.isCorrect)
-
-                let shouldEmphasizeExplanation = !result.isCorrect
-
-                HStack(spacing: 10) {
-                    // 左固定: 解説へ（不正解時だけ強調）
+                HStack(spacing: 12) {
                     explanationButtonUnified(
                         result: result,
                         emphasize: !result.isCorrect
                     )
-
-                    // 右固定: 次へ/終了（基本強調）
+                    
                     nextOrEndButtonUnified(emphasize: result.isCorrect)
                 }
             } else {
                 Button("回答する") {
                     viewModel.submit()
                 }
-                .frame(maxWidth: .infinity, minHeight: 44)
+                .frame(maxWidth: .infinity, minHeight: bottomButtonHeight)
+                .font(.headline)
                 .buttonStyle(.borderedProminent)
                 .disabled(!viewModel.canSubmit)
             }
         }
         .padding(.horizontal, 16)
-        .padding(.top, 4)
-        .padding(.bottom, 10)
+        .padding(.top, 6)
+        .padding(.bottom, 12)
     }
-
+    
     @ViewBuilder
     private func resultBanner(isCorrect: Bool) -> some View {
-        let title = isCorrect ? "正解！次へ進みましょう" : "不正解。解説を確認しましょう"
+        let title = isCorrect ? "正解！" : "不正解。解説を確認しましょう"
         let symbol = isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill"
         let toneColor: Color = isCorrect ? .green : .red
         
@@ -183,47 +185,36 @@ struct QuizView: View {
                 .stroke(toneColor.opacity(0.25), lineWidth: 1)
         )
     }
+    
     @ViewBuilder
     private func explanationButtonUnified(
         result: QuizResult,
         emphasize: Bool
     ) -> some View {
-        if emphasize {
-            Button {
-                Task { await openExplanation(result: result) }
-            } label: {
-                HStack(spacing: 6) {
-                    if isOpeningExplanation {
-                        ProgressView()
-                            .controlSize(.small)
-                    }
-                    Text("解説へ")
-                        .fontWeight(.semibold)
+        let button = Button {
+            Task { await openExplanation(result: result) }
+        } label: {
+            HStack(spacing: 8) {
+                if isOpeningExplanation {
+                    ProgressView()
+                        .controlSize(.small)
                 }
                 
+                Text("解説へ")
+                    .fontWeight(.semibold)
             }
-            .frame(maxWidth: .infinity, minHeight: 42)
-            .buttonStyle(.borderedProminent)
-            .disabled(isOpeningExplanation)
-        } else {
-            Button {
-                Task { await openExplanation(result: result) }
-            } label: {
-                HStack(spacing: 6) {
-                    if isOpeningExplanation {
-                        ProgressView()
-                            .controlSize(.small)
-                    }
-                    Text("解説へ")
-                        .fontWeight(.semibold)
-                }
-            }
-            .frame(maxWidth: .infinity, minHeight: 42)
-            .buttonStyle(.bordered)
-            .disabled(isOpeningExplanation)
+            .frame(maxWidth: .infinity, minHeight: bottomButtonHeight)
         }
+            .font(.headline)
+            .disabled(isOpeningExplanation)
+        button.buttonStyle(.bordered)
+//        if emphasize {
+//            button.buttonStyle(.borderedProminent)
+//        } else {
+//            button.buttonStyle(.bordered)
+//        }
     }
-
+    
     @ViewBuilder
     private func nextOrEndButtonUnified(emphasize: Bool) -> some View {
         if viewModel.isLastQuestion {
@@ -240,43 +231,41 @@ struct QuizView: View {
             )
         }
     }
-
+    
     @ViewBuilder
     private func actionButton(
         title: String,
         emphasize: Bool,
         action: @escaping () -> Void
     ) -> some View {
-        if emphasize {
-            Button(title, action: action)
-                .frame(maxWidth: .infinity, minHeight: 42)
-                .buttonStyle(.borderedProminent)
-                .disabled(isOpeningExplanation)
-        } else {
-            Button(title, action: action)
-                .frame(maxWidth: .infinity, minHeight: 42)
-                .buttonStyle(.bordered)
-                .disabled(isOpeningExplanation)
-        }
+        let button = Button(title, action: action)
+            .frame(maxWidth: .infinity, minHeight: bottomButtonHeight)
+            .font(.headline)
+            .disabled(isOpeningExplanation)
+        button.buttonStyle(.borderedProminent)
+//        if emphasize {
+//            button.buttonStyle(.borderedProminent)
+//        } else {
+//            button.buttonStyle(.bordered)
+//        }
     }
-
+    
     // MARK: - Actions
-
+    
     private func dismissQuiz() {
         dismiss()
     }
-
+    
     private func openExplanation(result: QuizResult) async {
         guard !isOpeningExplanation else { return }
-
+        
         isOpeningExplanation = true
         defer { isOpeningExplanation = false }
-
+        
         let ok = await appContainer.adGateService.showGateIfNeeded()
         guard ok else { return }
-
+        
         explanationResult = result
         showExplanation = true
     }
-
 }
