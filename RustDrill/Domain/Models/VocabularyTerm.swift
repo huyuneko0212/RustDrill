@@ -9,6 +9,7 @@ import Foundation
 
 struct VocabularyTerm: Identifiable, Codable, Hashable {
     let id: String
+    let categoryId: String
     let title: String
     let reading: String
     let description: String
@@ -17,6 +18,12 @@ struct VocabularyTerm: Identifiable, Codable, Hashable {
     let pitfalls: [String]
     let codeExamples: [VocabularyCodeExample]
     let relatedTermIds: [String]
+}
+
+struct VocabularyCategory: Identifiable, Codable, Hashable {
+    let id: String
+    let title: String
+    let description: String
 }
 
 struct VocabularyCodeExample: Identifiable, Codable, Hashable {

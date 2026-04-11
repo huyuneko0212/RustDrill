@@ -1,8 +1,26 @@
 {
-    "version": 2,
+    "version": 3,
+    "categories": [
+        {
+            "id": "memory-safety",
+            "title": "所有権と参照",
+            "description": "Rust のメモリ安全性を支える基本ルールです。"
+        },
+        {
+            "id": "types-and-abstractions",
+            "title": "型と抽象化",
+            "description": "データの形や共通の振る舞いを表す用語です。"
+        },
+        {
+            "id": "control-and-errors",
+            "title": "制御フローとエラー処理",
+            "description": "分岐、値の有無、失敗を扱うための用語です。"
+        }
+    ],
     "terms": [
         {
             "id": "ownership",
+            "categoryId": "memory-safety",
             "title": "Ownership",
             "reading": "所有権",
             "description": "値の所有者を1つに決め、メモリ安全性を保つ Rust の中心的な仕組みです。",
@@ -34,6 +52,7 @@
         },
         {
             "id": "borrow",
+            "categoryId": "memory-safety",
             "title": "Borrow",
             "reading": "借用",
             "description": "値を所有せずに参照として一時的に使うことです。",
@@ -64,6 +83,7 @@
         },
         {
             "id": "lifetime",
+            "categoryId": "memory-safety",
             "title": "Lifetime",
             "reading": "ライフタイム",
             "description": "参照が有効でいられる範囲を表します。多くの場合はコンパイラが推論します。",
@@ -90,6 +110,7 @@
         },
         {
             "id": "trait",
+            "categoryId": "types-and-abstractions",
             "title": "Trait",
             "reading": "トレイト",
             "description": "型が持つ振る舞いの約束を定義します。Swift の protocol に近い考え方です。",
@@ -120,6 +141,7 @@
         },
         {
             "id": "enum",
+            "categoryId": "types-and-abstractions",
             "title": "Enum",
             "reading": "列挙型",
             "description": "複数の状態や値の形を1つの型として表します。",
@@ -147,6 +169,7 @@
         },
         {
             "id": "match",
+            "categoryId": "control-and-errors",
             "title": "match",
             "reading": "パターンマッチ",
             "description": "値の形に応じて分岐します。すべての可能性を扱う必要があります。",
@@ -174,6 +197,7 @@
         },
         {
             "id": "option",
+            "categoryId": "control-and-errors",
             "title": "Option",
             "reading": "値の有無",
             "description": "値がある場合は Some、ない場合は None で表します。",
@@ -205,6 +229,7 @@
         },
         {
             "id": "result",
+            "categoryId": "control-and-errors",
             "title": "Result",
             "reading": "成功と失敗",
             "description": "成功時の Ok と失敗時の Err で、エラーになりうる処理を表します。",
@@ -232,6 +257,7 @@
         },
         {
             "id": "closure",
+            "categoryId": "types-and-abstractions",
             "title": "Closure",
             "reading": "クロージャ",
             "description": "周囲の値を捕まえて使える無名関数です。",
@@ -263,6 +289,7 @@
         },
         {
             "id": "iterator",
+            "categoryId": "types-and-abstractions",
             "title": "Iterator",
             "reading": "イテレータ",
             "description": "値の列を順番に取り出す仕組みです。map や filter と組み合わせて使います。",
