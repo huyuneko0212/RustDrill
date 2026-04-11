@@ -16,6 +16,8 @@ enum AppUIConstants {
         static let emptyQuestionsDescription = "このカテゴリにはまだ問題が登録されていません。"
         static let homeTitle = "ホーム"
         static let reviewTitle = "復習"
+        static let settingsTitle = "設定"
+        static let vocabularyTitle = "単語集"
         
         static func questionCount(_ count: Int) -> String {
             "\(count)問"
@@ -45,6 +47,8 @@ enum AppUIConstants {
         static let home = "house"
         static let play = "play.fill"
         static let review = "arrow.clockwise.circle"
+        static let settings = "gearshape"
+        static let vocabulary = "book.closed"
     }
     
     enum Colors {

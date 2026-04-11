@@ -25,6 +25,22 @@ struct RootTabView: View {
                         systemImage: AppUIConstants.Symbols.review
                     )
                 }
+
+            VocabularyView()
+                .tabItem {
+                    Label(
+                        AppUIConstants.Strings.vocabularyTitle,
+                        systemImage: AppUIConstants.Symbols.vocabulary
+                    )
+                }
+
+            SettingsView()
+                .tabItem {
+                    Label(
+                        AppUIConstants.Strings.settingsTitle,
+                        systemImage: AppUIConstants.Symbols.settings
+                    )
+                }
         }
     }
 }
