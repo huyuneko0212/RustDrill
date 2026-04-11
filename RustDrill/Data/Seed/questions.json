@@ -1,5 +1,5 @@
 {
-    "version": 1,
+    "version": 2,
     "categories": [
         {
             "id": "stage1",
@@ -77,7 +77,7 @@
             "id": "stage1.q001",
             "categoryId": "stage1",
             "type": "codeReading",
-            "title": "次のコードで、変数 x の値を変更できるようにするためには、",
+            "title": "可変変数の宣言",
             "body": "次のコードで、変数 x の値を変更できるようにするためには、空欄に何を入れるべきですか？",
             "codeSnippet": "let ___ x = 10;\nx = 20;",
             "choices": [
@@ -143,7 +143,7 @@
             "id": "stage1.q002",
             "categoryId": "stage1",
             "type": "basic",
-            "title": "Rustにおいて、符号付き32ビット整数を表す型はどれですか",
+            "title": "符号付き32ビット整数型",
             "body": "Rustにおいて、符号付き32ビット整数を表す型はどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -203,7 +203,7 @@
             "id": "stage1.q003",
             "categoryId": "stage1",
             "type": "codeReading",
-            "title": "次のコードを実行したときの出力は何ですか？",
+            "title": "シャドーイングと出力結果",
             "body": "次のコードを実行したときの出力は何ですか？",
             "codeSnippet": "let x = 5;\n{\nlet x = x * 2;\nprintln!(\"{}\", x);\n}",
             "choices": [
@@ -269,7 +269,7 @@
             "id": "stage1.q004",
             "categoryId": "stage1",
             "type": "basic",
-            "title": "Rustで定数を宣言するためのキーワードはどれですか？",
+            "title": "定数宣言のキーワード",
             "body": "Rustで定数を宣言するためのキーワードはどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -329,7 +329,7 @@
             "id": "stage1.q005",
             "categoryId": "stage1",
             "type": "basic",
-            "title": "論理値（boolean）の型として正しいものはどれですか？",
+            "title": "論理値の型",
             "body": "論理値（boolean）の型として正しいものはどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -389,7 +389,7 @@
             "id": "stage1.q006",
             "categoryId": "stage1",
             "type": "codeReading",
-            "title": "次のコードで、1から4までを表示するループの空欄を埋めてくだ",
+            "title": "範囲指定のforループ",
             "body": "次のコードで、1から4までを表示するループの空欄を埋めてください。",
             "codeSnippet": "for i in ___ {\nprintln!(\"{}\", i);\n}",
             "choices": [
@@ -455,7 +455,7 @@
             "id": "stage1.q007",
             "categoryId": "stage1",
             "type": "basic",
-            "title": "Rustの関数で値を返す際、 return キーワードを使わ",
+            "title": "returnを使わない戻り値",
             "body": "Rustの関数で値を返す際、 return キーワードを使わずに最後に書く式のことを何と呼びますか？",
             "codeSnippet": "",
             "choices": [
@@ -515,7 +515,7 @@
             "id": "stage1.q008",
             "categoryId": "stage1",
             "type": "basic",
-            "title": "次のうち、Rustの有効な変数名はどれですか？",
+            "title": "有効な変数名",
             "body": "次のうち、Rustの有効な変数名はどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -575,7 +575,7 @@
             "id": "stage1.q009",
             "categoryId": "stage1",
             "type": "basic",
-            "title": "Rustの if は「文（Statement）」ではなく「式",
+            "title": "式として使えるif",
             "body": "Rustの if は「文（Statement）」ではなく「式（Expression）」です。\nこれを利用して正しいのはどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -635,7 +635,7 @@
             "id": "stage1.q010",
             "categoryId": "stage1",
             "type": "basic",
-            "title": "Rustにおいて、何も返さない関数の戻り値の型（ユニット型）",
+            "title": "ユニット型の書き方",
             "body": "Rustにおいて、何も返さない関数の戻り値の型（ユニット型）はどのように記述しますか？",
             "codeSnippet": "",
             "choices": [
@@ -695,7 +695,7 @@
             "id": "stage2.q001",
             "categoryId": "stage2",
             "type": "codeReading",
-            "title": "次のコードをコンパイルしようとしたときの挙動として正しいもの",
+            "title": "所有権移動後の利用",
             "body": "次のコードをコンパイルしようとしたときの挙動として正しいものはどれですか？",
             "codeSnippet": "fn main() {\n    let s1 = String::from(\"hello\");\n    let s2 = s1;\n    println!(\"{}, world!\", s1);\n}",
             "choices": [
@@ -761,7 +761,7 @@
             "id": "stage2.q002",
             "categoryId": "stage2",
             "type": "codeReading",
-            "title": "次のコードは正常に実行されます。その理由として正しいものはど",
+            "title": "Copy型の所有権",
             "body": "次のコードは正常に実行されます。その理由として正しいものはどれですか？",
             "codeSnippet": "fn main() {\n　let x = 5;\n　let y = x;\n　println!(\"xは{}\", x);\n}",
             "choices": [
@@ -827,7 +827,7 @@
             "id": "stage2.q003",
             "categoryId": "stage2",
             "type": "basic",
-            "title": "所有権を関数に渡さず、中身だけを「貸し出す」ことを何と呼びま",
+            "title": "所有権を渡さない貸し出し",
             "body": "所有権を関数に渡さず、中身だけを「貸し出す」ことを何と呼びますか？",
             "codeSnippet": "",
             "choices": [
@@ -887,7 +887,7 @@
             "id": "stage2.q004",
             "categoryId": "stage2",
             "type": "basic",
-            "title": "関数 print_it に、所有権を渡さずに String ",
+            "title": "Stringを借用で渡す記法",
             "body": "関数 print_it に、所有権を渡さずに String を渡すための記法として正しいのはどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -947,7 +947,7 @@
             "id": "stage2.q005",
             "categoryId": "stage2",
             "type": "codeReading",
-            "title": "次のコードで、貸し出した先で文字列を書き換えるために空欄に入",
+            "title": "可変借用による書き換え",
             "body": "次のコードで、貸し出した先で文字列を書き換えるために空欄に入れるべき記法はどれですか？",
             "codeSnippet": "fn main() {\n　let mut s = String::from(\"hi\");\n　update(___s);\n}",
             "choices": [
@@ -1013,7 +1013,7 @@
             "id": "stage2.q006",
             "categoryId": "stage2",
             "type": "basic",
-            "title": "Rustの「借用規則」について正しい説明はどれですか？",
+            "title": "借用規則の基本",
             "body": "Rustの「借用規則」について正しい説明はどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -1073,7 +1073,7 @@
             "id": "stage2.q007",
             "categoryId": "stage2",
             "type": "codeReading",
-            "title": "次のコードをコンパイルした際の結果はどうなりますか？",
+            "title": "可変参照と不変参照の競合",
             "body": "次のコードをコンパイルした際の結果はどうなりますか？",
             "codeSnippet": "fn main() {\n　let mut s = String::from(\"abc\");\n　let r1 = &s;\n　let r2 = &mut s;\n　println!(\"{}\", r1);\n}",
             "choices": [
@@ -1139,7 +1139,7 @@
             "id": "stage2.q008",
             "categoryId": "stage2",
             "type": "basic",
-            "title": "ヒープ上のデータを完全に複製（ディープコピー）して、新しい所",
+            "title": "ヒープデータの複製",
             "body": "ヒープ上のデータを完全に複製（ディープコピー）して、新しい所有権を持つ変数を\n作るメソッドは何ですか？",
             "codeSnippet": "",
             "choices": [
@@ -1199,7 +1199,7 @@
             "id": "stage2.q009",
             "categoryId": "stage2",
             "type": "basic",
-            "title": "文字列の一部（スライス）を参照する型として正しい表記はどれで",
+            "title": "文字列スライスの型",
             "body": "文字列の一部（スライス）を参照する型として正しい表記はどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -1259,7 +1259,7 @@
             "id": "stage2.q010",
             "categoryId": "stage2",
             "type": "codeReading",
-            "title": "次のコードがエラーになる理由は何ですか？",
+            "title": "ダングリング参照の禁止",
             "body": "次のコードがエラーになる理由は何ですか？",
             "codeSnippet": "fn dingle() -> &String {\n　let s = String::from(\"hi\");\n　&s\n}",
             "choices": [
@@ -1325,7 +1325,7 @@
             "id": "stage3.q001",
             "categoryId": "stage3",
             "type": "basic",
-            "title": "ユーザー名（String）と年齢（u32）を持つ「User」",
+            "title": "User構造体の定義",
             "body": "ユーザー名（String）と年齢（u32）を持つ「User」という構造体を定義する正しいコードは？",
             "codeSnippet": "",
             "choices": [
@@ -1385,7 +1385,7 @@
             "id": "stage3.q002",
             "categoryId": "stage3",
             "type": "basic",
-            "title": "Rustの列挙型（enum）が、他言語（C言語など）と大きく",
+            "title": "値を持てるenum",
             "body": "Rustの列挙型（enum）が、他言語（C言語など）と大きく異なる点は何ですか？",
             "codeSnippet": "",
             "choices": [
@@ -1445,7 +1445,7 @@
             "id": "stage3.q003",
             "categoryId": "stage3",
             "type": "basic",
-            "title": "Rustで「値がないかもしれない」状態を安全に扱うための型は",
+            "title": "値がない可能性の表現",
             "body": "Rustで「値がないかもしれない」状態を安全に扱うための型は何ですか？",
             "codeSnippet": "",
             "choices": [
@@ -1505,7 +1505,7 @@
             "id": "stage3.q004",
             "categoryId": "stage3",
             "type": "codeReading",
-            "title": "match 式で列挙型を処理する際、Rustコンパイラがユー",
+            "title": "matchの網羅性チェック",
             "body": "match 式で列挙型を処理する際、Rustコンパイラがユーザーに強制するルールは？",
             "codeSnippet": "",
             "choices": [
@@ -1565,7 +1565,7 @@
             "id": "stage3.q005",
             "categoryId": "stage3",
             "type": "basic",
-            "title": "構造体 User にメソッド（関数）を追加したい場合、どのブ",
+            "title": "構造体メソッドの定義場所",
             "body": "構造体 User にメソッド（関数）を追加したい場合、どのブロックに記述しますか？",
             "codeSnippet": "",
             "choices": [
@@ -1625,7 +1625,7 @@
             "id": "stage3.q006",
             "categoryId": "stage3",
             "type": "basic",
-            "title": "構造体のインスタンス自身を指す、メソッドの第一引数として正し",
+            "title": "メソッドのself引数",
             "body": "構造体のインスタンス自身を指す、メソッドの第一引数として正しい書き方は？",
             "codeSnippet": "",
             "choices": [
@@ -1685,7 +1685,7 @@
             "id": "stage3.q007",
             "categoryId": "stage3",
             "type": "basic",
-            "title": "User::new() のように、インスタンスを作らずに呼び",
+            "title": "関連関数の引数",
             "body": "User::new() のように、インスタンスを作らずに呼び出す「関連関数」を定義する際、\n引数はどうなりますか？",
             "codeSnippet": "",
             "choices": [
@@ -1745,7 +1745,7 @@
             "id": "stage3.q008",
             "categoryId": "stage3",
             "type": "codeReading",
-            "title": "match 式で「それ以外のすべてのパターン」に一致させたい",
+            "title": "matchのワイルドカード",
             "body": "match 式で「それ以外のすべてのパターン」に一致させたい時に使う記号は？",
             "codeSnippet": "",
             "choices": [
@@ -1805,7 +1805,7 @@
             "id": "stage3.q009",
             "categoryId": "stage3",
             "type": "codeReading",
-            "title": "struct Color(i32, i32, i32); の",
+            "title": "タプル構造体",
             "body": "struct Color(i32, i32, i32); のように、フィールドに名前を付けない構造体を何と呼びますか？",
             "codeSnippet": "",
             "choices": [
@@ -1865,7 +1865,7 @@
             "id": "stage3.q010",
             "categoryId": "stage3",
             "type": "codeReading",
-            "title": "特定の1つのパターンだけに興味があり、",
+            "title": "単一パターンの簡潔な分岐",
             "body": "特定の1つのパターンだけに興味があり、",
             "codeSnippet": "他を無視したい場合に match の代わりに使える簡潔な構文は？",
             "choices": [
@@ -1931,7 +1931,7 @@
             "id": "stage4.q001",
             "categoryId": "stage4",
             "type": "basic",
-            "title": "回復不能なエラーが発生した際に、メッセージを表示してプログラ",
+            "title": "回復不能エラーの終了マクロ",
             "body": "回復不能なエラーが発生した際に、メッセージを表示してプログラムを\n即座に終了させるマクロはどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -1991,7 +1991,7 @@
             "id": "stage4.q002",
             "categoryId": "stage4",
             "type": "basic",
-            "title": "失敗する可能性がある関数の戻り値に使われる、\nOk と Er",
+            "title": "成功と失敗を表す型",
             "body": "失敗する可能性がある関数の戻り値に使われる、\nOk と Err の2つのバリアントを持つ型は何ですか？",
             "codeSnippet": "",
             "choices": [
@@ -2051,7 +2051,7 @@
             "id": "stage4.q003",
             "categoryId": "stage4",
             "type": "basic",
-            "title": "Result を返す関数内で、エラーが発生した際に呼び出し元",
+            "title": "エラー委譲の記号",
             "body": "Result を返す関数内で、エラーが発生した際に呼び出し元へ即座にエラーを\n「丸投げ（委譲）」する便利な記号は？",
             "codeSnippet": "",
             "choices": [
@@ -2111,7 +2111,7 @@
             "id": "stage4.q004",
             "categoryId": "stage4",
             "type": "basic",
-            "title": "Result 型から「成功していると信じて」中身を取り出すが",
+            "title": "Resultから強制的に取り出す方法",
             "body": "Result 型から「成功していると信じて」中身を取り出すが、\nもし Err だった場合はパニックを起こすメソッドは？",
             "codeSnippet": "",
             "choices": [
@@ -2171,7 +2171,7 @@
             "id": "stage4.q005",
             "categoryId": "stage4",
             "type": "basic",
-            "title": "unwrap と同様に中身を取り出すが、\nパニック時に独自の",
+            "title": "独自メッセージ付きの取り出し",
             "body": "unwrap と同様に中身を取り出すが、\nパニック時に独自のエラーメッセージを指定できるメソッドは？",
             "codeSnippet": "",
             "choices": [
@@ -2231,7 +2231,7 @@
             "id": "stage4.q006",
             "categoryId": "stage4",
             "type": "basic",
-            "title": "Result 型の成功（Ok）と失敗（Err）で、\nそれぞれ",
+            "title": "Resultの分岐処理",
             "body": "Result 型の成功（Ok）と失敗（Err）で、\nそれぞれ異なる処理を確実に行いたい場合に最適な構文は？",
             "codeSnippet": "",
             "choices": [
@@ -2291,7 +2291,7 @@
             "id": "stage4.q007",
             "categoryId": "stage4",
             "type": "basic",
-            "title": "Result が Err だった場合、パニックさせずにあらか",
+            "title": "Err時のデフォルト値",
             "body": "Result が Err だった場合、パニックさせずにあらかじめ決めた\n「デフォルト値」を採用するメソッドは？",
             "codeSnippet": "",
             "choices": [
@@ -2351,7 +2351,7 @@
             "id": "stage4.q008",
             "categoryId": "stage4",
             "type": "codeReading",
-            "title": "fn main() -> Result<(), Box<dy",
+            "title": "main関数でResultを返す理由",
             "body": "fn main() -> Result<(), Box<dyn Error>> のように、",
             "codeSnippet": "main 関数から Result を返せるようになったのはなぜ？",
             "choices": [
@@ -2417,7 +2417,7 @@
             "id": "stage4.q009",
             "categoryId": "stage4",
             "type": "basic",
-            "title": "Rustの設計思想において、「ファイルが見つからない」といっ",
+            "title": "回復可能エラーの分類",
             "body": "Rustの設計思想において、「ファイルが見つからない」といったエラーは\nどちらに分類されますか？",
             "codeSnippet": "",
             "choices": [
@@ -2477,7 +2477,7 @@
             "id": "stage4.q010",
             "categoryId": "stage4",
             "type": "basic",
-            "title": "Result 型の結果について、エラーの詳細は捨てて「成功し",
+            "title": "ResultをOptionに変換する方法",
             "body": "Result 型の結果について、エラーの詳細は捨てて「成功したか（値があるか）」だけを\n知りたい時に使うメソッドは？",
             "codeSnippet": "",
             "choices": [
@@ -2537,7 +2537,7 @@
             "id": "stage5.q001",
             "categoryId": "stage5",
             "type": "basic",
-            "title": "複数の値を初期値として持つ、新しい可変長配列（ベクタ）を作成",
+            "title": "Vecを作るマクロ",
             "body": "複数の値を初期値として持つ、新しい可変長配列（ベクタ）を作成する\n最も一般的なマクロはどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -2597,7 +2597,7 @@
             "id": "stage5.q002",
             "categoryId": "stage5",
             "type": "codeReading",
-            "title": "ベクタ v の3番目の要素にアクセスする際、",
+            "title": "範囲外に強いVecアクセス",
             "body": "ベクタ v の3番目の要素にアクセスする際、",
             "codeSnippet": "範囲外でもパニックせず Option 型を返すメソッドは？",
             "choices": [
@@ -2663,7 +2663,7 @@
             "id": "stage5.q003",
             "categoryId": "stage5",
             "type": "basic",
-            "title": "「名前（Key）」と「スコア（Value）」のように、\nペア",
+            "title": "キーと値のコレクション",
             "body": "「名前（Key）」と「スコア（Value）」のように、\nペアとなるデータを管理するのに最適な型はどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -2723,7 +2723,7 @@
             "id": "stage5.q004",
             "categoryId": "stage5",
             "type": "basic",
-            "title": "ベクタの末尾に新しい要素を追加するためのメソッドはどれですか",
+            "title": "Vec末尾への追加",
             "body": "ベクタの末尾に新しい要素を追加するためのメソッドはどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -2783,7 +2783,7 @@
             "id": "stage5.q005",
             "categoryId": "stage5",
             "type": "basic",
-            "title": "イテレータ（データの流れ）を、再び Vec などのコレクショ",
+            "title": "イテレータの収集",
             "body": "イテレータ（データの流れ）を、再び Vec などのコレクションに変換（収集）するために\n最後に呼ぶメソッドは？",
             "codeSnippet": "",
             "choices": [
@@ -2843,7 +2843,7 @@
             "id": "stage5.q006",
             "categoryId": "stage5",
             "type": "basic",
-            "title": "「もしキーがなければ初期値を入れ、あればその値を更新する」\n",
+            "title": "HashMapのentry API",
             "body": "「もしキーがなければ初期値を入れ、あればその値を更新する」\nという操作を1行でスマートに行うAPIは？",
             "codeSnippet": "",
             "choices": [
@@ -2903,7 +2903,7 @@
             "id": "stage5.q007",
             "categoryId": "stage5",
             "type": "basic",
-            "title": "String 型は、内部的には何のデータの集まり（コレクショ",
+            "title": "Stringの内部表現",
             "body": "String 型は、内部的には何のデータの集まり（コレクション）として保持されていますか？",
             "codeSnippet": "",
             "choices": [
@@ -2963,7 +2963,7 @@
             "id": "stage5.q008",
             "categoryId": "stage5",
             "type": "basic",
-            "title": "ベクタの特定のインデックスにある要素を取り除き、それ以降の要",
+            "title": "Vec要素の削除と詰め直し",
             "body": "ベクタの特定のインデックスにある要素を取り除き、それ以降の要素を前に詰めるメソッドは？",
             "codeSnippet": "",
             "choices": [
@@ -3023,7 +3023,7 @@
             "id": "stage5.q009",
             "categoryId": "stage5",
             "type": "basic",
-            "title": "ベクタの中身を「読み取り専用（借用）」で一つずつ取り出すイテ",
+            "title": "読み取り用イテレータ",
             "body": "ベクタの中身を「読み取り専用（借用）」で一つずつ取り出すイテレータを作るメソッドは？",
             "codeSnippet": "",
             "choices": [
@@ -3083,7 +3083,7 @@
             "id": "stage5.q010",
             "categoryId": "stage5",
             "type": "basic",
-            "title": "ベクタが現在保持している要素の数ではなく、\n「メモリ上に確保",
+            "title": "Vecの容量",
             "body": "ベクタが現在保持している要素の数ではなく、\n「メモリ上に確保されている最大枠数」を指す言葉は？",
             "codeSnippet": "",
             "choices": [
@@ -3143,7 +3143,7 @@
             "id": "stage6.q001",
             "categoryId": "stage6",
             "type": "basic",
-            "title": "特定の型に依存せず、どんな型でも受け入れられる関数や構造体を",
+            "title": "型に依存しない仕組み",
             "body": "特定の型に依存せず、どんな型でも受け入れられる関数や構造体を作るための\n仕組みを何と呼びますか？",
             "codeSnippet": "",
             "choices": [
@@ -3203,7 +3203,7 @@
             "id": "stage6.q002",
             "categoryId": "stage6",
             "type": "basic",
-            "title": "異なる型に対して「共通の振る舞い（メソッド）」を定義するため",
+            "title": "共通の振る舞いの定義",
             "body": "異なる型に対して「共通の振る舞い（メソッド）」を定義するための仕組みは何ですか？",
             "codeSnippet": "",
             "choices": [
@@ -3263,7 +3263,7 @@
             "id": "stage6.q003",
             "categoryId": "stage6",
             "type": "codeReading",
-            "title": "println!(\"{:?}\", x); のように、デバッグ",
+            "title": "デバッグ表示に必要なトレイト",
             "body": "println!(\"{:?}\", x); のように、デバッグ用に中身を表示するために必要なトレイトは何ですか？",
             "codeSnippet": "",
             "choices": [
@@ -3323,7 +3323,7 @@
             "id": "stage6.q004",
             "categoryId": "stage6",
             "type": "basic",
-            "title": "「このジェネリクス T は、\nSummary トレイトを実装",
+            "title": "ジェネリクスの制約",
             "body": "「このジェネリクス T は、\nSummary トレイトを実装している型でなければならない」という制限を何と呼びますか？",
             "codeSnippet": "",
             "choices": [
@@ -3383,7 +3383,7 @@
             "id": "stage6.q005",
             "categoryId": "stage6",
             "type": "basic",
-            "title": "構造体の上に #[derive(PartialEq)] と書",
+            "title": "deriveによる自動実装",
             "body": "構造体の上に #[derive(PartialEq)] と書くことで、\n自動的にそのトレイトを実装させる機能を何と呼びますか？",
             "codeSnippet": "",
             "choices": [
@@ -3443,7 +3443,7 @@
             "id": "stage6.q006",
             "categoryId": "stage6",
             "type": "basic",
-            "title": "参照が有効である期間をコンパイラに伝えるために使う、'a の",
+            "title": "参照の有効期間を表す記法",
             "body": "参照が有効である期間をコンパイラに伝えるために使う、'a のような記号を何と呼びますか？",
             "codeSnippet": "",
             "choices": [
@@ -3503,7 +3503,7 @@
             "id": "stage6.q007",
             "categoryId": "stage6",
             "type": "basic",
-            "title": "トレイトの定義内でメソッドの具体的な中身（コード）を\nあらか",
+            "title": "トレイトのデフォルト実装",
             "body": "トレイトの定義内でメソッドの具体的な中身（コード）を\nあらかじめ書いておくことを何と呼びますか？",
             "codeSnippet": "",
             "choices": [
@@ -3563,7 +3563,7 @@
             "id": "stage6.q008",
             "categoryId": "stage6",
             "type": "basic",
-            "title": "代入した時に「自動的」かつ「高速」にスタック上のデータを複製",
+            "title": "スタックデータの自動複製",
             "body": "代入した時に「自動的」かつ「高速」にスタック上のデータを複製するトレイトはどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -3623,7 +3623,7 @@
             "id": "stage6.q009",
             "categoryId": "stage6",
             "type": "basic",
-            "title": "「Summary トレイトを実装している何か」を引数に受け取",
+            "title": "impl Traitの引数",
             "body": "「Summary トレイトを実装している何か」を引数に受け取る、最も簡潔な書き方はどれ？",
             "codeSnippet": "",
             "choices": [
@@ -3683,7 +3683,7 @@
             "id": "stage6.q010",
             "categoryId": "stage6",
             "type": "basic",
-            "title": "ほとんどの場合、ライフタイム記法（'a）を書かなくても良いの",
+            "title": "ライフタイム省略規則",
             "body": "ほとんどの場合、ライフタイム記法（'a）を書かなくても良いのはなぜ？",
             "codeSnippet": "",
             "choices": [
@@ -3743,7 +3743,7 @@
             "id": "stage7.q001",
             "categoryId": "stage7",
             "type": "basic",
-            "title": "変数に代入したり引数として渡したりできる「名前のない関数（ク",
+            "title": "クロージャ引数の記号",
             "body": "変数に代入したり引数として渡したりできる「名前のない関数（クロージャ）」を定義する際の、\n引数を囲む記号はどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -3803,7 +3803,7 @@
             "id": "stage7.q002",
             "categoryId": "stage7",
             "type": "basic",
-            "title": "クロージャが周囲の変数の「所有権」を強制的に奪い取る（取り込",
+            "title": "所有権を取り込むクロージャ",
             "body": "クロージャが周囲の変数の「所有権」を強制的に奪い取る（取り込む）ために、\n定義の前に付けるキーワードは？",
             "codeSnippet": "",
             "choices": [
@@ -3863,7 +3863,7 @@
             "id": "stage7.q003",
             "categoryId": "stage7",
             "type": "basic",
-            "title": "Rustで新しく並列実行されるスレッドを作成するための標準関",
+            "title": "新しいスレッドの作成",
             "body": "Rustで新しく並列実行されるスレッドを作成するための標準関数はどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -3923,7 +3923,7 @@
             "id": "stage7.q004",
             "categoryId": "stage7",
             "type": "basic",
-            "title": "spawn したスレッドの処理が終わるまで、\nメインスレッド",
+            "title": "スレッド終了待ち",
             "body": "spawn したスレッドの処理が終わるまで、\nメインスレッドを待機（同期）させるためのメソッドは？",
             "codeSnippet": "",
             "choices": [
@@ -3983,7 +3983,7 @@
             "id": "stage7.q005",
             "categoryId": "stage7",
             "type": "basic",
-            "title": "複数のスレッド間で、同じデータの所有権を\n「安全に共有」する",
+            "title": "スレッド間の共有所有権",
             "body": "複数のスレッド間で、同じデータの所有権を\n「安全に共有」するために使われる型はどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -4043,7 +4043,7 @@
             "id": "stage7.q006",
             "categoryId": "stage7",
             "type": "basic",
-            "title": "複数のスレッドから同時にデータを書き換えないよう、\n一度に一",
+            "title": "排他アクセスのロック",
             "body": "複数のスレッドから同時にデータを書き換えないよう、\n一度に一スレッドだけがアクセスできる「ロック」を提供する型は？",
             "codeSnippet": "",
             "choices": [
@@ -4103,7 +4103,7 @@
             "id": "stage7.q007",
             "categoryId": "stage7",
             "type": "basic",
-            "title": "「メモリを共有する」のではなく、「メッセージを送る」ことでス",
+            "title": "メッセージパッシング",
             "body": "「メモリを共有する」のではなく、「メッセージを送る」ことでスレッド間通信を行う仕組みは？",
             "codeSnippet": "",
             "choices": [
@@ -4163,7 +4163,7 @@
             "id": "stage7.q008",
             "categoryId": "stage7",
             "type": "basic",
-            "title": "Rustが「並行処理に強い」と言われる最大の理由は、何が起き",
+            "title": "データ競合の防止",
             "body": "Rustが「並行処理に強い」と言われる最大の理由は、何が起きないことをコンパイル時に\n保証しているからですか？",
             "codeSnippet": "",
             "choices": [
@@ -4223,7 +4223,7 @@
             "id": "stage7.q009",
             "categoryId": "stage7",
             "type": "basic",
-            "title": "「この型は別のスレッドに所有権を渡しても安全である」\nという",
+            "title": "スレッドへ渡せる型",
             "body": "「この型は別のスレッドに所有権を渡しても安全である」\nという能力を示すトレイトは何ですか？",
             "codeSnippet": "",
             "choices": [
@@ -4283,7 +4283,7 @@
             "id": "stage7.q010",
             "categoryId": "stage7",
             "type": "basic",
-            "title": "環境から奪った所有権を消費してしまうため、\n「一度しか呼び出",
+            "title": "一度だけ呼べるクロージャ",
             "body": "環境から奪った所有権を消費してしまうため、\n「一度しか呼び出すことができない」クロージャのトレイトは？",
             "codeSnippet": "",
             "choices": [
@@ -4343,7 +4343,7 @@
             "id": "stage8.q001",
             "categoryId": "stage8",
             "type": "basic",
-            "title": "データをスタックではなく「ヒープ領域」に強制的に確保し、\nそ",
+            "title": "ヒープに置くスマートポインタ",
             "body": "データをスタックではなく「ヒープ領域」に強制的に確保し、\nそのポインタ（アドレス）をスタックに置くための最もシンプルな型は？",
             "codeSnippet": "",
             "choices": [
@@ -4403,7 +4403,7 @@
             "id": "stage8.q002",
             "categoryId": "stage8",
             "type": "basic",
-            "title": "スマートポインタが通常の参照（&T）のように振る舞えるように",
+            "title": "参照外しのトレイト",
             "body": "スマートポインタが通常の参照（&T）のように振る舞えるようにするため、\n「*」（参照外し）の動作を定義するトレイトは？",
             "codeSnippet": "",
             "choices": [
@@ -4463,7 +4463,7 @@
             "id": "stage8.q003",
             "categoryId": "stage8",
             "type": "basic",
-            "title": "変数がスコープを抜けて不要になった際、\n自動的に呼ばれる「後",
+            "title": "スコープ終了時の後片付け",
             "body": "変数がスコープを抜けて不要になった際、\n自動的に呼ばれる「後片付け」の処理を定義するトレイトは？",
             "codeSnippet": "",
             "choices": [
@@ -4523,7 +4523,7 @@
             "id": "stage8.q004",
             "categoryId": "stage8",
             "type": "basic",
-            "title": "「所有者は1つ」というルールを破り、同じデータを「複数の所有",
+            "title": "単一スレッドの共有所有権",
             "body": "「所有者は1つ」というルールを破り、同じデータを「複数の所有者」で共有するための型は？",
             "codeSnippet": "",
             "choices": [
@@ -4583,7 +4583,7 @@
             "id": "stage8.q005",
             "categoryId": "stage8",
             "type": "basic",
-            "title": "Rc(T) が持っている重要な制限（制約）はどれですか？",
+            "title": "Rcの制約",
             "body": "Rc(T) が持っている重要な制限（制約）はどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -4643,7 +4643,7 @@
             "id": "stage8.q006",
             "categoryId": "stage8",
             "type": "basic",
-            "title": "変数自体は不変（let）でも、実行時に中身を書き換えられる「",
+            "title": "内部可変性",
             "body": "変数自体は不変（let）でも、実行時に中身を書き換えられる「内部可変性」を提供する型は？",
             "codeSnippet": "",
             "choices": [
@@ -4703,7 +4703,7 @@
             "id": "stage8.q007",
             "categoryId": "stage8",
             "type": "basic",
-            "title": "RefCell(T) を使った場合、\n借用ルール（可変参照は",
+            "title": "RefCellの借用チェック",
             "body": "RefCell(T) を使った場合、\n借用ルール（可変参照は同時に1つまで等）はいつチェックされますか？",
             "codeSnippet": "",
             "choices": [
@@ -4763,7 +4763,7 @@
             "id": "stage8.q008",
             "categoryId": "stage8",
             "type": "basic",
-            "title": "RcやRefCellを使って「お互いを参照し合う状態」を作る",
+            "title": "循環参照のリスク",
             "body": "RcやRefCellを使って「お互いを参照し合う状態」を作ると、何が起きる可能性がありますか？",
             "codeSnippet": "",
             "choices": [
@@ -4823,7 +4823,7 @@
             "id": "stage8.q009",
             "categoryId": "stage8",
             "type": "basic",
-            "title": "循環参照によるメモリリークを防ぐため、\nRcの代わりに使う「",
+            "title": "所有権を持たない弱参照",
             "body": "循環参照によるメモリリークを防ぐため、\nRcの代わりに使う「所有権を持たない弱参照」の型は？",
             "codeSnippet": "",
             "choices": [
@@ -4883,7 +4883,7 @@
             "id": "stage8.q010",
             "categoryId": "stage8",
             "type": "basic",
-            "title": "マルチスレッド環境で「複数人で共有」し、かつ「書き換え」を行",
+            "title": "スレッド間の共有と書き換え",
             "body": "マルチスレッド環境で「複数人で共有」し、かつ「書き換え」を行うための定番の型は？",
             "codeSnippet": "",
             "choices": [
@@ -4943,7 +4943,7 @@
             "id": "stage9.q001",
             "categoryId": "stage9",
             "type": "basic",
-            "title": "コードを機能単位で整理するために、新しい「モジュール」を定義",
+            "title": "モジュール定義のキーワード",
             "body": "コードを機能単位で整理するために、新しい「モジュール」を定義する際に\n使用するキーワードはどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -5003,7 +5003,7 @@
             "id": "stage9.q002",
             "categoryId": "stage9",
             "type": "basic",
-            "title": "モジュールの外から関数や構造体を利用できるようにするために\n",
+            "title": "外部公開のキーワード",
             "body": "モジュールの外から関数や構造体を利用できるようにするために\n付けるキーワードはどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -5063,7 +5063,7 @@
             "id": "stage9.q003",
             "categoryId": "stage9",
             "type": "basic",
-            "title": "長いモジュールのパス（例：std::collections:",
+            "title": "パスを短くするキーワード",
             "body": "長いモジュールのパス（例：std::collections::HashMap）を、\n短い名前で直接使えるようにするキーワードは？",
             "codeSnippet": "",
             "choices": [
@@ -5123,7 +5123,7 @@
             "id": "stage9.q004",
             "categoryId": "stage9",
             "type": "basic",
-            "title": "Rustにおいて、コンパイルの最小単位であり、\nライブラリや",
+            "title": "コンパイル単位としてのクレート",
             "body": "Rustにおいて、コンパイルの最小単位であり、\nライブラリや実行ファイルとしてまとめられたものを何と呼びますか？",
             "codeSnippet": "",
             "choices": [
@@ -5183,7 +5183,7 @@
             "id": "stage9.q005",
             "categoryId": "stage9",
             "type": "basic",
-            "title": "外部のライブラリ（クレート）をプロジェクトに追加したい場合、",
+            "title": "依存クレートの追加先",
             "body": "外部のライブラリ（クレート）をプロジェクトに追加したい場合、\nどのファイルにその情報を記述しますか？",
             "codeSnippet": "",
             "choices": [
@@ -5243,7 +5243,7 @@
             "id": "stage9.q006",
             "categoryId": "stage9",
             "type": "basic",
-            "title": "Rustで関数が正しく動くかテストする際、\nテスト用関数の直",
+            "title": "テスト関数の属性",
             "body": "Rustで関数が正しく動くかテストする際、\nテスト用関数の直前に付けるアトリビュート（属性）はどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -5303,7 +5303,7 @@
             "id": "stage9.q007",
             "categoryId": "stage9",
             "type": "basic",
-            "title": "テスト内で「期待した値と実際の値が等しいこと」を確認するため",
+            "title": "等価性を確認するマクロ",
             "body": "テスト内で「期待した値と実際の値が等しいこと」を確認するために\n最もよく使われるマクロはどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -5363,7 +5363,7 @@
             "id": "stage9.q008",
             "categoryId": "stage9",
             "type": "basic",
-            "title": "cargo doc でドキュメントを自動生成する際、\n説明と",
+            "title": "ドキュメントコメント",
             "body": "cargo doc でドキュメントを自動生成する際、\n説明として認識されるコメントの書き方はどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -5423,7 +5423,7 @@
             "id": "stage9.q009",
             "categoryId": "stage9",
             "type": "basic",
-            "title": "ライブラリとして外部から呼び出した時の動作を確認する\n「結合",
+            "title": "結合テストの配置場所",
             "body": "ライブラリとして外部から呼び出した時の動作を確認する\n「結合テスト」のコードを置く標準の場所は？",
             "codeSnippet": "",
             "choices": [
@@ -5483,7 +5483,7 @@
             "id": "stage9.q010",
             "categoryId": "stage9",
             "type": "basic",
-            "title": "「この関数はエラー時に正しくパニックするか」を確認したい場合",
+            "title": "パニックを期待するテスト",
             "body": "「この関数はエラー時に正しくパニックするか」を確認したい場合に、\n#[test] と併せて付ける属性は？",
             "codeSnippet": "",
             "choices": [
@@ -5543,7 +5543,7 @@
             "id": "stage10.q001",
             "categoryId": "stage10",
             "type": "codeReading",
-            "title": "次のコードをコンパイルしようとするとどうなりますか？",
+            "title": "所有権エラーの総合確認",
             "body": "次のコードをコンパイルしようとするとどうなりますか？",
             "codeSnippet": "let s = String::from(\"rust\");\nlet t = s;\nprintln!(\"{}\", s);",
             "choices": [
@@ -5609,7 +5609,7 @@
             "id": "stage10.q002",
             "categoryId": "stage10",
             "type": "codeReading",
-            "title": "次の関数の戻り値の型として最も適切なのはどれですか？",
+            "title": "Optionで表す探索結果",
             "body": "次の関数の戻り値の型として最も適切なのはどれですか？",
             "codeSnippet": "fn first_char(s: &str) -> ___ {\n    s.chars().next()\n}",
             "choices": [
@@ -5675,7 +5675,7 @@
             "id": "stage10.q003",
             "categoryId": "stage10",
             "type": "codeReading",
-            "title": "次の match 式の空欄に入るものとして正しいのはどれです",
+            "title": "matchのNone分岐",
             "body": "次の match 式の空欄に入るものとして正しいのはどれですか？",
             "codeSnippet": "let result: Result<i32, &str> = Ok(10);\nmatch result {\n    Ok(value) => println!(\"{}\", value),\n    ___ => println!(\"error\"),\n}",
             "choices": [
@@ -5741,7 +5741,7 @@
             "id": "stage10.q004",
             "categoryId": "stage10",
             "type": "codeReading",
-            "title": "次のコードでベクタ v の中身は最終的にどうなりますか？",
+            "title": "Vec操作後の中身",
             "body": "次のコードでベクタ v の中身は最終的にどうなりますか？",
             "codeSnippet": "let mut v = vec![1, 2, 3];\nv.push(4);\nv.remove(1);",
             "choices": [
@@ -5807,7 +5807,7 @@
             "id": "stage10.q005",
             "categoryId": "stage10",
             "type": "basic",
-            "title": "次のうち、Summary トレイトを実装している任意の型を参",
+            "title": "トレイト実装型を参照で受け取る関数",
             "body": "次のうち、Summary トレイトを実装している任意の型を参照で受け取る関数として正しいのはどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -5867,7 +5867,7 @@
             "id": "stage10.q006",
             "categoryId": "stage10",
             "type": "basic",
-            "title": "複数スレッドから共有データを書き換えたいときの定番の組み合わ",
+            "title": "共有データ更新の定番構成",
             "body": "複数スレッドから共有データを書き換えたいときの定番の組み合わせはどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -5927,7 +5927,7 @@
             "id": "stage10.q007",
             "categoryId": "stage10",
             "type": "codeReading",
-            "title": "次のコードの空欄に入る属性として正しいものはどれですか？",
+            "title": "PartialEqの自動導出",
             "body": "次のコードの空欄に入る属性として正しいものはどれですか？",
             "codeSnippet": "___\nfn add_test() {\n    assert_eq!(1 + 1, 2);\n}",
             "choices": [
@@ -5993,7 +5993,7 @@
             "id": "stage10.q008",
             "categoryId": "stage10",
             "type": "codeReading",
-            "title": "次のコードをより安全に書き換える方法として最も適切なのはどれ",
+            "title": "unwrapを避ける安全な書き換え",
             "body": "次のコードをより安全に書き換える方法として最も適切なのはどれですか？",
             "codeSnippet": "let v = vec![10, 20, 30];\nlet x = v[5];",
             "choices": [
@@ -6059,7 +6059,7 @@
             "id": "stage10.q009",
             "categoryId": "stage10",
             "type": "basic",
-            "title": "次のうち、Rust のモジュールを外部から使えるように公開す",
+            "title": "モジュール公開のキーワード",
             "body": "次のうち、Rust のモジュールを外部から使えるように公開するために必要なキーワードはどれですか？",
             "codeSnippet": "",
             "choices": [
@@ -6119,7 +6119,7 @@
             "id": "stage10.q010",
             "categoryId": "stage10",
             "type": "codeReading",
-            "title": "次のコードを実行したとき、表示される値はどれですか？",
+            "title": "シャドーイング後の表示値",
             "body": "次のコードを実行したとき、表示される値はどれですか？",
             "codeSnippet": "let x = if true { 1 } else { 2 };\nprintln!(\"{}\", x);",
             "choices": [
