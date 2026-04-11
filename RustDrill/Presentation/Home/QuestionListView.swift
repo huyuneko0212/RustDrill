@@ -8,6 +8,8 @@ import SwiftUI
 
 struct QuestionListView: View {
     @EnvironmentObject private var appContainer: AppContainer
+    @AppStorage(AppSettingsKeys.hideSolvedQuestions) private var hideSolvedQuestions = false
+    @AppStorage(AppSettingsKeys.showQuestionStatus) private var showQuestionStatus = true
     
     let category: Category
     
@@ -17,6 +19,11 @@ struct QuestionListView: View {
     @State private var errorMessage: String?
     @State private var solvedQuestionIds: Set<String> = []
     
+    private var visibleQuestions: [QuizQuestion] {
+        guard hideSolvedQuestions else { return questions }
+
+        return questions.filter { !solvedQuestionIds.contains($0.id) }
+    }
     
     var body: some View {
         Group {
@@ -35,10 +42,16 @@ struct QuestionListView: View {
                     systemImage: AppUIConstants.Symbols.emptyQuestions,
                     description: Text(AppUIConstants.Strings.emptyQuestionsDescription)
                 )
+            } else if visibleQuestions.isEmpty {
+                ContentUnavailableView(
+                    Constants.Strings.allSolvedTitle,
+                    systemImage: Constants.Symbols.allSolved,
+                    description: Text(Constants.Strings.allSolvedDescription)
+                )
             } else {
                 List {
                     Section("問題") {
-                        ForEach(Array(questions.enumerated()), id: \.element.id) { index, question in
+                        ForEach(Array(visibleQuestions.enumerated()), id: \.element.id) { index, question in
                             NavigationLink {
                                 QuizView(
                                     viewModel: QuizViewModel(
@@ -50,7 +63,8 @@ struct QuestionListView: View {
                                 QuestionRowView(
                                     index: index + 1,
                                     question: question,
-                                    isSolved: solvedQuestionIds.contains(question.id)
+                                    isSolved: solvedQuestionIds.contains(question.id),
+                                    showsStatus: showQuestionStatus
                                 )
                             }
                         }
@@ -92,5 +106,16 @@ struct QuestionListView: View {
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+}
+
+private enum Constants {
+    enum Strings {
+        static let allSolvedTitle = "未解答の問題はありません"
+        static let allSolvedDescription = "設定で解答済みの問題も表示できます。"
+    }
+
+    enum Symbols {
+        static let allSolved = "checkmark.circle"
     }
 }

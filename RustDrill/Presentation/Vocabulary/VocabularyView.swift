@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct VocabularyView: View {
-    @AppStorage(Constants.StorageKeys.showRuby) private var showRuby = true
-    @AppStorage(Constants.StorageKeys.compactVocabulary) private var compactVocabulary = false
+    @AppStorage(AppSettingsKeys.showRuby) private var showRuby = true
+    @AppStorage(AppSettingsKeys.compactVocabulary) private var compactVocabulary = false
 
     @State private var categories: [VocabularyCategory] = []
     @State private var terms: [VocabularyTerm] = []
@@ -384,11 +384,6 @@ private struct FlowLikeRelatedTermsView: View {
 }
 
 private enum Constants {
-    enum StorageKeys {
-        static let showRuby = "RustDrill.settings.showRuby"
-        static let compactVocabulary = "RustDrill.settings.compactVocabulary"
-    }
-
     enum Strings {
         static let emptySearchText = ""
         static let emptySearchTitle = "単語が見つかりません"
