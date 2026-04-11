@@ -1,11 +1,10 @@
 import Foundation
 import Combine
-import CryptoKit
 import SwiftData
 
 @MainActor
 final class LocalQuizRepository: QuizRepository {
-    private static let seedVersionKey = "RustDrill.seed.questionsJSON.sha256"
+    private static let seedVersionKey = "RustDrill.seed.questionsJSON.version"
 
     private let context: ModelContext
     private let progressSubject = PassthroughSubject<Void, Never>()
@@ -20,16 +19,14 @@ final class LocalQuizRepository: QuizRepository {
 
     // MARK: - Seed
     func seedIfNeeded() throws {
-        let seedData = try SeedLoader.loadQuestionsJSONData()
-        let seedVersion = Self.sha256Hex(seedData)
-        let storedVersion = UserDefaults.standard.string(forKey: Self.seedVersionKey)
+        let seed = try SeedLoader.loadQuestionsJSON()
+        let storedVersion = UserDefaults.standard.integer(forKey: Self.seedVersionKey)
         let questionCount = try context.fetchCount(FetchDescriptor<SDQuestion>())
 
-        guard storedVersion != seedVersion || questionCount == 0 else { return }
+        guard storedVersion != seed.version || questionCount == 0 else { return }
 
-        let seed = try JSONDecoder().decode(SeedData.self, from: seedData)
         try syncCatalog(with: seed)
-        UserDefaults.standard.set(seedVersion, forKey: Self.seedVersionKey)
+        UserDefaults.standard.set(seed.version, forKey: Self.seedVersionKey)
     }
 
     private func syncCatalog(with seed: SeedData) throws {
@@ -390,12 +387,6 @@ final class LocalQuizRepository: QuizRepository {
         }
     }
 
-    private static func sha256Hex(_ data: Data) -> String {
-        SHA256.hash(data: data)
-            .map { String(format: "%02x", $0) }
-            .joined()
-    }
-    
     private func mapCategory(_ model: SDCategory) -> Category {
         Category(
             id: model.id,

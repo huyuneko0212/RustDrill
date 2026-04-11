@@ -8,6 +8,7 @@
 import Foundation
 
 struct SeedData: Codable {
+    let version: Int
     let categories: [Category]
     let questions: [QuizQuestion]
 }
