@@ -213,6 +213,7 @@ struct QuizView: View {
             .contentShape(Rectangle())
         }
             .font(.headline)
+            .tint(AppUIConstants.Colors.explanation)
             .disabled(isOpeningExplanation)
         button.buttonStyle(.bordered)
     }

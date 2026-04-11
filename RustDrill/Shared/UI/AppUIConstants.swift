@@ -49,6 +49,7 @@ enum AppUIConstants {
     
     enum Colors {
         static let accent = Color.accentOrange
+        static let explanation = Color.explanationTeal
         static let selectedTone = Color.blue
         static let solvedTone = Color.green
         static let unsolvedTone = Color.orange
