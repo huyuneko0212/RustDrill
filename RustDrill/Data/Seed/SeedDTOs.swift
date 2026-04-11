@@ -12,3 +12,8 @@ struct SeedData: Codable {
     let categories: [Category]
     let questions: [QuizQuestion]
 }
+
+struct VocabularySeedData: Codable {
+    let version: Int
+    let terms: [VocabularyTerm]
+}
