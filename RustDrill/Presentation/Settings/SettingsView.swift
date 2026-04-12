@@ -46,6 +46,28 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    NavigationLink {
+                        LegalDocumentView(document: .privacyPolicy)
+                    } label: {
+                        Label("プライバシーポリシー", systemImage: "hand.raised")
+                    }
+
+                    NavigationLink {
+                        LegalDocumentView(document: .termsOfUse)
+                    } label: {
+                        Label("利用規約", systemImage: "doc.text")
+                    }
+
+                    NavigationLink {
+                        LegalDocumentView(document: .support)
+                    } label: {
+                        Label("サポート", systemImage: "questionmark.circle")
+                    }
+                } header: {
+                    Text("リリース情報")
+                }
+
+                Section {
                     Button(role: .destructive) {
                         resetDisplaySettings()
                     } label: {
