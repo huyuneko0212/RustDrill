@@ -43,6 +43,6 @@ Rust Drill は Rust 学習用のクイズアプリです。ログイン、課金
 
 ## URL 欄
 
-- Privacy Policy URL: 公開した `docs/privacy-policy.md` の URL
-- Support URL: 公開した `docs/support.md` の URL
+- Privacy Policy URL: https://huyuneko0212.github.io/RustDrill/docs/privacy-policy.html
+- Support URL: https://huyuneko0212.github.io/RustDrill/docs/support.html
 - Marketing URL: 任意

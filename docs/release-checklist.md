@@ -4,8 +4,8 @@
 
 ## App Store Connect に必要な URL
 
-- Privacy Policy URL: `docs/privacy-policy.md` を GitHub Pages、リポジトリの公開ページ、または任意の公開 URL に掲載する
-- Support URL: `docs/support.md` を GitHub Pages、リポジトリの公開ページ、または任意の公開 URL に掲載する
+- Privacy Policy URL: https://huyuneko0212.github.io/RustDrill/docs/privacy-policy.html
+- Support URL: https://huyuneko0212.github.io/RustDrill/docs/support.html
 - Terms of Use URL: 必須ではないが、必要な場合は `docs/terms-of-use.md` を公開する
 
 ## 提出前確認
