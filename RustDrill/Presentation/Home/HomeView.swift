@@ -19,6 +19,9 @@ struct HomeView: View {
     @State private var totalSolvedCount = 0
     @State private var totalQuestionCount = 0
     @State private var selectedCategory: Category?
+    @State private var selectedResumeQuestion: QuizQuestion?
+    @State private var resumeQuestion: QuizQuestion?
+    @State private var resumeCategory: Category?
 
     private var recommendedCategory: Category? {
         categories.first
@@ -53,6 +56,14 @@ struct HomeView: View {
             .navigationTitle(AppUIConstants.Strings.appTitle)
             .navigationDestination(item: $selectedCategory) { category in
                 CategoryChildrenView(parentCategory: category)
+            }
+            .navigationDestination(item: $selectedResumeQuestion) { question in
+                QuizView(
+                    viewModel: QuizViewModel(
+                        repository: appContainer.repository,
+                        source: .category(question.categoryId, initialQuestionId: question.id)
+                    )
+                )
             }
             .task {
                 guard !didLoad else { return }
@@ -117,9 +128,13 @@ struct HomeView: View {
 
     @ViewBuilder
     private var restartButton: some View {
-        if let recommendedCategory {
+        if resumeQuestion != nil || recommendedCategory != nil {
             Button {
-                selectedCategory = recommendedCategory
+                if let resumeQuestion {
+                    selectedResumeQuestion = resumeQuestion
+                } else {
+                    selectedCategory = recommendedCategory
+                }
             } label: {
                 HStack(spacing: 8) {
                     Image(systemName: AppUIConstants.Symbols.play)
@@ -130,7 +145,7 @@ struct HomeView: View {
 
                     Spacer()
 
-                    Text(recommendedCategory.name)
+                    Text(resumeCategory?.name ?? recommendedCategory?.name ?? "")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -203,6 +218,14 @@ struct HomeView: View {
             }
             totalQuestionCount = progressByCategoryId.values.reduce(0) {
                 $0 + $1.totalCount
+            }
+            resumeQuestion = try appContainer.repository.fetchResumeQuestion()
+            if let resumeQuestion {
+                resumeCategory = try appContainer.repository.fetchCategory(
+                    categoryId: resumeQuestion.categoryId
+                )
+            } else {
+                resumeCategory = nil
             }
         } catch {
             errorMessage = error.localizedDescription

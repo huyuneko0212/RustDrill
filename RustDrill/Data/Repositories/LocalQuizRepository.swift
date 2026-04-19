@@ -5,6 +5,7 @@ import SwiftData
 @MainActor
 final class LocalQuizRepository: QuizRepository {
     private static let seedVersionKey = "RustDrill.seed.questionsJSON.version"
+    private static let lastPresentedQuestionIdKey = "RustDrill.quiz.lastPresentedQuestionId"
 
     private let context: ModelContext
     private let progressSubject = PassthroughSubject<Void, Never>()
@@ -118,6 +119,13 @@ final class LocalQuizRepository: QuizRepository {
         return models.map(mapCategory)
     }
 
+    func fetchCategory(categoryId: String) throws -> Category? {
+        let descriptor = FetchDescriptor<SDCategory>(
+            predicate: #Predicate { $0.id == categoryId }
+        )
+        return try context.fetch(descriptor).first.map(mapCategory)
+    }
+
     func fetchCategoryNodeState(categoryId: String) throws -> CategoryNodeState {
         let children = try fetchChildren(of: categoryId)
         let ownQuestionCount = try countQuestions(categoryId: categoryId)
@@ -163,7 +171,9 @@ final class LocalQuizRepository: QuizRepository {
             predicate: #Predicate { $0.categoryId == categoryId }
         )
         let models = try context.fetch(descriptor)
-        return models.map(mapQuestion)
+        return models
+            .map(mapQuestion)
+            .sorted { $0.id.localizedStandardCompare($1.id) == .orderedAscending }
     }
 
     // MARK: - Category Progress
@@ -223,6 +233,30 @@ final class LocalQuizRepository: QuizRepository {
             isFavorite: p.isFavorite,
             needsReview: p.needsReview
         )
+    }
+
+    func fetchResumeQuestion() throws -> QuizQuestion? {
+        if let latestAnsweredQuestion = try fetchLatestAnsweredQuestion() {
+            let questions = try fetchAllQuestions()
+            if let index = questions.firstIndex(where: { $0.id == latestAnsweredQuestion.id }),
+               questions.indices.contains(index + 1) {
+                return questions[index + 1]
+            }
+
+            return latestAnsweredQuestion
+        }
+
+        if let questionId = UserDefaults.standard.string(forKey: Self.lastPresentedQuestionIdKey),
+           let question = try fetchQuestion(questionId: questionId) {
+            return question
+        }
+
+        return nil
+    }
+
+    func recordLastPresentedQuestion(questionId: String) throws {
+        guard try fetchQuestion(questionId: questionId) != nil else { return }
+        UserDefaults.standard.set(questionId, forKey: Self.lastPresentedQuestionIdKey)
     }
     
     func saveAnswer(
@@ -343,6 +377,31 @@ final class LocalQuizRepository: QuizRepository {
         let solvedProgress = try context.fetch(descriptor)
 
         return Set(solvedProgress.map(\.questionId))
+    }
+
+    private func fetchQuestion(questionId: String) throws -> QuizQuestion? {
+        let descriptor = FetchDescriptor<SDQuestion>(
+            predicate: #Predicate { $0.id == questionId }
+        )
+        return try context.fetch(descriptor).first.map(mapQuestion)
+    }
+
+    private func fetchAllQuestions() throws -> [QuizQuestion] {
+        try context.fetch(FetchDescriptor<SDQuestion>())
+            .map(mapQuestion)
+            .sorted { $0.id.localizedStandardCompare($1.id) == .orderedAscending }
+    }
+
+    private func fetchLatestAnsweredQuestion() throws -> QuizQuestion? {
+        let descriptor = FetchDescriptor<SDQuestionProgress>(
+            predicate: #Predicate { $0.lastAnsweredAt != nil }
+        )
+        let latestProgress = try context.fetch(descriptor).max {
+            ($0.lastAnsweredAt ?? .distantPast) < ($1.lastAnsweredAt ?? .distantPast)
+        }
+
+        guard let questionId = latestProgress?.questionId else { return nil }
+        return try fetchQuestion(questionId: questionId)
     }
 
     private func makeChoices(for question: QuizQuestion) -> [SDChoice] {

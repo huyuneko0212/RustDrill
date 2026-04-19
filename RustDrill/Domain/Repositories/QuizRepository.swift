@@ -20,6 +20,7 @@ struct CategoryNodeState {
 @MainActor
 protocol QuestionCatalogRepository {
     func fetchRootCategories() throws -> [Category]
+    func fetchCategory(categoryId: String) throws -> Category?
     func fetchChildren(of parentId: String) throws -> [Category]
     func fetchCategoryNodeState(categoryId: String) throws -> CategoryNodeState
     func fetchCategoryNodeStates(categoryIds: [String]) throws -> [String: CategoryNodeState]
@@ -32,6 +33,8 @@ protocol ProgressRepository {
 
     func fetchProgress(questionId: String) throws -> QuestionProgress?
     func fetchProgressByCategory(categoryIds: [String]) throws -> [String: CategoryProgress]
+    func fetchResumeQuestion() throws -> QuizQuestion?
+    func recordLastPresentedQuestion(questionId: String) throws
     func saveAnswer(questionId: String, selectedChoiceId: String, isCorrect: Bool) throws
     func toggleFavorite(questionId: String) throws
     func fetchSolvedQuestionIds(categoryId: String) throws -> Set<String>

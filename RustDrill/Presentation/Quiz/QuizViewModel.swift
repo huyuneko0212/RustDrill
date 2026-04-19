@@ -63,6 +63,7 @@ final class QuizViewModel: ObservableObject {
             
             selectedChoiceId = nil
             submittedResult = nil
+            recordCurrentQuestion()
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -100,5 +101,16 @@ final class QuizViewModel: ObservableObject {
         currentIndex += 1
         selectedChoiceId = nil
         submittedResult = nil
+        recordCurrentQuestion()
+    }
+
+    private func recordCurrentQuestion() {
+        guard let questionId = currentQuestion?.id else { return }
+
+        do {
+            try repository.recordLastPresentedQuestion(questionId: questionId)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
 }
