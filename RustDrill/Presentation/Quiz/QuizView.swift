@@ -64,6 +64,7 @@ struct QuizView: View {
                 ExplanationView(
                     result: result,
                     onNext: { viewModel.nextQuestion() },
+                    onFinish: { finishQuizFromExplanation() },
                     isLastQuestion: viewModel.isLastQuestion
                 )
             }
@@ -258,6 +259,11 @@ struct QuizView: View {
     
     private func dismissQuiz() {
         dismiss()
+    }
+
+    private func finishQuizFromExplanation() {
+        explanationResult = nil
+        dismissQuiz()
     }
     
     private func openExplanation(result: QuizResult) async {

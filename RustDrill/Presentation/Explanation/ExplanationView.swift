@@ -10,6 +10,7 @@ import SwiftUI
 struct ExplanationView: View {
     let result: QuizResult
     let onNext: () -> Void
+    let onFinish: () -> Void
     let isLastQuestion: Bool
 
     @Environment(\.dismiss) private var dismiss
@@ -81,7 +82,7 @@ struct ExplanationView: View {
 
             Button {
                 if isLastQuestion {
-                    dismiss()
+                    finishQuiz()
                 } else {
                     onNext()
                     dismiss()
@@ -99,6 +100,13 @@ struct ExplanationView: View {
         .padding()
         .navigationTitle(Constants.Strings.navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func finishQuiz() {
+        dismiss()
+        DispatchQueue.main.async {
+            onFinish()
+        }
     }
 }
 
