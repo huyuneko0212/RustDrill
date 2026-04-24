@@ -10,4 +10,5 @@ import Foundation
 struct QuizChoice: Identifiable, Codable, Hashable {
     let id: String
     let text: String
+    let explanation: String?
 }

@@ -410,6 +410,7 @@ final class LocalQuizRepository: QuizRepository {
                 id: "\(question.id)::\(choice.id)",
                 questionId: question.id,
                 text: choice.text,
+                explanation: choice.explanation ?? "",
                 order: idx
             )
         }
@@ -425,12 +426,14 @@ final class LocalQuizRepository: QuizRepository {
             if let existing = choicesById[globalChoiceId] {
                 existing.questionId = seedQuestion.id
                 existing.text = choice.text
+                existing.explanation = choice.explanation ?? ""
                 existing.order = idx
             } else {
                 let newChoice = SDChoice(
                     id: globalChoiceId,
                     questionId: seedQuestion.id,
                     text: choice.text,
+                    explanation: choice.explanation ?? "",
                     order: idx
                 )
                 model.choices.append(newChoice)
@@ -467,7 +470,7 @@ final class LocalQuizRepository: QuizRepository {
             body: q.body,
             codeSnippet: q.codeSnippet,
             choices: sortedChoices.map {
-                QuizChoice(id: $0.id, text: $0.text) // グローバルIDで返す
+                QuizChoice(id: $0.id, text: $0.text, explanation: $0.explanation) // グローバルIDで返す
             },
             correctChoiceId: q.correctChoiceId, // グローバルID
             explanation: q.explanation,
