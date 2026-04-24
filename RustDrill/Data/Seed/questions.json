@@ -1,5 +1,5 @@
 {
-    "version": 2,
+    "version": 3,
     "categories": [
         {
             "id": "stage1",
@@ -79,7 +79,7 @@
             "type": "codeReading",
             "title": "可変変数の宣言",
             "body": "次のコードで、変数 x の値を変更できるようにするためには、空欄に何を入れるべきですか？",
-            "codeSnippet": "let ___ x = 10;x = 20;",
+            "codeSnippet": "let ___ x = 10;\nx = 20;",
             "choices": [
                 {
                     "id": "a",
@@ -119,7 +119,7 @@
                         "kind": "code",
                         "title": "問題のコード",
                         "language": "rust",
-                        "code": "let ___ x = 10;x = 20;"
+                        "code": "let ___ x = 10;\nx = 20;"
                     },
                     {
                         "kind": "text",
@@ -205,7 +205,7 @@
             "type": "codeReading",
             "title": "シャドーイングと出力結果",
             "body": "次のコードを実行したときの出力は何ですか？",
-            "codeSnippet": "let x = 5;{let x = x * 2;println!(\"{}\", x);}",
+            "codeSnippet": "let x = 5;\n{\n    let x = x * 2;\n    println!(\"{}\", x);\n}",
             "choices": [
                 {
                     "id": "a",
@@ -245,7 +245,7 @@
                         "kind": "code",
                         "title": "問題のコード",
                         "language": "rust",
-                        "code": "let x = 5;{let x = x * 2;println!(\"{}\", x);}"
+                        "code": "let x = 5;\n{\n    let x = x * 2;\n    println!(\"{}\", x);\n}"
                     },
                     {
                         "kind": "text",
@@ -391,7 +391,7 @@
             "type": "codeReading",
             "title": "範囲指定のforループ",
             "body": "次のコードで、1から4までを表示するループの空欄を埋めてください。",
-            "codeSnippet": "for i in ___ {println!(\"{}\", i);}",
+            "codeSnippet": "for i in ___ {\n    println!(\"{}\", i);\n}",
             "choices": [
                 {
                     "id": "a",
@@ -431,7 +431,7 @@
                         "kind": "code",
                         "title": "問題のコード",
                         "language": "rust",
-                        "code": "for i in ___ {println!(\"{}\", i);}"
+                        "code": "for i in ___ {\n    println!(\"{}\", i);\n}"
                     },
                     {
                         "kind": "text",
@@ -697,7 +697,7 @@
             "type": "codeReading",
             "title": "所有権移動後の利用",
             "body": "次のコードをコンパイルしようとしたときの挙動として正しいものはどれですか？",
-            "codeSnippet": "fn main() {    let s1 = String::from(\"hello\");    let s2 = s1;    println!(\"{}, world!\", s1);}",
+            "codeSnippet": "fn main() {\n    let s1 = String::from(\"hello\");\n    let s2 = s1;\n    println!(\"{}, world!\", s1);\n}",
             "choices": [
                 {
                     "id": "a",
@@ -737,7 +737,7 @@
                         "kind": "code",
                         "title": "問題のコード",
                         "language": "rust",
-                        "code": "fn main() {    let s1 = String::from(\"hello\");    let s2 = s1;    println!(\"{}, world!\", s1);}"
+                        "code": "fn main() {\n    let s1 = String::from(\"hello\");\n    let s2 = s1;\n    println!(\"{}, world!\", s1);\n}"
                     },
                     {
                         "kind": "text",
@@ -763,7 +763,7 @@
             "type": "codeReading",
             "title": "Copy型の所有権",
             "body": "次のコードは正常に実行されます。その理由として正しいものはどれですか？",
-            "codeSnippet": "fn main() {　let x = 5;　let y = x;　println!(\"xは{}\", x);}",
+            "codeSnippet": "fn main() {\n    let x = 5;\n    let y = x;\n    println!(\"xは{}\", x);\n}",
             "choices": [
                 {
                     "id": "a",
@@ -803,7 +803,7 @@
                         "kind": "code",
                         "title": "問題のコード",
                         "language": "rust",
-                        "code": "fn main() {　let x = 5;　let y = x;　println!(\"xは{}\", x);}"
+                        "code": "fn main() {\n    let x = 5;\n    let y = x;\n    println!(\"xは{}\", x);\n}"
                     },
                     {
                         "kind": "text",
@@ -949,7 +949,7 @@
             "type": "codeReading",
             "title": "可変借用による書き換え",
             "body": "次のコードで、貸し出した先で文字列を書き換えるために空欄に入れるべき記法はどれですか？",
-            "codeSnippet": "fn main() {　let mut s = String::from(\"hi\");　update(___s);}",
+            "codeSnippet": "fn main() {\n    let mut s = String::from(\"hi\");\n    update(___s);\n}",
             "choices": [
                 {
                     "id": "a",
@@ -989,7 +989,7 @@
                         "kind": "code",
                         "title": "問題のコード",
                         "language": "rust",
-                        "code": "fn main() {　let mut s = String::from(\"hi\");　update(___s);}"
+                        "code": "fn main() {\n    let mut s = String::from(\"hi\");\n    update(___s);\n}"
                     },
                     {
                         "kind": "text",
@@ -1075,7 +1075,7 @@
             "type": "codeReading",
             "title": "可変参照と不変参照の競合",
             "body": "次のコードをコンパイルした際の結果はどうなりますか？",
-            "codeSnippet": "fn main() {　let mut s = String::from(\"abc\");　let r1 = &s;　let r2 = &mut s;　println!(\"{}\", r1);}",
+            "codeSnippet": "fn main() {\n    let mut s = String::from(\"abc\");\n    let r1 = &s;\n    let r2 = &mut s;\n    println!(\"{}\", r1);\n}",
             "choices": [
                 {
                     "id": "a",
@@ -1115,7 +1115,7 @@
                         "kind": "code",
                         "title": "問題のコード",
                         "language": "rust",
-                        "code": "fn main() {　let mut s = String::from(\"abc\");　let r1 = &s;　let r2 = &mut s;　println!(\"{}\", r1);}"
+                        "code": "fn main() {\n    let mut s = String::from(\"abc\");\n    let r1 = &s;\n    let r2 = &mut s;\n    println!(\"{}\", r1);\n}"
                     },
                     {
                         "kind": "text",
@@ -1261,7 +1261,7 @@
             "type": "codeReading",
             "title": "ダングリング参照の禁止",
             "body": "次のコードがエラーになる理由は何ですか？",
-            "codeSnippet": "fn dingle() -> &String {　let s = String::from(\"hi\");　&s}",
+            "codeSnippet": "fn dingle() -> &String {\n    let s = String::from(\"hi\");\n    &s\n}",
             "choices": [
                 {
                     "id": "a",
@@ -1301,7 +1301,7 @@
                         "kind": "code",
                         "title": "問題のコード",
                         "language": "rust",
-                        "code": "fn dingle() -> &String {　let s = String::from(\"hi\");　&s}"
+                        "code": "fn dingle() -> &String {\n    let s = String::from(\"hi\");\n    &s\n}"
                     },
                     {
                         "kind": "text",
@@ -5545,7 +5545,7 @@
             "type": "codeReading",
             "title": "所有権エラーの総合確認",
             "body": "次のコードをコンパイルしようとするとどうなりますか？",
-            "codeSnippet": "let s = String::from(\"rust\");let t = s;println!(\"{}\", s);",
+            "codeSnippet": "let s = String::from(\"rust\");\nlet t = s;\nprintln!(\"{}\", s);",
             "choices": [
                 {
                     "id": "a",
@@ -5585,7 +5585,7 @@
                         "kind": "code",
                         "title": "問題のコード",
                         "language": "rust",
-                        "code": "let s = String::from(\"rust\");let t = s;println!(\"{}\", s);"
+                        "code": "let s = String::from(\"rust\");\nlet t = s;\nprintln!(\"{}\", s);"
                     },
                     {
                         "kind": "text",
@@ -5611,7 +5611,7 @@
             "type": "codeReading",
             "title": "Optionで表す探索結果",
             "body": "次の関数の戻り値の型として最も適切なのはどれですか？",
-            "codeSnippet": "fn first_char(s: &str) -> ___ {    s.chars().next()}",
+            "codeSnippet": "fn first_char(s: &str) -> ___ {\n    s.chars().next()\n}",
             "choices": [
                 {
                     "id": "a",
@@ -5651,7 +5651,7 @@
                         "kind": "code",
                         "title": "問題のコード",
                         "language": "rust",
-                        "code": "fn first_char(s: &str) -> ___ {    s.chars().next()}"
+                        "code": "fn first_char(s: &str) -> ___ {\n    s.chars().next()\n}"
                     },
                     {
                         "kind": "text",
@@ -5677,7 +5677,7 @@
             "type": "codeReading",
             "title": "matchのNone分岐",
             "body": "次の match 式の空欄に入るものとして正しいのはどれですか？",
-            "codeSnippet": "let result: Result<i32, &str> = Ok(10);match result {    Ok(value) => println!(\"{}\", value),    ___ => println!(\"error\"),}",
+            "codeSnippet": "let result: Result<i32, &str> = Ok(10);\nmatch result {\n    Ok(value) => println!(\"{}\", value),\n    ___ => println!(\"error\"),\n}",
             "choices": [
                 {
                     "id": "a",
@@ -5717,7 +5717,7 @@
                         "kind": "code",
                         "title": "問題のコード",
                         "language": "rust",
-                        "code": "let result: Result<i32, &str> = Ok(10);match result {    Ok(value) => println!(\"{}\", value),    ___ => println!(\"error\"),}"
+                        "code": "let result: Result<i32, &str> = Ok(10);\nmatch result {\n    Ok(value) => println!(\"{}\", value),\n    ___ => println!(\"error\"),\n}"
                     },
                     {
                         "kind": "text",
@@ -5743,7 +5743,7 @@
             "type": "codeReading",
             "title": "Vec操作後の中身",
             "body": "次のコードでベクタ v の中身は最終的にどうなりますか？",
-            "codeSnippet": "let mut v = vec![1, 2, 3];v.push(4);v.remove(1);",
+            "codeSnippet": "let mut v = vec![1, 2, 3];\nv.push(4);\nv.remove(1);",
             "choices": [
                 {
                     "id": "a",
@@ -5783,7 +5783,7 @@
                         "kind": "code",
                         "title": "問題のコード",
                         "language": "rust",
-                        "code": "let mut v = vec![1, 2, 3];v.push(4);v.remove(1);"
+                        "code": "let mut v = vec![1, 2, 3];\nv.push(4);\nv.remove(1);"
                     },
                     {
                         "kind": "text",
@@ -5929,7 +5929,7 @@
             "type": "codeReading",
             "title": "PartialEqの自動導出",
             "body": "次のコードの空欄に入る属性として正しいものはどれですか？",
-            "codeSnippet": "___fn add_test() {    assert_eq!(1 + 1, 2);}",
+            "codeSnippet": "___\nfn add_test() {\n    assert_eq!(1 + 1, 2);\n}",
             "choices": [
                 {
                     "id": "a",
@@ -5969,7 +5969,7 @@
                         "kind": "code",
                         "title": "問題のコード",
                         "language": "rust",
-                        "code": "___fn add_test() {    assert_eq!(1 + 1, 2);}"
+                        "code": "___\nfn add_test() {\n    assert_eq!(1 + 1, 2);\n}"
                     },
                     {
                         "kind": "text",
@@ -5995,7 +5995,7 @@
             "type": "codeReading",
             "title": "unwrapを避ける安全な書き換え",
             "body": "次のコードをより安全に書き換える方法として最も適切なのはどれですか？",
-            "codeSnippet": "let v = vec![10, 20, 30];let x = v[5];",
+            "codeSnippet": "let v = vec![10, 20, 30];\nlet x = v[5];",
             "choices": [
                 {
                     "id": "a",
@@ -6035,7 +6035,7 @@
                         "kind": "code",
                         "title": "問題のコード",
                         "language": "rust",
-                        "code": "let v = vec![10, 20, 30];let x = v[5];"
+                        "code": "let v = vec![10, 20, 30];\nlet x = v[5];"
                     },
                     {
                         "kind": "text",
@@ -6121,7 +6121,7 @@
             "type": "codeReading",
             "title": "シャドーイング後の表示値",
             "body": "次のコードを実行したとき、表示される値はどれですか？",
-            "codeSnippet": "let x = if true { 1 } else { 2 };println!(\"{}\", x);",
+            "codeSnippet": "let x = if true { 1 } else { 2 };\nprintln!(\"{}\", x);",
             "choices": [
                 {
                     "id": "a",
@@ -6161,7 +6161,7 @@
                         "kind": "code",
                         "title": "問題のコード",
                         "language": "rust",
-                        "code": "let x = if true { 1 } else { 2 };println!(\"{}\", x);"
+                        "code": "let x = if true { 1 } else { 2 };\nprintln!(\"{}\", x);"
                     },
                     {
                         "kind": "text",
