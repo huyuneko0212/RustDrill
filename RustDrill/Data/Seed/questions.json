@@ -1,5 +1,5 @@
 {
-    "version": 3,
+    "version": 1,
     "categories": [
         {
             "id": "stage1",
@@ -494,6 +494,12 @@
                         "body": "関数の最後の行にセミコロンなしで書かれた式は「末尾式」として評価され、戻り値となります。"
                     },
                     {
+                        "kind": "code",
+                        "title": "サンプルコード",
+                        "language": "rust",
+                        "code": "fn add(a: i32, b: i32) -> i32 {\n    a + b\n}\n\nfn main() {\n    let result = add(2, 3);\n    println!(\"{}\", result);\n}"
+                    },
+                    {
                         "kind": "text",
                         "title": "正解の理由",
                         "body": "正解は「末尾式」です。関数の最後の行にセミコロンなしで書かれた式は「末尾式」として評価され、戻り値となります。"
@@ -949,7 +955,7 @@
             "type": "codeReading",
             "title": "可変借用による書き換え",
             "body": "次のコードで、貸し出した先で文字列を書き換えるために空欄に入れるべき記法はどれですか？",
-            "codeSnippet": "fn main() {\n    let mut s = String::from(\"hi\");\n    update(___s);\n}",
+            "codeSnippet": "fn update(text: &mut String) {\n    text.push_str(\"!\");\n}\n\nfn main() {\n    let mut s = String::from(\"hi\");\n    update(___s);\n    println!(\"{}\", s);\n}",
             "choices": [
                 {
                     "id": "a",
@@ -989,7 +995,7 @@
                         "kind": "code",
                         "title": "問題のコード",
                         "language": "rust",
-                        "code": "fn main() {\n    let mut s = String::from(\"hi\");\n    update(___s);\n}"
+                        "code": "fn update(text: &mut String) {\n    text.push_str(\"!\");\n}\n\nfn main() {\n    let mut s = String::from(\"hi\");\n    update(___s);\n    println!(\"{}\", s);\n}"
                     },
                     {
                         "kind": "text",
@@ -1261,7 +1267,7 @@
             "type": "codeReading",
             "title": "ダングリング参照の禁止",
             "body": "次のコードがエラーになる理由は何ですか？",
-            "codeSnippet": "fn dingle() -> &String {\n    let s = String::from(\"hi\");\n    &s\n}",
+            "codeSnippet": "fn dangle() -> &String {\n    let s = String::from(\"hi\");\n    &s\n}\n\nfn main() {\n    let message = dangle();\n    println!(\"{}\", message);\n}",
             "choices": [
                 {
                     "id": "a",
@@ -1301,7 +1307,7 @@
                         "kind": "code",
                         "title": "問題のコード",
                         "language": "rust",
-                        "code": "fn dingle() -> &String {\n    let s = String::from(\"hi\");\n    &s\n}"
+                        "code": "fn dangle() -> &String {\n    let s = String::from(\"hi\");\n    &s\n}\n\nfn main() {\n    let message = dangle();\n    println!(\"{}\", message);\n}"
                     },
                     {
                         "kind": "text",
