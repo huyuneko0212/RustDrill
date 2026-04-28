@@ -18,6 +18,7 @@ struct QuestionListView: View {
     @State private var didLoad = false
     @State private var errorMessage: String?
     @State private var solvedQuestionIds: Set<String> = []
+    @State private var questionStatuses: [String: QuestionStatus] = [:]
     
     private var visibleQuestions: [QuizQuestion] {
         guard hideSolvedQuestions else { return questions }
@@ -63,7 +64,7 @@ struct QuestionListView: View {
                                 QuestionRowView(
                                     index: index + 1,
                                     question: question,
-                                    isSolved: solvedQuestionIds.contains(question.id),
+                                    status: questionStatuses[question.id] ?? .unanswered,
                                     showsStatus: showQuestionStatus
                                 )
                             }
@@ -103,6 +104,10 @@ struct QuestionListView: View {
         do {
             questions = try appContainer.repository.fetchQuestions(categoryId: category.id)
             solvedQuestionIds = try appContainer.repository.fetchSolvedQuestionIds(categoryId: category.id)
+            questionStatuses = try questions.reduce(into: [:]) { result, question in
+                let progress = try appContainer.repository.fetchProgress(questionId: question.id)
+                result[question.id] = progress?.status ?? .unanswered
+            }
         } catch {
             errorMessage = error.localizedDescription
         }

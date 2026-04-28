@@ -7,6 +7,12 @@
 
 import Foundation
 
+enum QuestionStatus: Codable, Hashable {
+    case unanswered
+    case incorrect
+    case correct
+}
+
 struct QuestionProgress: Identifiable, Codable, Hashable {
     var id: String { questionId }
     let questionId: String
@@ -15,4 +21,16 @@ struct QuestionProgress: Identifiable, Codable, Hashable {
     var lastAnsweredAt: Date?
     var isFavorite: Bool
     var needsReview: Bool
+
+    var status: QuestionStatus {
+        if correctCount > 0 {
+            return .correct
+        }
+
+        if wrongCount > 0 {
+            return .incorrect
+        }
+
+        return .unanswered
+    }
 }

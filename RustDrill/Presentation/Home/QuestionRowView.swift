@@ -10,7 +10,7 @@ import SwiftUI
 struct QuestionRowView: View {
     let index: Int
     let question: QuizQuestion
-    let isSolved: Bool
+    let status: QuestionStatus
     let showsStatus: Bool
     
     var body: some View {
@@ -29,15 +29,15 @@ struct QuestionRowView: View {
             Spacer()
             
             if showsStatus {
-                Text(Constants.Strings.statusLabel(isSolved: isSolved))
+                Text(Constants.Strings.statusLabel(status: status))
                     .font(.caption)
                     .fontWeight(.semibold)
-                    .foregroundStyle(AppUIConstants.Colors.solvedStatusTone(isSolved: isSolved))
+                    .foregroundStyle(AppUIConstants.Colors.questionStatusTone(status))
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .background(
                         Capsule()
-                            .fill(AppUIConstants.Colors.solvedStatusTone(isSolved: isSolved).opacity(0.12))
+                            .fill(AppUIConstants.Colors.questionStatusTone(status).opacity(0.12))
                     )
             }
         }
@@ -47,8 +47,15 @@ struct QuestionRowView: View {
 
 private enum Constants {
     enum Strings {
-        static func statusLabel(isSolved: Bool) -> String {
-            isSolved ? "解答済み" : "未解答"
+        static func statusLabel(status: QuestionStatus) -> String {
+            switch status {
+            case .unanswered:
+                "未回答"
+            case .incorrect:
+                "未正解"
+            case .correct:
+                "正解"
+            }
         }
     }
 }

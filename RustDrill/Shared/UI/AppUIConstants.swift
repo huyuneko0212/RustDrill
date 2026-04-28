@@ -56,10 +56,18 @@ enum AppUIConstants {
         static let explanation = Color.explanationTeal
         static let selectedTone = Color.blue
         static let solvedTone = Color.green
+        static let reviewTone = Color.red
         static let unsolvedTone = Color.orange
-        
-        static func solvedStatusTone(isSolved: Bool) -> Color {
-            isSolved ? solvedTone : unsolvedTone
+
+        static func questionStatusTone(_ status: QuestionStatus) -> Color {
+            switch status {
+            case .unanswered:
+                unsolvedTone
+            case .incorrect:
+                reviewTone
+            case .correct:
+                solvedTone
+            }
         }
     }
 }
