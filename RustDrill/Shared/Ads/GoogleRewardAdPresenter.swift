@@ -7,9 +7,12 @@
 
 import Foundation
 import GoogleMobileAds
+import OSLog
+import UIKit
 
 @MainActor
 final class GoogleRewardAdPresenter: NSObject, AdPresenting {
+    private let logger = Logger(subsystem: "RustDrill", category: "RewardAd")
     private let adUnitID: String
     private var rewardedAd: RewardedAd?
     private var isLoading = false
@@ -31,14 +34,21 @@ final class GoogleRewardAdPresenter: NSObject, AdPresenting {
             didEarnReward = false
             ad.fullScreenContentDelegate = self
             
+            guard let viewController = Self.topViewController() else {
+                logger.error("Reward ad presentation failed: root view controller not found")
+                preload()
+                return true
+            }
+            
             return await withCheckedContinuation { continuation in
                 presentationContinuation = continuation
-                ad.present(from: nil) { [weak self, weak ad] in
+                ad.present(from: viewController) { [weak self, weak ad] in
                     self?.didEarnReward = true
                     _ = ad?.adReward
                 }
             }
         } catch {
+            logger.error("Reward ad load failed: \(error.localizedDescription, privacy: .public)")
             return true
         }
     }
@@ -64,6 +74,32 @@ final class GoogleRewardAdPresenter: NSObject, AdPresenting {
         )
         rewardedAd = ad
         return ad
+    }
+    
+    private static func topViewController() -> UIViewController? {
+        let rootViewController = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .first { $0.isKeyWindow }?
+            .rootViewController
+        
+        return topViewController(from: rootViewController)
+    }
+    
+    private static func topViewController(from viewController: UIViewController?) -> UIViewController? {
+        if let presentedViewController = viewController?.presentedViewController {
+            return topViewController(from: presentedViewController)
+        }
+        
+        if let navigationController = viewController as? UINavigationController {
+            return topViewController(from: navigationController.visibleViewController)
+        }
+        
+        if let tabBarController = viewController as? UITabBarController {
+            return topViewController(from: tabBarController.selectedViewController)
+        }
+        
+        return viewController
     }
     
     private func finishPresentation(canOpenExplanation: Bool) {

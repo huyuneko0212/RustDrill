@@ -23,5 +23,9 @@ final class NoopAdPresenter: AdPresenting {
 }
 
 enum AdConfiguration {
-    static let rewardAdUnitID = "cca-app-pub-5965323767847306/1776487802"
+#if DEBUG
+    static let rewardAdUnitID = "ca-app-pub-3940256099942544/1712485313"
+#else
+    static let rewardAdUnitID = "ca-app-pub-5965323767847306/1776487802"
+#endif
 }
