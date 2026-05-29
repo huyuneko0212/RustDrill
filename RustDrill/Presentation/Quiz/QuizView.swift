@@ -140,19 +140,13 @@ struct QuizView: View {
         VStack(spacing: Constants.Layout.bottomBarSpacing) {
             Divider()
             
-            if let result = viewModel.submittedResult {
-                HStack(spacing: Constants.Layout.bottomButtonSpacing) {
-                    explanationButtonUnified(result: result)
-                    nextOrEndButtonUnified()
-                }
-            } else {
-                Button {
-                    viewModel.submit()
-                } label: {
-                    bottomActionLabel(Constants.Strings.submitButtonTitle)
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(!viewModel.canSubmit)
+            HStack(spacing: Constants.Layout.bottomButtonSpacing) {
+                submitButtonUnified()
+                explanationButtonUnified(result: viewModel.submittedResult)
+            }
+            
+            if viewModel.submittedResult != nil {
+                nextOrEndButtonUnified()
             }
         }
         .padding(.horizontal, Constants.Layout.bottomBarHorizontalPadding)
@@ -196,8 +190,25 @@ struct QuizView: View {
     }
     
     @ViewBuilder
-    private func explanationButtonUnified(result: QuizResult) -> some View {
+    private func submitButtonUnified() -> some View {
+        let isSubmitted = viewModel.submittedResult != nil
         let button = Button {
+            viewModel.submit()
+        } label: {
+            bottomActionLabel(
+                isSubmitted
+                ? Constants.Strings.submittedButtonTitle
+                : Constants.Strings.submitButtonTitle
+            )
+        }
+            .disabled(!viewModel.canSubmit || isSubmitted || isOpeningExplanation)
+        button.buttonStyle(.borderedProminent)
+    }
+    
+    @ViewBuilder
+    private func explanationButtonUnified(result: QuizResult?) -> some View {
+        let button = Button {
+            guard let result else { return }
             Task { await openExplanation(result: result) }
         } label: {
             HStack(spacing: Constants.Layout.explanationButtonSpacing) {
@@ -215,7 +226,7 @@ struct QuizView: View {
         }
             .font(.headline)
             .tint(AppUIConstants.Colors.explanation)
-            .disabled(isOpeningExplanation)
+            .disabled(result == nil || isOpeningExplanation)
         button.buttonStyle(.bordered)
     }
     
@@ -284,6 +295,7 @@ private enum Constants {
     enum Strings {
         static let navigationTitle = "クイズ"
         static let submitButtonTitle = "回答する"
+        static let submittedButtonTitle = "回答済み"
         static let explanationButtonTitle = "解説へ"
         static let finishButtonTitle = "終了"
         static let nextButtonTitle = "次へ"

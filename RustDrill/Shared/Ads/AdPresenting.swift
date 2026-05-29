@@ -21,3 +21,7 @@ final class NoopAdPresenter: AdPresenting {
         true
     }
 }
+
+enum AdConfiguration {
+    static let rewardAdUnitID = "cca-app-pub-5965323767847306/1776487802"
+}

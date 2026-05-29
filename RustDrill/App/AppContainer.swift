@@ -15,6 +15,18 @@ final class AppContainer: ObservableObject {
     
     init(repository: QuizRepository, adGateService: AdGateService? = nil) {
         self.repository = repository
-        self.adGateService = adGateService ?? FrequencyControlledAdGateService(frequency: 3)
+        
+        if let adGateService {
+            self.adGateService = adGateService
+        } else {
+            let presenter = GoogleRewardAdPresenter(
+                adUnitID: AdConfiguration.rewardAdUnitID
+            )
+            presenter.preload()
+            self.adGateService = FrequencyControlledAdGateService(
+                frequency: 1,
+                presenter: presenter
+            )
+        }
     }
 }
