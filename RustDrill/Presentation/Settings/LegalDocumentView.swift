@@ -70,7 +70,7 @@ enum LegalDocument {
     }
 
     var updatedAt: String {
-        "制定日: 2026年4月12日"
+        "制定日: 2026年5月30日"
     }
 
     var sections: [LegalDocumentSection] {
@@ -80,15 +80,25 @@ enum LegalDocument {
                 LegalDocumentSection(
                     title: "収集する情報",
                     paragraphs: [
-                        "Rust Drill は、氏名、メールアドレス、位置情報、連絡先、写真、広告識別子など、個人を特定できる情報を収集しません。",
+                        "Rust Drill は、氏名、メールアドレス、連絡先、写真など、利用者を直接特定する情報を開発者のサーバーへ送信しません。",
                         "クイズの解答履歴、復習対象、表示設定、学習進捗は、アプリの機能提供のために端末内に保存されます。これらの情報は開発者のサーバーへ送信されません。"
                     ]
                 ),
                 LegalDocumentSection(
                     title: "第三者サービス",
                     paragraphs: [
-                        "現在のバージョンでは、広告 SDK、解析 SDK、クラッシュ解析 SDK、ログイン機能、課金機能は使用していません。",
+                        "本アプリでは、解説表示など一部機能の提供に関連して、Google Mobile Ads SDK（AdMob）による広告を表示する場合があります。",
+                        "Google Mobile Ads SDK は、広告配信、広告効果測定、不正利用防止、広告のパーソナライズなどのために、広告識別子、端末情報、アプリ利用状況、IP アドレスから推定される地域情報などを取得または利用する場合があります。取得される情報と利用目的は Google のポリシーに従います。",
+                        "Google による広告データの取り扱いについては、Google のポリシーと規約をご確認ください: https://policies.google.com/technologies/ads",
                         "設定画面には Rust 公式サイトおよび The Rust Programming Language への外部リンクがあります。外部サイトを開いた後の取り扱いは、各サイトのポリシーに従います。"
+                    ]
+                ),
+                LegalDocumentSection(
+                    title: "広告と設定",
+                    paragraphs: [
+                        "広告のパーソナライズは、端末のプライバシー設定や Google が提供する設定によって制限できる場合があります。",
+                        "本アプリは、広告識別子を利用する場合に iOS の App Tracking Transparency（ATT）許可ダイアログを表示することがあります。許可しない場合でも、広告が非パーソナライズまたは制限された形で表示されることがあります。",
+                        "Debug 版や開発中のビルドでは、広告表示確認のためにテスト広告が表示される場合があります。"
                     ]
                 ),
                 LegalDocumentSection(
@@ -124,6 +134,14 @@ enum LegalDocument {
                     paragraphs: [
                         "本アプリの問題、解説、単語集は学習支援を目的として提供されます。内容の正確性には注意していますが、完全性や特定目的への適合性を保証するものではありません。",
                         "Rust は Rust Foundation の商標です。本アプリは Rust Foundation による公式アプリではありません。"
+                    ]
+                ),
+                LegalDocumentSection(
+                    title: "広告",
+                    paragraphs: [
+                        "本アプリでは、解説表示など一部機能の利用時にリワード広告を表示する場合があります。",
+                        "広告の表示可否、配信内容、リワードの成立条件は、通信状況、端末状態、広告配信事業者の仕様や審査状況により変わる場合があります。",
+                        "広告の内容、広告から遷移する外部サイト、広告主が提供する商品またはサービスについて、開発者は責任を負いません。"
                     ]
                 ),
                 LegalDocumentSection(

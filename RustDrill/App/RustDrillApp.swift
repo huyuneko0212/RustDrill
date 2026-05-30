@@ -1,6 +1,5 @@
 import SwiftUI
 import SwiftData
-import GoogleMobileAds
 
 @main
 struct RustDrillApp: App {
@@ -9,8 +8,6 @@ struct RustDrillApp: App {
     
     init() {
         do {
-            MobileAds.shared.start()
-            
             let modelContainer = try ModelContainer(for:
                                                         SDCategory.self,
                                                     SDQuestion.self,
@@ -34,6 +31,9 @@ struct RustDrillApp: App {
         WindowGroup {
             RootTabView()
                 .environmentObject(appContainer)
+                .task {
+                    await appContainer.startAdsIfNeeded()
+                }
         }
         .modelContainer(container)
     }
