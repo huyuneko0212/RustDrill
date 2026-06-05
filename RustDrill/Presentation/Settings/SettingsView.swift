@@ -12,6 +12,8 @@ struct SettingsView: View {
     @AppStorage(AppSettingsKeys.showQuestionStatus) private var showQuestionStatus = true
     @AppStorage(AppSettingsKeys.showRuby) private var showRuby = true
     @AppStorage(AppSettingsKeys.compactVocabulary) private var compactVocabulary = false
+    @State private var isPrivacyOptionsRequired = AdPrivacyAuthorizationService.isPrivacyOptionsRequired
+    @State private var privacyOptionsErrorMessage: String?
 
     var body: some View {
         NavigationStack {
@@ -67,6 +69,20 @@ struct SettingsView: View {
                     Text("リリース情報")
                 }
 
+                if isPrivacyOptionsRequired {
+                    Section {
+                        Button {
+                            Task { await presentPrivacyOptions() }
+                        } label: {
+                            Label("広告のプライバシー設定", systemImage: "person.badge.shield.checkmark")
+                        }
+                    } footer: {
+                        if let privacyOptionsErrorMessage {
+                            Text(privacyOptionsErrorMessage)
+                        }
+                    }
+                }
+
                 Section {
                     Button(role: .destructive) {
                         resetDisplaySettings()
@@ -79,7 +95,21 @@ struct SettingsView: View {
             }
             .listStyle(.insetGrouped)
             .navigationTitle(AppUIConstants.Strings.settingsTitle)
+            .task {
+                isPrivacyOptionsRequired = AdPrivacyAuthorizationService.isPrivacyOptionsRequired
+            }
         }
+    }
+
+    private func presentPrivacyOptions() async {
+        do {
+            try await AdPrivacyAuthorizationService.presentPrivacyOptionsForm()
+            privacyOptionsErrorMessage = nil
+        } catch {
+            privacyOptionsErrorMessage = error.localizedDescription
+        }
+
+        isPrivacyOptionsRequired = AdPrivacyAuthorizationService.isPrivacyOptionsRequired
     }
 
     private func resetDisplaySettings() {

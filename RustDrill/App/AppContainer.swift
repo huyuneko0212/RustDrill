@@ -37,7 +37,11 @@ final class AppContainer: ObservableObject {
     func startAdsIfNeeded() async {
         guard !didStartAds else { return }
         didStartAds = true
-        
+
+        guard await AdPrivacyAuthorizationService.gatherConsentIfNeeded() else {
+            return
+        }
+
         await AdPrivacyAuthorizationService.requestTrackingAuthorizationIfNeeded()
         await MobileAds.shared.start()
         rewardAdPresenter?.preload()
