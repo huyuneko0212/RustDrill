@@ -23,9 +23,11 @@ final class NoopAdPresenter: AdPresenting {
 }
 
 enum AdConfiguration {
-#if DEBUG
-    static let rewardAdUnitID = "ca-app-pub-3940256099942544/1712485313"
-#else
-    static let rewardAdUnitID = "ca-app-pub-5965323767847306/1776487802"
-#endif
+    static var rewardAdUnitID: String? {
+        guard let id = Bundle.main.object(forInfoDictionaryKey: "RustDrillRewardAdUnitID") as? String,
+              !id.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return nil
+        }
+        return id
+    }
 }

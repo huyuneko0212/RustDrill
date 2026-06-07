@@ -37,11 +37,15 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Link(destination: URL(string: "https://www.rust-lang.org/")!) {
-                        Label("Rust 公式サイト", systemImage: "safari")
+                    if let url = URL(string: "https://www.rust-lang.org/") {
+                        Link(destination: url) {
+                            Label("Rust 公式サイト", systemImage: "safari")
+                        }
                     }
-                    Link(destination: URL(string: "https://doc.rust-lang.org/book/")!) {
-                        Label("The Rust Programming Language", systemImage: "book")
+                    if let url = URL(string: "https://doc.rust-lang.org/book/") {
+                        Link(destination: url) {
+                            Label("The Rust Programming Language", systemImage: "book")
+                        }
                     }
                 } header: {
                     Text("学習リンク")

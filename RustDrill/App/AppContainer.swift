@@ -8,9 +8,12 @@
 import Foundation
 import Combine
 import GoogleMobileAds
+import OSLog
 
 @MainActor
 final class AppContainer: ObservableObject {
+    private static let logger = Logger(subsystem: "RustDrill", category: "Ads")
+
     let repository: QuizRepository
     let adGateService: AdGateService
     private let rewardAdPresenter: GoogleRewardAdPresenter?
@@ -18,30 +21,35 @@ final class AppContainer: ObservableObject {
     
     init(repository: QuizRepository, adGateService: AdGateService? = nil) {
         self.repository = repository
-        
+
         if let adGateService {
             self.adGateService = adGateService
             self.rewardAdPresenter = nil
-        } else {
-            let presenter = GoogleRewardAdPresenter(
-                adUnitID: AdConfiguration.rewardAdUnitID
-            )
+        } else if let rewardAdUnitID = AdConfiguration.rewardAdUnitID {
+            let presenter = GoogleRewardAdPresenter(adUnitID: rewardAdUnitID)
             self.rewardAdPresenter = presenter
             self.adGateService = FrequencyControlledAdGateService(
                 frequency: 1,
                 presenter: presenter
+            )
+        } else {
+            Self.logger.error("Reward ad unit ID is missing or invalid. Ads will be disabled for reward gate.")
+            self.rewardAdPresenter = nil
+            self.adGateService = FrequencyControlledAdGateService(
+                frequency: 1,
+                presenter: NoopAdPresenter()
             )
         }
     }
     
     func startAdsIfNeeded() async {
         guard !didStartAds else { return }
-        didStartAds = true
 
         guard await AdPrivacyAuthorizationService.gatherConsentIfNeeded() else {
             return
         }
 
+        didStartAds = true
         await AdPrivacyAuthorizationService.requestTrackingAuthorizationIfNeeded()
         await MobileAds.shared.start()
         rewardAdPresenter?.preload()

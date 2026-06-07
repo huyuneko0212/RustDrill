@@ -28,6 +28,11 @@ final class GoogleRewardAdPresenter: NSObject, AdPresenting {
     }
     
     func presentRewardAd() async -> Bool {
+        guard !adUnitID.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            logger.error("Reward ad unit ID is empty; skipping ad presentation.")
+            return true
+        }
+
         do {
             let ad = try await loadAdIfNeeded()
             rewardedAd = nil

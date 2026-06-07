@@ -90,12 +90,13 @@ struct QuestionListView: View {
         }
     }
     
-    private func loadQuestions(force _: Bool = false) async {
+    private func loadQuestions(force: Bool = false) async {
         if isLoading { return }
-        
+        if didLoad && !force { return }
+
         isLoading = true
         errorMessage = nil
-        
+
         defer {
             isLoading = false
             didLoad = true
@@ -104,9 +105,11 @@ struct QuestionListView: View {
         do {
             questions = try appContainer.repository.fetchQuestions(categoryId: category.id)
             solvedQuestionIds = try appContainer.repository.fetchSolvedQuestionIds(categoryId: category.id)
-            questionStatuses = try questions.reduce(into: [:]) { result, question in
-                let progress = try appContainer.repository.fetchProgress(questionId: question.id)
-                result[question.id] = progress?.status ?? .unanswered
+            let progressMap = try appContainer.repository.fetchProgressForQuestionIds(
+                questions.map(\.id)
+            )
+            questionStatuses = questions.reduce(into: [:]) { result, question in
+                result[question.id] = progressMap[question.id]?.status ?? .unanswered
             }
         } catch {
             errorMessage = error.localizedDescription

@@ -135,7 +135,10 @@ final class LocalQuizRepository: QuizRepository {
     func fetchCategoryNodeStates(categoryIds: [String]) throws -> [String: CategoryNodeState] {
         guard !categoryIds.isEmpty else { return [:] }
 
-        let allChildren = try context.fetch(FetchDescriptor<SDCategory>())
+        let childDescriptor = FetchDescriptor<SDCategory>(
+            predicate: #Predicate { categoryIds.contains($0.parentId ?? "") }
+        )
+        let childCategories = try context.fetch(childDescriptor)
             .map(mapCategory)
             .reduce(into: [String: [Category]]()) { result, category in
                 guard let parentId = category.parentId else { return }
@@ -149,7 +152,7 @@ final class LocalQuizRepository: QuizRepository {
             (
                 categoryId,
                 CategoryNodeState(
-                    children: allChildren[categoryId] ?? [],
+                    children: childCategories[categoryId] ?? [],
                     ownQuestionCount: questionCounts[categoryId, default: 0]
                 )
             )
@@ -168,12 +171,10 @@ final class LocalQuizRepository: QuizRepository {
     // MARK: - Question
     func fetchQuestions(categoryId: String) throws -> [QuizQuestion] {
         let descriptor = FetchDescriptor<SDQuestion>(
-            predicate: #Predicate { $0.categoryId == categoryId }
+            predicate: #Predicate { $0.categoryId == categoryId },
+            sortBy: [SortDescriptor(\.id)]
         )
-        let models = try context.fetch(descriptor)
-        return models
-            .map(mapQuestion)
-            .sorted { $0.id.localizedStandardCompare($1.id) == .orderedAscending }
+        return try context.fetch(descriptor).map(mapQuestion)
     }
 
     // MARK: - Category Progress
@@ -224,7 +225,7 @@ final class LocalQuizRepository: QuizRepository {
             predicate: #Predicate { $0.questionId == questionId }
         )
         guard let p = try context.fetch(descriptor).first else { return nil }
-        
+
         return QuestionProgress(
             questionId: p.questionId,
             correctCount: p.correctCount,
@@ -233,6 +234,29 @@ final class LocalQuizRepository: QuizRepository {
             isFavorite: p.isFavorite,
             needsReview: p.needsReview
         )
+    }
+
+    func fetchProgressForQuestionIds(_ questionIds: [String]) throws -> [String: QuestionProgress] {
+        guard !questionIds.isEmpty else { return [:] }
+        let ids = Set(questionIds)
+        let descriptor = FetchDescriptor<SDQuestionProgress>(
+            predicate: #Predicate { ids.contains($0.questionId) }
+        )
+        let progresses = try context.fetch(descriptor)
+
+        return Dictionary(uniqueKeysWithValues: progresses.map { p in
+            (
+                p.questionId,
+                QuestionProgress(
+                    questionId: p.questionId,
+                    correctCount: p.correctCount,
+                    wrongCount: p.wrongCount,
+                    lastAnsweredAt: p.lastAnsweredAt,
+                    isFavorite: p.isFavorite,
+                    needsReview: p.needsReview
+                )
+            )
+        })
     }
 
     func fetchResumeQuestion() throws -> QuizQuestion? {
@@ -303,14 +327,13 @@ final class LocalQuizRepository: QuizRepository {
         let reviewProgress = try context.fetch(progressDescriptor)
         let ids = Set(reviewProgress.map(\.questionId))
         guard !ids.isEmpty else { return [] }
-        
+
         let questionIds = Array(ids)
         let questionDescriptor = FetchDescriptor<SDQuestion>(
-            predicate: #Predicate { questionIds.contains($0.id) }
+            predicate: #Predicate { questionIds.contains($0.id) },
+            sortBy: [SortDescriptor(\.id)]
         )
-        let questions = try context.fetch(questionDescriptor)
-        
-        return questions.map(mapQuestion)
+        return try context.fetch(questionDescriptor).map(mapQuestion)
     }
     
     // MARK: - Helpers
@@ -386,10 +409,22 @@ final class LocalQuizRepository: QuizRepository {
         return try context.fetch(descriptor).first.map(mapQuestion)
     }
 
+    private func fetchQuestionIds(categoryId: String) throws -> Set<String> {
+        try context.fetch(
+            FetchDescriptor<SDQuestion>(
+                predicate: #Predicate { $0.categoryId == categoryId }
+            )
+        ).reduce(into: Set<String>()) { result, question in
+            result.insert(question.id)
+        }
+    }
+
     private func fetchAllQuestions() throws -> [QuizQuestion] {
-        try context.fetch(FetchDescriptor<SDQuestion>())
-            .map(mapQuestion)
-            .sorted { $0.id.localizedStandardCompare($1.id) == .orderedAscending }
+        try context.fetch(
+            FetchDescriptor<SDQuestion>(
+                sortBy: [SortDescriptor(\.id)]
+            )
+        ).map(mapQuestion)
     }
 
     private func fetchLatestAnsweredQuestion() throws -> QuizQuestion? {

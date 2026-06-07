@@ -11,6 +11,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C5AD10002FCA000000000001 /* Ads-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Ads-Debug.xcconfig"; sourceTree = "<group>"; };
+		C5AD10012FCA000000000001 /* Ads-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Ads-Release.xcconfig"; sourceTree = "<group>"; };
 		C5B885D82F49243D00124515 /* RustDrill.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RustDrill.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -37,9 +39,19 @@
 		C5B885CF2F49243D00124515 = {
 			isa = PBXGroup;
 			children = (
+				C5AD10022FCA000000000001 /* Config */,
 				C5B885DA2F49243D00124515 /* RustDrill */,
 				C5B885D92F49243D00124515 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		C5AD10022FCA000000000001 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				C5AD10002FCA000000000001 /* Ads-Debug.xcconfig */,
+				C5AD10012FCA000000000001 /* Ads-Release.xcconfig */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 		C5B885D92F49243D00124515 /* Products */ = {
@@ -255,6 +267,7 @@
 		};
 		C5B885E62F49243D00124515 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C5AD10002FCA000000000001 /* Ads-Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -282,6 +295,7 @@
 		};
 		C5B885E72F49243D00124515 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C5AD10012FCA000000000001 /* Ads-Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

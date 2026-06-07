@@ -32,6 +32,7 @@ protocol ProgressRepository {
     var progressDidChange: AnyPublisher<Void, Never> { get }
 
     func fetchProgress(questionId: String) throws -> QuestionProgress?
+    func fetchProgressForQuestionIds(_ questionIds: [String]) throws -> [String: QuestionProgress]
     func fetchProgressByCategory(categoryIds: [String]) throws -> [String: CategoryProgress]
     func fetchResumeQuestion() throws -> QuizQuestion?
     func recordLastPresentedQuestion(questionId: String) throws
