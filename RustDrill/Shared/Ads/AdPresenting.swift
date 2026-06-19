@@ -9,6 +9,8 @@ import Foundation
 
 @MainActor
 protocol AdPresenting {
+    var isAvailable: Bool { get }
+
     /// 広告表示成功 or スキップ許可で true
     /// 広告失敗/キャンセルで false（必要なら）
     func presentRewardAd() async -> Bool
@@ -16,6 +18,8 @@ protocol AdPresenting {
 
 @MainActor
 final class NoopAdPresenter: AdPresenting {
+    let isAvailable = false
+
     func presentRewardAd() async -> Bool {
         // まだ広告SDK未導入なので常に通す
         true

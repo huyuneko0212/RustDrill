@@ -12,6 +12,8 @@ import UIKit
 
 @MainActor
 final class GoogleRewardAdPresenter: NSObject, AdPresenting {
+    let isAvailable = true
+
     private let logger = Logger(subsystem: "RustDrill", category: "RewardAd")
     private let adUnitID: String
     private var rewardedAd: RewardedAd?

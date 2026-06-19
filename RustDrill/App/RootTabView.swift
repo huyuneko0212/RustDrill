@@ -8,15 +8,27 @@
 import SwiftUI
 
 struct RootTabView: View {
+    private enum Tab: Hashable {
+        case home
+        case review
+        case vocabulary
+        case settings
+    }
+
+    @State private var selectedTab: Tab = .home
+    @State private var homeResetID = UUID()
+
     var body: some View {
-        TabView {
+        TabView(selection: tabSelection) {
             HomeView()
+                .id(homeResetID)
                 .tabItem {
                     Label(
                         AppUIConstants.Strings.homeTitle,
                         systemImage: AppUIConstants.Symbols.home
                     )
                 }
+                .tag(Tab.home)
             
             ReviewListView()
                 .tabItem {
@@ -25,6 +37,7 @@ struct RootTabView: View {
                         systemImage: AppUIConstants.Symbols.review
                     )
                 }
+                .tag(Tab.review)
 
             VocabularyView()
                 .tabItem {
@@ -33,6 +46,7 @@ struct RootTabView: View {
                         systemImage: AppUIConstants.Symbols.vocabulary
                     )
                 }
+                .tag(Tab.vocabulary)
 
             SettingsView()
                 .tabItem {
@@ -41,6 +55,18 @@ struct RootTabView: View {
                         systemImage: AppUIConstants.Symbols.settings
                     )
                 }
+                .tag(Tab.settings)
+        }
+    }
+
+    private var tabSelection: Binding<Tab> {
+        Binding {
+            selectedTab
+        } set: { newTab in
+            if newTab == .home {
+                homeResetID = UUID()
+            }
+            selectedTab = newTab
         }
     }
 }

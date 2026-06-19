@@ -55,9 +55,19 @@ Rustの学習ハードルを下げるための、クイズ形式学習アプリ�
 
 ## リリース関連
 
-- [プライバシーポリシー](docs/privacy-policy.md)
-- [利用規約](docs/terms-of-use.md)
-- [サポート](docs/support.md)
-- [App Store Connect プライバシー回答メモ](docs/app-store-privacy.md)
-- [App Store メタデータ案](docs/app-store-metadata.md)
-- [リリースチェックリスト](docs/release-checklist.md)
+- [プライバシーポリシー](docs/privacy-policy.html)
+- [利用規約](docs/terms-of-use.html)
+- [サポート](docs/support.html)
+
+公開 URL: https://rustdrill.wintercats.com/
+
+App Store Connect に設定する URL:
+
+- Privacy Policy URL: https://rustdrill.wintercats.com/docs/privacy-policy.html
+- Support URL: https://rustdrill.wintercats.com/docs/support.html
+
+Cloudflare Pages では静的 HTML をそのまま公開します。
+
+- Framework preset: `None`
+- Build command: `exit 0`
+- Build output directory: `/`

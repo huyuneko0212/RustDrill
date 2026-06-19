@@ -69,6 +69,9 @@ struct ChoiceButton: View {
         }
         .buttonStyle(.plain)
         .disabled(isDisabled)
+        .accessibilityValue(accessibilityValue)
+        .accessibilityRemoveTraits(.isSelected)
+        .accessibilityAddTraits(isActuallySelected ? .isSelected : [])
     }
     
     // MARK: - UI Parts
@@ -136,6 +139,23 @@ struct ChoiceButton: View {
             return QuizUIConstants.Colors.correctTone.opacity(0.7)
         case .wrongSelected:
             return QuizUIConstants.Colors.incorrectTone.opacity(0.7)
+        }
+    }
+
+    private var isActuallySelected: Bool {
+        visualState == .selected || visualState == .wrongSelected
+    }
+
+    private var accessibilityValue: String {
+        switch visualState {
+        case .normal:
+            return ""
+        case .selected:
+            return "選択中"
+        case .correct:
+            return "正解"
+        case .wrongSelected:
+            return "選択した不正解"
         }
     }
 }

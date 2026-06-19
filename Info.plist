@@ -3,7 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<string>ja</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>ja</string>
+	</array>
 	<key>CFBundleDisplayName</key>
 	<string>Rust Drill</string>
 	<key>CFBundleExecutable</key>
@@ -27,7 +31,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSUserTrackingUsageDescription</key>
-	<string>広告識別子は、パーソナライズされた広告の表示と広告効果測定のために使用されます。</string>
+	<string>より関連性の高い広告を表示し、アプリを無料で提供し続けるために使用します。</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>

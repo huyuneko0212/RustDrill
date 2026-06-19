@@ -117,7 +117,7 @@ enum LegalDocument {
                 LegalDocumentSection(
                     title: "お問い合わせ",
                     paragraphs: [
-                        "お問い合わせは GitHub Issues からご連絡ください: https://github.com/huyuneko0212/RustDrill/issues"
+                        "お問い合わせはメールでご連絡ください: rustdrill@wintercats.com"
                     ]
                 )
             ]
@@ -165,7 +165,7 @@ enum LegalDocument {
                 LegalDocumentSection(
                     title: "お問い合わせ",
                     paragraphs: [
-                        "お問い合わせは GitHub Issues からご連絡ください: https://github.com/huyuneko0212/RustDrill/issues"
+                        "お問い合わせはメールでご連絡ください: rustdrill@wintercats.com"
                     ]
                 )
             ]
@@ -174,7 +174,7 @@ enum LegalDocument {
                 LegalDocumentSection(
                     title: "お問い合わせ先",
                     paragraphs: [
-                        "不具合報告、問題文の誤り、改善要望は GitHub Issues からご連絡ください: https://github.com/huyuneko0212/RustDrill/issues"
+                        "不具合報告、問題文の誤り、改善要望はメールでご連絡ください: rustdrill@wintercats.com"
                     ]
                 ),
                 LegalDocumentSection(

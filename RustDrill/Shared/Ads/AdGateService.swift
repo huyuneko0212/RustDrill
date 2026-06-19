@@ -9,6 +9,8 @@ import Foundation
 
 @MainActor
 protocol AdGateService {
+    var willShowAdOnNextGate: Bool { get }
+
     /// 解説表示前の広告ゲート
     /// true: 解説へ進める / false: キャンセル
     func showGateIfNeeded() async -> Bool
@@ -21,6 +23,11 @@ final class FrequencyControlledAdGateService: AdGateService {
     private let frequency: Int
     private let counterStore: AdGateCounterStore
     private let presenter: AdPresenting
+
+    var willShowAdOnNextGate: Bool {
+        guard presenter.isAvailable else { return false }
+        return (counterStore.currentExplanationTapCount() + 1) % frequency == 0
+    }
     
     /// - parameter frequency: 何回に1回広告を出すか（例: 3）
     init(

@@ -1,0 +1,99 @@
+:root {
+  color-scheme: light;
+  --background: #f7f8f5;
+  --surface: #ffffff;
+  --text: #242721;
+  --muted: #62675d;
+  --accent: #c44d28;
+  --border: #ddd8cf;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  line-height: 1.75;
+}
+
+a {
+  color: var(--accent);
+}
+
+.page {
+  width: min(880px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 48px 0 72px;
+}
+
+.hero,
+.document {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: clamp(24px, 5vw, 48px);
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+h1 {
+  margin: 0 0 16px;
+  font-size: clamp(2rem, 7vw, 3.25rem);
+  line-height: 1.15;
+}
+
+h2 {
+  margin: 36px 0 12px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-size: 1.35rem;
+}
+
+p,
+ul {
+  margin: 0 0 18px;
+}
+
+ul {
+  padding-left: 1.4em;
+}
+
+.meta {
+  color: var(--muted);
+}
+
+.link-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.link-list a {
+  display: block;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.link-list a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 28px;
+}

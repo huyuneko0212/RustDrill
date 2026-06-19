@@ -20,24 +20,23 @@ struct VocabularyView: View {
     @State private var expandedSectionIds: Set<String> = []
 
     private var filteredTerms: [VocabularyTerm] {
-        guard !searchText.isEmpty else { return terms }
+        let query = normalizedSearchText
+        guard !query.isEmpty else { return terms }
 
-        return terms.filter { term in
-            let category = category(for: term)
-
-            return term.title.localizedStandardContains(searchText)
-            || term.reading.localizedStandardContains(searchText)
-            || term.description.localizedStandardContains(searchText)
-            || term.detailDescription.localizedStandardContains(searchText)
-            || category?.title.localizedStandardContains(searchText) == true
-            || category?.description.localizedStandardContains(searchText) == true
-            || term.keyPoints.contains { $0.localizedStandardContains(searchText) }
-            || term.pitfalls.contains { $0.localizedStandardContains(searchText) }
-            || term.codeExamples.contains { example in
-                example.title.localizedStandardContains(searchText)
-                || example.code.localizedStandardContains(searchText)
-            }
+        return terms.compactMap { term in
+            searchRank(for: term, query: query).map { (term, $0) }
         }
+        .sorted { lhs, rhs in
+            if lhs.1 != rhs.1 {
+                return lhs.1 < rhs.1
+            }
+            return lhs.0.title.localizedStandardCompare(rhs.0.title) == .orderedAscending
+        }
+        .map(\.0)
+    }
+
+    private var normalizedSearchText: String {
+        searchText.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     private var termSections: [VocabularyTermSection] {
@@ -82,25 +81,21 @@ struct VocabularyView: View {
                         description: Text(Constants.Strings.emptySearchDescription)
                     )
                 } else {
-                    ForEach(termSections) { section in
-                        DisclosureGroup(isExpanded: isSectionExpandedBinding(for: section.id)) {
-                            ForEach(section.terms) { term in
-                                NavigationLink {
-                                    VocabularyTermDetailView(
-                                        term: term,
-                                        category: category(for: term),
-                                        relatedTerms: relatedTerms(for: term)
-                                    )
-                                } label: {
-                                    VocabularyTermRow(
-                                        term: term,
-                                        showsReading: showRuby,
-                                        isCompact: compactVocabulary
-                                    )
+                    if normalizedSearchText.isEmpty {
+                        ForEach(termSections) { section in
+                            DisclosureGroup(isExpanded: isSectionExpandedBinding(for: section.id)) {
+                                ForEach(section.terms) { term in
+                                    termLink(for: term)
                                 }
+                            } label: {
+                                VocabularyTermSectionHeader(section: section)
                             }
-                        } label: {
-                            VocabularyTermSectionHeader(section: section)
+                        }
+                    } else {
+                        Section(Constants.Strings.searchResultsTitle) {
+                            ForEach(filteredTerms) { term in
+                                termLink(for: term)
+                            }
                         }
                     }
                 }
@@ -156,6 +151,38 @@ struct VocabularyView: View {
     private func relatedTerms(for term: VocabularyTerm) -> [VocabularyTerm] {
         term.relatedTermIds.compactMap { id in
             terms.first { $0.id == id }
+        }
+    }
+
+    private func searchRank(for term: VocabularyTerm, query: String) -> Int? {
+        if term.title.localizedCaseInsensitiveCompare(query) == .orderedSame { return 0 }
+        if term.reading.localizedCaseInsensitiveCompare(query) == .orderedSame { return 1 }
+        if term.title.localizedCaseInsensitiveContains(query) { return 2 }
+        if term.reading.localizedCaseInsensitiveContains(query) { return 3 }
+        if term.description.localizedCaseInsensitiveContains(query) { return 4 }
+        if term.detailDescription.localizedCaseInsensitiveContains(query) { return 5 }
+        if term.keyPoints.contains(where: { $0.localizedCaseInsensitiveContains(query) }) { return 6 }
+        if term.pitfalls.contains(where: { $0.localizedCaseInsensitiveContains(query) }) { return 7 }
+        if term.codeExamples.contains(where: {
+            $0.title.localizedCaseInsensitiveContains(query)
+            || $0.code.localizedCaseInsensitiveContains(query)
+        }) { return 8 }
+        return nil
+    }
+
+    private func termLink(for term: VocabularyTerm) -> some View {
+        NavigationLink {
+            VocabularyTermDetailView(
+                term: term,
+                category: category(for: term),
+                relatedTerms: relatedTerms(for: term)
+            )
+        } label: {
+            VocabularyTermRow(
+                term: term,
+                showsReading: showRuby,
+                isCompact: compactVocabulary
+            )
         }
     }
 
@@ -392,6 +419,7 @@ private enum Constants {
         static let uncategorizedSectionTitle = "その他"
         static let uncategorizedSectionDescription = "まだ分類されていない用語です。"
         static let searchPrompt = "用語を検索"
+        static let searchResultsTitle = "検索結果"
         static let keyPointsSectionTitle = "要点"
         static let codeExamplesSectionTitle = "コード例"
         static let pitfallsSectionTitle = "つまずきやすい点"
