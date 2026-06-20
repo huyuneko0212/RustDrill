@@ -41,7 +41,7 @@ enum AdPrivacyAuthorizationService {
         guard ATTrackingManager.trackingAuthorizationStatus == .notDetermined else {
             return
         }
-        
+
         _ = await withCheckedContinuation { continuation in
             ATTrackingManager.requestTrackingAuthorization { status in
                 continuation.resume(returning: status)

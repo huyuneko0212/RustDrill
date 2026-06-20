@@ -29,7 +29,7 @@ final class AppContainer: ObservableObject {
             let presenter = GoogleRewardAdPresenter(adUnitID: rewardAdUnitID)
             self.rewardAdPresenter = presenter
             self.adGateService = FrequencyControlledAdGateService(
-                frequency: 1,
+                frequency: 3,
                 presenter: presenter
             )
         } else {

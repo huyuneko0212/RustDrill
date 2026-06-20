@@ -14,10 +14,8 @@ struct QuizView: View {
     @StateObject var viewModel: QuizViewModel
     
     @State private var showExplanation = false
-    @State private var showAdConfirmation = false
     @State private var isOpeningExplanation = false
     @State private var explanationResult: QuizResult?
-    @State private var pendingExplanationResult: QuizResult?
     
     var body: some View {
         Group {
@@ -70,22 +68,6 @@ struct QuizView: View {
                     isLastQuestion: viewModel.isLastQuestion
                 )
             }
-        }
-        .confirmationDialog(
-            Constants.Strings.adConfirmationTitle,
-            isPresented: $showAdConfirmation,
-            titleVisibility: .visible
-        ) {
-            Button(Constants.Strings.watchAdButtonTitle) {
-                guard let result = pendingExplanationResult else { return }
-                pendingExplanationResult = nil
-                Task { await openExplanation(result: result) }
-            }
-            Button(Constants.Strings.cancelButtonTitle, role: .cancel) {
-                pendingExplanationResult = nil
-            }
-        } message: {
-            Text(Constants.Strings.adConfirmationMessage)
         }
     }
     
@@ -294,12 +276,7 @@ struct QuizView: View {
     }
 
     private func requestExplanation(result: QuizResult) {
-        if appContainer.adGateService.willShowAdOnNextGate {
-            pendingExplanationResult = result
-            showAdConfirmation = true
-        } else {
-            Task { await openExplanation(result: result) }
-        }
+        Task { await openExplanation(result: result) }
     }
     
     private func openExplanation(result: QuizResult) async {
@@ -322,10 +299,6 @@ private enum Constants {
         static let submitButtonTitle = "回答する"
         static let explanationButtonTitle = "解説へ"
         static let adExplanationButtonTitle = "広告を見て解説を読む"
-        static let adConfirmationTitle = "広告を再生します"
-        static let adConfirmationMessage = "解説を読むには広告を最後までご覧ください。閉じるボタンや完了ボタンは、広告開始から数秒後に表示されます。"
-        static let watchAdButtonTitle = "広告を見て解説を読む"
-        static let cancelButtonTitle = "キャンセル"
         static let finishButtonTitle = "終了"
         static let nextButtonTitle = "次へ"
         
